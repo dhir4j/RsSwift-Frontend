@@ -1,3 +1,70 @@
+import Header from '@/components/header';
+import Footer from '@/components/footer';
+import QuoteWidget from '@/components/quote-widget';
+import FeatureGrid from '@/components/feature-grid';
+import Testimonials from '@/components/testimonials';
+
 export default function Home() {
-  return <></>;
+  return (
+    <div className="flex flex-col min-h-dvh bg-background text-foreground">
+      <Header />
+      <main className="flex-1">
+        <section id="home" className="w-full py-12 md:py-24 lg:py-32 bg-white">
+          <div className="container px-4 md:px-6">
+            <div className="grid gap-10 lg:grid-cols-2 lg:gap-16">
+              <div className="flex flex-col justify-center space-y-6">
+                <div className="space-y-4">
+                  <h1 className="text-4xl font-bold tracking-tighter sm:text-5xl md:text-6xl lg:text-7xl font-headline text-primary">
+                    SwiftShip
+                  </h1>
+                  <h2 className="text-3xl font-bold tracking-tighter sm:text-4xl md:text-5xl font-headline">
+                    India's Trusted Courier Partner
+                  </h2>
+                  <p className="max-w-[600px] text-muted-foreground md:text-xl">
+                    Fast, reliable, and secure delivery services with 24x7 support. Ship anything, anywhere in India with confidence.
+                  </p>
+                </div>
+              </div>
+              <div className="w-full mx-auto">
+                <QuoteWidget />
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section id="services" className="w-full py-12 md:py-24 lg:py-32">
+          <div className="container px-4 md:px-6">
+            <div className="flex flex-col items-center justify-center space-y-4 text-center">
+              <div className="space-y-2">
+                <h2 className="text-3xl font-bold tracking-tighter sm:text-5xl font-headline">Why Choose SwiftShip?</h2>
+                <p className="max-w-[900px] text-muted-foreground md:text-xl/relaxed lg:text-base/relaxed xl:text-xl/relaxed">
+                  We are committed to providing top-notch courier services with a focus on speed, safety, and customer satisfaction.
+                </p>
+              </div>
+            </div>
+            <div className="mx-auto grid max-w-5xl items-start gap-8 py-12 sm:grid-cols-2 md:gap-12 lg:max-w-none lg:grid-cols-4">
+                <FeatureGrid />
+            </div>
+          </div>
+        </section>
+
+        <section id="testimonials" className="w-full py-12 md:py-24 lg:py-32 bg-white">
+          <div className="container px-4 md:px-6">
+            <div className="flex flex-col items-center justify-center space-y-4 text-center">
+              <div className="space-y-2">
+                <h2 className="text-3xl font-bold tracking-tighter sm:text-5xl font-headline">Loved by Our Customers</h2>
+                <p className="max-w-[900px] text-muted-foreground md:text-xl/relaxed lg:text-base/relaxed xl:text-xl/relaxed">
+                  Hear what our satisfied clients have to say about their experience with SwiftShip.
+                </p>
+              </div>
+            </div>
+            <div className="mx-auto max-w-6xl mt-12">
+              <Testimonials />
+            </div>
+          </div>
+        </section>
+      </main>
+      <Footer />
+    </div>
+  );
 }
