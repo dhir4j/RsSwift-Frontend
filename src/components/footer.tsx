@@ -18,24 +18,33 @@ export default function Footer() {
           </div>
           <div className="grid gap-2 text-sm">
             <h3 className="font-bold text-base font-headline">Quick Links</h3>
-            <Link href="/#services" className="hover:text-primary hover:underline" prefetch={false}>
-              Services
+            <Link href="/about-us" className="hover:text-primary hover:underline" prefetch={false}>
+              About Us
             </Link>
-            <Link href="/#testimonials" className="hover:text-primary hover:underline" prefetch={false}>
-              Testimonials
+            <Link href="/privacy-policy" className="hover:text-primary hover:underline" prefetch={false}>
+              Privacy Policy
             </Link>
-            <Link href="/#home" className="hover:text-primary hover:underline" prefetch={false}>
-              Get a Quote
+            <Link href="/terms-of-service" className="hover:text-primary hover:underline" prefetch={false}>
+              Terms of Service
+            </Link>
+            <Link href="/shipping-delivery" className="hover:text-primary hover:underline" prefetch={false}>
+              Shipping & Delivery
+            </Link>
+            <Link href="/refund-cancellation" className="hover:text-primary hover:underline" prefetch={false}>
+              Refund & Cancellation
+            </Link>
+            <Link href="/customer-care" className="hover:text-primary hover:underline" prefetch={false}>
+              Customer Care
             </Link>
           </div>
           <div className="grid gap-2 text-sm">
             <h3 className="font-bold text-base font-headline">Contact Us</h3>
-            <p>123 Delivery Lane, New Delhi, 110001, India</p>
-            <a href="mailto:contact@swiftship.co.in" className="hover:text-primary hover:underline">
-              contact@swiftship.co.in
+            <p>18AX MODEL TOWN EXTENSION LUDHIANA NEAR PUNJAB & SIND BANK</p>
+            <a href="mailto:RSSWIFTCOURIERS@GMAIL.COM" className="hover:text-primary hover:underline">
+              RSSWIFTCOURIERS@GMAIL.COM
             </a>
-            <a href="tel:+919876543210" className="hover:text-primary hover:underline">
-              +91 98765 43210
+            <a href="tel:+919541195406" className="hover:text-primary hover:underline">
+              +91 9541195406
             </a>
           </div>
           <div className="grid gap-2 text-sm">
