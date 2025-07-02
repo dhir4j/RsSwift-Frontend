@@ -13,7 +13,7 @@ export default function TermsOfService() {
               <div className="space-y-4 text-muted-foreground md:text-xl/relaxed lg:text-base/relaxed xl:text-xl/relaxed">
                 <p><strong>Last updated: {new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}</strong></p>
                 
-                <p>Please read these Terms of Service ("Terms", "Terms of Service") carefully before using the swiftship.co.in website (the "Service") operated by RS SWIFT COURIERS LLP ("us", "we", or "our").</p>
+                <p>Please read these Terms of Service ("Terms", "Terms of Service") carefully before using our website (the "Service") operated by RS SWIFT COURIERS LLP ("us", "we", or "our").</p>
 
                 <h2 className="text-2xl font-bold font-headline mt-6">1. Agreement to Terms</h2>
                 <p>By accessing or using our Service, you agree to be bound by these Terms. If you disagree with any part of the terms, then you may not access the Service.</p>

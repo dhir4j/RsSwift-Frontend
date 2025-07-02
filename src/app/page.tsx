@@ -15,7 +15,7 @@ export default function Home() {
               <div className="flex flex-col justify-center space-y-6">
                 <div className="space-y-4">
                   <h1 className="text-4xl font-bold tracking-tighter sm:text-5xl md:text-6xl lg:text-7xl font-headline text-primary">
-                    SwiftShip
+                    RS SWIFT COURIERS LLP
                   </h1>
                   <h2 className="text-3xl font-bold tracking-tighter sm:text-4xl md:text-5xl font-headline">
                     India's Trusted Courier Partner
@@ -36,7 +36,7 @@ export default function Home() {
           <div className="container px-4 md:px-6">
             <div className="flex flex-col items-center justify-center space-y-4 text-center">
               <div className="space-y-2">
-                <h2 className="text-3xl font-bold tracking-tighter sm:text-5xl font-headline">Why Choose SwiftShip?</h2>
+                <h2 className="text-3xl font-bold tracking-tighter sm:text-5xl font-headline">Why Choose RS SWIFT COURIERS LLP?</h2>
                 <p className="max-w-[900px] text-muted-foreground md:text-xl/relaxed lg:text-base/relaxed xl:text-xl/relaxed">
                   We are committed to providing top-notch courier services with a focus on speed, safety, and customer satisfaction.
                 </p>
@@ -54,7 +54,7 @@ export default function Home() {
               <div className="space-y-2">
                 <h2 className="text-3xl font-bold tracking-tighter sm:text-5xl font-headline">Loved by Our Customers</h2>
                 <p className="max-w-[900px] text-muted-foreground md:text-xl/relaxed lg:text-base/relaxed xl:text-xl/relaxed">
-                  Hear what our satisfied clients have to say about their experience with SwiftShip.
+                  Hear what our satisfied clients have to say about their experience with RS SWIFT COURIERS LLP.
                 </p>
               </div>
             </div>

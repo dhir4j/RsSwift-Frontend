@@ -9,10 +9,7 @@ export default function Footer() {
           <div className="flex flex-col items-start gap-4">
             <Link href="/" className="flex items-center gap-2" prefetch={false}>
               <Package2 className="h-8 w-8 text-primary" />
-              <div className="flex flex-col">
-                <span className="text-xl font-bold font-headline">SwiftShip</span>
-                <span className="text-xs text-muted-foreground">by RS SWIFT COURIERS LLP</span>
-              </div>
+              <span className="text-xl font-bold font-headline">RS SWIFT COURIERS LLP</span>
             </Link>
             <p className="text-sm">Your trusted partner for swift and secure deliveries across India.</p>
           </div>

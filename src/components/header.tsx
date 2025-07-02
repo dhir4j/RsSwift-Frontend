@@ -11,10 +11,7 @@ export default function Header() {
       <div className="container flex h-16 items-center px-4 md:px-6">
         <Link href="/" className="mr-6 flex items-center gap-2" prefetch={false}>
           <Package2 className="h-6 w-6 text-primary" />
-          <div className="flex flex-col">
-            <span className="font-bold font-headline">SwiftShip</span>
-            <span className="text-xs text-muted-foreground -mt-1">RS SWIFT COURIERS LLP</span>
-          </div>
+          <span className="font-bold font-headline">RS SWIFT COURIERS LLP</span>
         </Link>
         <nav className="hidden flex-col gap-6 text-lg font-medium md:flex md:flex-row md:items-center md:gap-5 md:text-sm lg:gap-6">
           <Link href="/#services" className="text-muted-foreground transition-colors hover:text-foreground" prefetch={false}>

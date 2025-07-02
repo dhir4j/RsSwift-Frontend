@@ -15,7 +15,7 @@ export default function AboutUs() {
                   Welcome to RS SWIFT COURIERS LLP, your most trusted partner for courier and logistics services across India. Founded with a vision to redefine the delivery experience, we are committed to providing fast, reliable, and secure shipping solutions for individuals and businesses alike.
                 </p>
                 <p>
-                  Our journey began with a simple mission: to bridge distances by delivering packages with utmost care and efficiency. At SwiftShip, we leverage cutting-edge technology and a robust network to ensure that your parcels reach their destination on time, every time. Our real-time tracking system provides complete transparency, giving you peace of mind from pickup to delivery.
+                  Our journey began with a simple mission: to bridge distances by delivering packages with utmost care and efficiency. At RS SWIFT COURIERS LLP, we leverage cutting-edge technology and a robust network to ensure that your parcels reach their destination on time, every time. Our real-time tracking system provides complete transparency, giving you peace of mind from pickup to delivery.
                 </p>
                 <p>
                   We understand that every package is important. That's why our dedicated team of professionals handles each shipment with the highest level of priority and security. Whether it's an urgent document, a valuable item, or a large consignment, we have the expertise and infrastructure to manage it all.

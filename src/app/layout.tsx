@@ -3,7 +3,7 @@ import './globals.css';
 import { Toaster } from '@/components/ui/toaster';
 
 export const metadata: Metadata = {
-  title: 'SwiftShip',
+  title: 'RS SWIFT COURIERS LLP',
   description: 'RS SWIFT COURIERS LLP - India’s trusted courier partner.',
 };
 
