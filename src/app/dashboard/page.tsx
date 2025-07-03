@@ -1,23 +1,25 @@
-import Link from "next/link"
+"use client";
+
+import { useEffect, useState, useMemo } from "react";
+import Link from "next/link";
+import { useAuth } from "@/contexts/auth-context";
+import { useToast } from "@/hooks/use-toast";
 import {
-  Activity,
   ArrowUpRight,
   Book,
   CreditCard,
-  DollarSign,
-  FileText,
   Package2,
-  Users,
-} from "lucide-react"
+  PackageCheck,
+} from "lucide-react";
 
-import { Button } from "@/components/ui/button"
+import { Button } from "@/components/ui/button";
 import {
   Card,
   CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
-} from "@/components/ui/card"
+} from "@/components/ui/card";
 import {
   Table,
   TableBody,
@@ -25,10 +27,129 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from "@/components/ui/table"
-import { Badge } from "@/components/ui/badge"
+} from "@/components/ui/table";
+import { Badge } from "@/components/ui/badge";
+import { Skeleton } from "@/components/ui/skeleton";
+
+interface Shipment {
+  id: number;
+  shipment_id_str: string;
+  receiver_name: string;
+  booking_date: string;
+  status: string;
+  total_with_tax_18_percent: number;
+}
+
+interface DashboardStats {
+  totalShipments: number;
+  pendingPaymentsAmount: number;
+  deliveredShipments: number;
+}
 
 export default function Dashboard() {
+  const [shipments, setShipments] = useState<Shipment[]>([]);
+  const [loading, setLoading] = useState(true);
+  const { user } = useAuth();
+  const { toast } = useToast();
+
+  useEffect(() => {
+    async function fetchShipments() {
+      if (!user?.email) return;
+
+      try {
+        setLoading(true);
+        const response = await fetch(`https://www.server.shedloadoverseas.com/api/shipments?email=${user.email}`);
+        if (!response.ok) {
+          throw new Error('Failed to fetch shipments');
+        }
+        const data = await response.json();
+        setShipments(data);
+      } catch (error) {
+        toast({
+          variant: "destructive",
+          title: "Error",
+          description: "Could not fetch dashboard data."
+        });
+        console.error(error);
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    if (user) {
+        fetchShipments();
+    }
+  }, [user, toast]);
+
+  const stats: DashboardStats = useMemo(() => {
+    return {
+      totalShipments: shipments.length,
+      pendingPaymentsAmount: shipments
+        .filter(s => s.status === 'Pending Payment')
+        .reduce((sum, s) => sum + s.total_with_tax_18_percent, 0),
+      deliveredShipments: shipments.filter(s => s.status.toLowerCase().includes('delivered')).length
+    };
+  }, [shipments]);
+
+  const getBadgeVariant = (status: string) => {
+    const lowerStatus = status.toLowerCase();
+    if (lowerStatus.includes('delivered')) return 'default';
+    if (lowerStatus.includes('pending')) return 'destructive';
+    return 'outline';
+  };
+  
+  const recentShipments = shipments.slice(0, 5);
+
+  if (loading) {
+    return (
+      <div className="flex flex-1 flex-col gap-4 md:gap-8">
+        <div className="grid gap-4 md:grid-cols-2 md:gap-8 lg:grid-cols-4">
+          {[...Array(4)].map((_, i) => (
+            <Card key={i}>
+              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                <Skeleton className="h-5 w-24" />
+                <Skeleton className="h-4 w-4" />
+              </CardHeader>
+              <CardContent>
+                <Skeleton className="h-8 w-32" />
+              </CardContent>
+            </Card>
+          ))}
+        </div>
+        <Card>
+          <CardHeader>
+            <Skeleton className="h-7 w-1/3" />
+            <Skeleton className="h-5 w-1/2" />
+          </CardHeader>
+          <CardContent>
+             <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead><Skeleton className="h-5 w-24" /></TableHead>
+                  <TableHead><Skeleton className="h-5 w-24" /></TableHead>
+                  <TableHead className="hidden md:table-cell"><Skeleton className="h-5 w-20" /></TableHead>
+                  <TableHead><Skeleton className="h-5 w-20" /></TableHead>
+                  <TableHead className="text-right"><Skeleton className="h-5 w-16 ml-auto" /></TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {[...Array(3)].map((_, i) => (
+                    <TableRow key={i}>
+                        <TableCell><Skeleton className="h-5 w-24" /></TableCell>
+                        <TableCell><Skeleton className="h-5 w-24" /></TableCell>
+                        <TableCell className="hidden md:table-cell"><Skeleton className="h-5 w-20" /></TableCell>
+                        <TableCell><Skeleton className="h-6 w-20" /></TableCell>
+                        <TableCell className="text-right"><Skeleton className="h-5 w-16 ml-auto" /></TableCell>
+                    </TableRow>
+                ))}
+              </TableBody>
+             </Table>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
+
   return (
     <div className="flex flex-1 flex-col gap-4 md:gap-8">
       <div className="grid gap-4 md:grid-cols-2 md:gap-8 lg:grid-cols-4">
@@ -40,10 +161,7 @@ export default function Dashboard() {
             <Package2 className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">1,234</div>
-            <p className="text-xs text-muted-foreground">
-              +20.1% from last month
-            </p>
+            <div className="text-2xl font-bold">{stats.totalShipments}</div>
           </CardContent>
         </Card>
         <Card>
@@ -54,22 +172,16 @@ export default function Dashboard() {
             <CreditCard className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">₹5,231.89</div>
-            <p className="text-xs text-muted-foreground">
-              +19% from last month
-            </p>
+            <div className="text-2xl font-bold">₹{stats.pendingPaymentsAmount.toLocaleString()}</div>
           </CardContent>
         </Card>
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Invoices Due</CardTitle>
-            <FileText className="h-4 w-4 text-muted-foreground" />
+            <CardTitle className="text-sm font-medium">Delivered Shipments</CardTitle>
+            <PackageCheck className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">12</div>
-            <p className="text-xs text-muted-foreground">
-              +5 since last week
-            </p>
+            <div className="text-2xl font-bold">{stats.deliveredShipments}</div>
           </CardContent>
         </Card>
         <Card>
@@ -113,24 +225,25 @@ export default function Dashboard() {
               </TableRow>
             </TableHeader>
             <TableBody>
-              <TableRow>
-                <TableCell>
-                  <div className="font-medium">RS123456789</div>
-                </TableCell>
-                <TableCell>New Delhi</TableCell>
-                <TableCell className="hidden md:table-cell">2023-06-23</TableCell>
-                <TableCell><Badge variant="outline">In Transit</Badge></TableCell>
-                <TableCell className="text-right">₹250.00</TableCell>
-              </TableRow>
-              <TableRow>
-                <TableCell>
-                  <div className="font-medium">RS987654321</div>
-                </TableCell>
-                <TableCell>Mumbai</TableCell>
-                <TableCell className="hidden md:table-cell">2023-06-20</TableCell>
-                <TableCell><Badge>Delivered</Badge></TableCell>
-                <TableCell className="text-right">₹450.00</TableCell>
-              </TableRow>
+              {recentShipments.length > 0 ? (
+                recentShipments.map((shipment) => (
+                  <TableRow key={shipment.id}>
+                    <TableCell>
+                      <div className="font-medium">{shipment.shipment_id_str}</div>
+                    </TableCell>
+                    <TableCell>{shipment.receiver_name}</TableCell>
+                    <TableCell className="hidden md:table-cell">{new Date(shipment.booking_date).toLocaleDateString()}</TableCell>
+                    <TableCell><Badge variant={getBadgeVariant(shipment.status)}>{shipment.status}</Badge></TableCell>
+                    <TableCell className="text-right">₹{shipment.total_with_tax_18_percent.toLocaleString()}</TableCell>
+                  </TableRow>
+                ))
+              ) : (
+                <TableRow>
+                    <TableCell colSpan={5} className="h-24 text-center">
+                        No recent shipments.
+                    </TableCell>
+                </TableRow>
+              )}
             </TableBody>
           </Table>
         </CardContent>
