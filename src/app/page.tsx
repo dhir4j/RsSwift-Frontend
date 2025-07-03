@@ -11,36 +11,27 @@ export default function Home() {
     <div className="flex flex-col min-h-dvh bg-background text-foreground">
       <Header />
       <main className="flex-1">
-        <section id="home" className="w-full py-24 md:py-32 lg:py-40 aurora-bg bg-background">
-          <div className="container px-4 md:px-6 z-10 relative">
-            <div className="grid gap-10 lg:grid-cols-2 lg:gap-16">
-              <div className="flex flex-col justify-center space-y-6">
-                <div className="space-y-4">
-                  <h1 className="text-4xl font-bold tracking-tighter sm:text-5xl md:text-6xl lg:text-7xl font-headline text-primary">
-                    RS SWIFT COURIERS LLP
-                  </h1>
-                  <h2 className="text-3xl font-bold tracking-tighter sm:text-4xl md:text-5xl font-headline">
-                    India's Trusted Courier Partner
-                  </h2>
-                  <p className="max-w-[600px] text-muted-foreground md:text-xl">
-                    Fast, reliable, and secure delivery services with 24x7 support. Ship anything, anywhere in India with confidence.
-                  </p>
-                </div>
-                 <div className="flex flex-col gap-2 min-[400px]:flex-row">
-                  <Button asChild size="lg" className="transition-transform duration-300 hover:scale-105">
-                    <Link href="/register">
-                      Register Now
-                      <ArrowRight className="ml-2 h-4 w-4" />
-                    </Link>
-                  </Button>
-                </div>
+        <section id="home" className="w-full py-24 md:py-32 lg:py-40 bg-background">
+          <div className="container px-4 md:px-6">
+            <div className="flex flex-col items-center justify-center space-y-6 text-center">
+              <div className="space-y-4">
+                <h1 className="text-4xl font-bold tracking-tighter sm:text-5xl md:text-6xl lg:text-7xl font-headline text-primary animate-in fade-in slide-in-from-bottom-4 duration-700 ease-out">
+                  RS SWIFT COURIERS LLP
+                </h1>
+                <h2 className="text-3xl font-bold tracking-tighter sm:text-4xl md:text-5xl font-headline animate-in fade-in slide-in-from-bottom-4 duration-700 delay-150 ease-out fill-mode-backwards">
+                  India's Trusted Courier Partner
+                </h2>
+                <p className="max-w-[600px] text-muted-foreground md:text-xl animate-in fade-in slide-in-from-bottom-4 duration-700 delay-300 ease-out fill-mode-backwards">
+                  Fast, reliable, and secure delivery services with 24x7 support. Ship anything, anywhere in India with confidence.
+                </p>
               </div>
-              <div className="w-full mx-auto flex items-center justify-center">
-                 <div className="relative w-[300px] h-[300px] md:w-[400px] md:h-[400px]">
-                    <div className="absolute inset-0 bg-primary/20 rounded-full blur-3xl animate-pulse" />
-                    <div className="absolute inset-8 bg-primary/30 rounded-full blur-3xl animate-pulse animation-delay-2000" />
-                    <div className="absolute inset-16 bg-accent/20 rounded-full blur-3xl animate-pulse animation-delay-4000" />
-                 </div>
+              <div className="animate-in fade-in slide-in-from-bottom-4 duration-700 delay-450 ease-out fill-mode-backwards">
+                <Button asChild size="lg">
+                  <Link href="/register">
+                    Register Now
+                    <ArrowRight className="ml-2 h-4 w-4" />
+                  </Link>
+                </Button>
               </div>
             </div>
           </div>
