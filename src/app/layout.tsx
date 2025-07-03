@@ -4,8 +4,8 @@ import { Toaster } from '@/components/ui/toaster';
 import { Providers } from './providers';
 
 export const metadata: Metadata = {
-  title: 'RS SWIFT COURIERS LLP',
-  description: 'RS SWIFT COURIERS LLP - India’s trusted courier partner.',
+  title: 'RS SWIFT COURIERS',
+  description: 'RS SWIFT COURIERS - India’s trusted courier partner.',
 };
 
 export default function RootLayout({

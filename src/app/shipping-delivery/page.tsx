@@ -11,7 +11,7 @@ export default function ShippingDelivery() {
             <div className="space-y-6">
               <h1 className="text-4xl font-bold tracking-tighter sm:text-5xl font-headline">Shipping & Delivery Policy</h1>
               <div className="space-y-4 text-muted-foreground md:text-xl/relaxed lg:text-base/relaxed xl:text-xl/relaxed">
-                <p>At RS SWIFT COURIERS LLP, we are dedicated to ensuring your packages are delivered efficiently and securely. This policy outlines our shipping and delivery procedures.</p>
+                <p>At RS SWIFT COURIERS, we are dedicated to ensuring your packages are delivered efficiently and securely. This policy outlines our shipping and delivery procedures.</p>
 
                 <h2 className="text-2xl font-bold font-headline mt-6">1. Service Areas</h2>
                 <p>We offer nationwide coverage across India, including metropolitan cities, towns, and remote areas. Please use our website's quote widget to confirm serviceability for specific pincodes.</p>

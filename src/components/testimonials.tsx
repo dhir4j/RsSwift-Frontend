@@ -13,7 +13,7 @@ import { Star } from "lucide-react"
 
 const testimonials = [
   {
-    quote: "RS SWIFT COURIERS LLP has been a game-changer for our business. Their express delivery is incredibly fast and reliable. We can always count on them.",
+    quote: "RS SWIFT COURIERS has been a game-changer for our business. Their express delivery is incredibly fast and reliable. We can always count on them.",
     author: "Rohan Sharma",
     company: "E-commerce Seller",
     avatar: "RS",
@@ -27,7 +27,7 @@ const testimonials = [
     stars: 5,
   },
   {
-    quote: "As a frequent shipper, I appreciate the professionalism and efficiency of RS SWIFT COURIERS LLP. Their nationwide coverage is a huge plus.",
+    quote: "As a frequent shipper, I appreciate the professionalism and efficiency of RS SWIFT COURIERS. Their nationwide coverage is a huge plus.",
     author: "Amit Singh",
     company: "Tech Startup",
     avatar: "AS",

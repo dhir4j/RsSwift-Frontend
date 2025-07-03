@@ -9,7 +9,7 @@ export default function Footer() {
           <div className="flex flex-col items-start gap-4">
             <Link href="/" className="flex items-center gap-2" prefetch={false}>
               <Package2 className="h-8 w-8 text-primary" />
-              <span className="text-xl font-bold font-headline">RS SWIFT COURIERS LLP</span>
+              <span className="text-xl font-bold font-headline">RS SWIFT COURIERS</span>
             </Link>
             <p className="text-sm">Your trusted partner for swift and secure deliveries across India.</p>
           </div>
@@ -67,7 +67,7 @@ export default function Footer() {
           </div>
         </div>
         <div className="mt-8 border-t pt-6 text-center text-sm text-muted-foreground">
-          © {new Date().getFullYear()} RS SWIFT COURIERS LLP. All rights reserved.
+          © {new Date().getFullYear()} RS SWIFT COURIERS. All rights reserved.
         </div>
       </div>
     </footer>

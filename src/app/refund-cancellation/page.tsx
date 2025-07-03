@@ -11,7 +11,7 @@ export default function RefundCancellation() {
             <div className="space-y-6">
               <h1 className="text-4xl font-bold tracking-tighter sm:text-5xl font-headline">Refund & Cancellation Policy</h1>
               <div className="space-y-4 text-muted-foreground md:text-xl/relaxed lg:text-base/relaxed xl:text-xl/relaxed">
-                <p>This policy details the terms and conditions for cancellations and refunds for services availed from RS SWIFT COURIERS LLP.</p>
+                <p>This policy details the terms and conditions for cancellations and refunds for services availed from RS SWIFT COURIERS.</p>
 
                 <h2 className="text-2xl font-bold font-headline mt-6">1. Cancellation Policy</h2>
                 <p>You can cancel your shipment booking under the following conditions:</p>

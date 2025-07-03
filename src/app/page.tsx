@@ -16,7 +16,7 @@ export default function Home() {
             <div className="flex flex-col items-center justify-center space-y-6 text-center">
               <div className="space-y-4">
                 <h1 className="text-4xl font-bold tracking-tighter sm:text-5xl md:text-6xl lg:text-7xl font-headline text-primary animate-in fade-in zoom-in-95 slide-in-from-bottom-8 duration-1000 ease-out">
-                  RS SWIFT COURIERS LLP
+                  RS SWIFT COURIERS
                 </h1>
                 <h2 className="text-3xl font-bold tracking-tighter sm:text-4xl md:text-5xl font-headline animate-in fade-in zoom-in-95 slide-in-from-bottom-8 duration-1000 delay-200 ease-out fill-mode-backwards">
                   India's Trusted Courier Partner
@@ -41,7 +41,7 @@ export default function Home() {
           <div className="container px-4 md:px-6">
             <div className="flex flex-col items-center justify-center space-y-4 text-center">
               <div className="space-y-2">
-                <h2 className="text-3xl font-bold tracking-tighter sm:text-5xl font-headline animate-in fade-in slide-in-from-bottom-6 duration-700">Why Choose RS SWIFT COURIERS LLP?</h2>
+                <h2 className="text-3xl font-bold tracking-tighter sm:text-5xl font-headline animate-in fade-in slide-in-from-bottom-6 duration-700">Why Choose RS SWIFT COURIERS?</h2>
                 <p className="max-w-[900px] text-muted-foreground md:text-xl/relaxed lg:text-base/relaxed xl:text-xl/relaxed animate-in fade-in slide-in-from-bottom-6 duration-700 delay-200">
                   We are committed to providing top-notch courier services with a focus on speed, safety, and customer satisfaction.
                 </p>
@@ -59,7 +59,7 @@ export default function Home() {
               <div className="space-y-2">
                 <h2 className="text-3xl font-bold tracking-tighter sm:text-5xl font-headline animate-in fade-in slide-in-from-bottom-6 duration-700">Loved by Our Customers</h2>
                 <p className="max-w-[900px] text-muted-foreground md:text-xl/relaxed lg:text-base/relaxed xl:text-xl/relaxed animate-in fade-in slide-in-from-bottom-6 duration-700 delay-200">
-                  Hear what our satisfied clients have to say about their experience with RS SWIFT COURIERS LLP.
+                  Hear what our satisfied clients have to say about their experience with RS SWIFT COURIERS.
                 </p>
               </div>
             </div>

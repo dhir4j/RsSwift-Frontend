@@ -15,7 +15,7 @@ export default function PrivacyPolicy() {
                 
                 <h2 className="text-2xl font-bold font-headline mt-6">1. Information We Collect</h2>
                 <p>
-                  RS SWIFT COURIERS LLP ("we," "our," or "us") collects information that you provide directly to us when you use our services. This may include:
+                  RS SWIFT COURIERS ("we," "our," or "us") collects information that you provide directly to us when you use our services. This may include:
                   <ul className="list-disc list-inside ml-4 mt-2">
                     <li>Personal identification information (Name, email address, phone number, address).</li>
                     <li>Shipment details (Origin, destination, weight, dimensions, contents).</li>
