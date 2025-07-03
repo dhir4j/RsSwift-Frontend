@@ -6,15 +6,12 @@ import { useAuth } from '@/contexts/auth-context';
 import { Button } from '@/components/ui/button';
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
 import {
-  Book,
-  Compass,
-  FileText,
   Home,
-  Landmark,
   LogOut,
   Package2,
   PanelLeft,
-  Phone,
+  Users,
+  CreditCard
 } from 'lucide-react';
 import { usePathname } from 'next/navigation';
 import { cn } from '@/lib/utils';
@@ -29,36 +26,30 @@ const NavLink = ({ href, children }: { href: string; children: React.ReactNode }
     );
 }
 
-export default function DashboardLayout({ children }: { children: React.ReactNode }) {
-  const { isLoggedIn, logout, isAdmin } = useAuth();
+export default function AdminDashboardLayout({ children }: { children: React.ReactNode }) {
+  const { user, logout, isAdmin } = useAuth();
   const router = useRouter();
-  const pathname = usePathname();
 
   React.useEffect(() => {
-    // Redirect to login if not logged in OR if an admin tries to access the user dashboard
-    if (!isLoggedIn || isAdmin) {
-      router.push('/login');
+    if (!isAdmin) {
+      router.push('/admin/login');
     }
-  }, [isLoggedIn, isAdmin, router]);
+  }, [isAdmin, router]);
 
   const handleLogout = () => {
     logout();
-    router.push('/');
+    router.push('/admin/login');
   };
   
   const navLinks = (
       <nav className="grid items-start px-2 text-sm font-medium lg:px-4">
-          <NavLink href="/dashboard"><Home className="h-4 w-4" />Dashboard</NavLink>
-          <NavLink href="/dashboard/book-shipment"><Book className="h-4 w-4" />Book Shipment</NavLink>
-          <NavLink href="/dashboard/track-shipment"><Compass className="h-4 w-4" />Track Shipment</NavLink>
-          <NavLink href="/dashboard/my-shipments"><Package2 className="h-4 w-4" />My Shipments</NavLink>
-          <NavLink href="/dashboard/my-invoices"><FileText className="h-4 w-4" />My Invoices</NavLink>
-          <NavLink href="/dashboard/my-payments"><Landmark className="h-4 w-4" />My Payments</NavLink>
-          <NavLink href="/customer-care"><Phone className="h-4 w-4" />Contact</NavLink>
+          <NavLink href="/admin/dashboard"><Home className="h-4 w-4" />Dashboard</NavLink>
+          <NavLink href="/admin/dashboard/payments"><CreditCard className="h-4 w-4" />Payments</NavLink>
+          <NavLink href="/admin/dashboard/users"><Users className="h-4 w-4" />Users</NavLink>
       </nav>
   );
 
-  if (!isLoggedIn || isAdmin) {
+  if (!isAdmin) {
     return <div className="flex min-h-screen w-full items-center justify-center">Loading...</div>;
   }
 
@@ -67,9 +58,9 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
       <div className="hidden border-r bg-muted/40 md:block">
         <div className="flex h-full max-h-screen flex-col gap-2">
           <div className="flex h-14 items-center border-b px-4 lg:h-[60px] lg:px-6">
-            <Link href="/" className="flex items-center gap-2 font-semibold">
+            <Link href="/admin/dashboard" className="flex items-center gap-2 font-semibold">
               <Package2 className="h-6 w-6 text-primary" />
-              <span className="">RS SWIFT COURIERS</span>
+              <span className="">Admin Panel</span>
             </Link>
           </div>
           <div className="flex-1 overflow-auto py-2">{navLinks}</div>
@@ -92,9 +83,9 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
             </SheetTrigger>
             <SheetContent side="left" className="flex flex-col">
                 <div className="flex h-14 items-center border-b px-4">
-                 <Link href="/" className="flex items-center gap-2 font-semibold">
+                 <Link href="/admin/dashboard" className="flex items-center gap-2 font-semibold">
                     <Package2 className="h-6 w-6 text-primary" />
-                    <span className="">RS SWIFT COURIERS</span>
+                    <span className="">Admin Panel</span>
                 </Link>
                 </div>
                 <div className="flex-1 overflow-auto py-2">{navLinks}</div>
@@ -107,6 +98,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
             </SheetContent>
           </Sheet>
           <div className="w-full flex-1">
+             <h1 className="font-semibold text-lg">Welcome, {user?.firstName}!</h1>
           </div>
         </header>
         <main className="flex flex-1 flex-col gap-4 p-4 lg:gap-6 lg:p-6">
