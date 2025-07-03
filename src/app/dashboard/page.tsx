@@ -115,7 +115,7 @@ export default function Dashboard() {
             <TableBody>
               <TableRow>
                 <TableCell>
-                  <div className="font-medium">#RS123456789</div>
+                  <div className="font-medium">RS123456789</div>
                 </TableCell>
                 <TableCell>New Delhi</TableCell>
                 <TableCell className="hidden md:table-cell">2023-06-23</TableCell>
@@ -124,7 +124,7 @@ export default function Dashboard() {
               </TableRow>
               <TableRow>
                 <TableCell>
-                  <div className="font-medium">#RS987654321</div>
+                  <div className="font-medium">RS987654321</div>
                 </TableCell>
                 <TableCell>Mumbai</TableCell>
                 <TableCell className="hidden md:table-cell">2023-06-20</TableCell>

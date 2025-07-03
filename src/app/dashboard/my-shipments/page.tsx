@@ -19,11 +19,11 @@ import { Book } from "lucide-react"
 import Link from "next/link"
 
 const shipments = [
-  { id: "#RS123456789", destination: "New Delhi", date: "2023-06-23", status: "In Transit", amount: "₹250.00" },
-  { id: "#RS987654321", destination: "Mumbai", date: "2023-06-20", status: "Delivered", amount: "₹450.00" },
-  { id: "#RS555666777", destination: "Chennai", date: "2023-06-18", status: "Delivered", amount: "₹320.00" },
-  { id: "#RS333222111", destination: "Kolkata", date: "2023-06-15", status: "Delivered", amount: "₹600.00" },
-  { id: "#RS444777999", destination: "Bangalore", date: "2023-06-24", status: "Out for Delivery", amount: "₹150.00" },
+  { id: "RS123456789", destination: "New Delhi", date: "2023-06-23", status: "In Transit", amount: "₹250.00" },
+  { id: "RS987654321", destination: "Mumbai", date: "2023-06-20", status: "Delivered", amount: "₹450.00" },
+  { id: "RS555666777", destination: "Chennai", date: "2023-06-18", status: "Delivered", amount: "₹320.00" },
+  { id: "RS333222111", destination: "Kolkata", date: "2023-06-15", status: "Delivered", amount: "₹600.00" },
+  { id: "RS444777999", destination: "Bangalore", date: "2023-06-24", status: "Out for Delivery", amount: "₹150.00" },
 ];
 
 export default function MyShipmentsPage() {

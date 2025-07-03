@@ -12,10 +12,11 @@ export default function TrackShipmentPage() {
 
     const handleTrack = (e: React.FormEvent) => {
         e.preventDefault()
-        if (trackingId) {
+        const cleanTrackingId = trackingId.replace("#", "");
+        if (cleanTrackingId) {
             // Mock tracking data
             setTrackingInfo({
-                id: trackingId,
+                id: cleanTrackingId,
                 status: "In Transit",
                 origin: "Mumbai",
                 destination: "New Delhi",
@@ -39,7 +40,7 @@ export default function TrackShipmentPage() {
                 <CardContent>
                     <form onSubmit={handleTrack} className="flex gap-4">
                         <Input 
-                            placeholder="Enter Tracking ID (e.g. #RS123456789)" 
+                            placeholder="Enter Tracking ID (e.g. RS123456789)" 
                             value={trackingId} 
                             onChange={(e) => setTrackingId(e.target.value)} 
                             className="max-w-sm"
