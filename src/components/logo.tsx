@@ -4,7 +4,7 @@ export default function Logo() {
   return (
     <>
       <Image
-        src="/images/rsswift_light.png"
+        src="/images/rsswift_light_mode.png"
         alt="RS SWIFT COURIERS Logo"
         width={140}
         height={22}
@@ -12,7 +12,7 @@ export default function Logo() {
         priority
       />
       <Image
-        src="/images/rsswift_dark.png"
+        src="/images/rsswift_dark_mode.png"
         alt="RS SWIFT COURIERS Logo"
         width={140}
         height={22}
