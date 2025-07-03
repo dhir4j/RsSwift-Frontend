@@ -64,10 +64,10 @@
     position: fixed;
     inset: 0;
     z-index: -1;
-    background: radial-gradient(400px at var(--x, -1000px) var(--y, -1000px), hsl(var(--primary) / 0.15), transparent 80%);
+    background: radial-gradient(400px at var(--x, -1000px) var(--y, -1000px), hsl(var(--primary) / 0.1), transparent 80%);
     transition: background 0.3s ease-in-out;
   }
   .dark .mouse-glow {
-    background: radial-gradient(400px at var(--x, -1000px) var(--y, -1000px), hsl(var(--primary) / 0.2), transparent 80%);
+    background: radial-gradient(400px at var(--x, -1000px) var(--y, -1000px), hsl(var(--primary) / 0.15), transparent 80%);
   }
 }
