@@ -8,7 +8,6 @@ import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
 import {
   Home,
   LogOut,
-  Package2,
   PanelLeft,
   Users,
   CreditCard
@@ -16,6 +15,7 @@ import {
 import { usePathname } from 'next/navigation';
 import { cn } from '@/lib/utils';
 import { ThemeToggle } from '@/components/theme-toggle';
+import Logo from '@/components/logo';
 
 const NavLink = ({ href, children }: { href: string; children: React.ReactNode }) => {
     const pathname = usePathname();
@@ -60,8 +60,8 @@ export default function AdminDashboardLayout({ children }: { children: React.Rea
         <div className="flex h-full max-h-screen flex-col gap-2">
           <div className="flex h-14 items-center border-b px-4 lg:h-[60px] lg:px-6">
             <Link href="/admin/dashboard" className="flex items-center gap-2 font-semibold">
-              <Package2 className="h-6 w-6 text-primary" />
-              <span className="">Admin Panel</span>
+              <Logo />
+              <span className="border-l-2 border-border pl-2 ml-2">Admin Panel</span>
             </Link>
           </div>
           <div className="flex-1 overflow-auto py-2">{navLinks}</div>
@@ -85,8 +85,8 @@ export default function AdminDashboardLayout({ children }: { children: React.Rea
             <SheetContent side="left" className="flex flex-col">
                 <div className="flex h-14 items-center border-b px-4">
                  <Link href="/admin/dashboard" className="flex items-center gap-2 font-semibold">
-                    <Package2 className="h-6 w-6 text-primary" />
-                    <span className="">Admin Panel</span>
+                    <Logo />
+                    <span className="ml-2 font-semibold">Admin Panel</span>
                 </Link>
                 </div>
                 <div className="flex-1 overflow-auto py-2">{navLinks}</div>

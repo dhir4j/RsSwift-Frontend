@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import './globals.css';
 import { Toaster } from '@/components/ui/toaster';
 import { Providers } from './providers';
+import MouseGlow from '@/components/mouse-glow';
 
 export const metadata: Metadata = {
   title: 'RS SWIFT COURIERS',
@@ -23,6 +24,7 @@ export default function RootLayout({
       </head>
       <body className="font-body antialiased">
         <Providers>
+          <MouseGlow />
           {children}
           <Toaster />
         </Providers>

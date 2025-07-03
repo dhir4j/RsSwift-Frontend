@@ -1,7 +1,7 @@
 "use client"
 
 import Link from "next/link"
-import { Package2, Menu, ArrowRight, User } from "lucide-react"
+import { Menu, ArrowRight, User } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Sheet, SheetTrigger, SheetContent } from "@/components/ui/sheet"
 import { useAuth } from "@/contexts/auth-context"
@@ -15,6 +15,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import { ThemeToggle } from "./theme-toggle"
+import Logo from "./logo"
 
 export default function Header() {
   const { isLoggedIn, logout } = useAuth()
@@ -29,8 +30,7 @@ export default function Header() {
     <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
       <div className="container flex h-16 items-center px-4 md:px-6">
         <Link href="/" className="mr-6 flex items-center gap-2" prefetch={false}>
-          <Package2 className="h-6 w-6 text-primary" />
-          <span className="font-bold font-headline">RS SWIFT COURIERS</span>
+          <Logo />
         </Link>
         <nav className="hidden flex-col gap-6 text-lg font-medium md:flex md:flex-row md:items-center md:gap-5 md:text-sm lg:gap-6">
           <Link href="/#services" className="text-muted-foreground transition-colors hover:text-foreground" prefetch={false}>

@@ -12,12 +12,12 @@ import {
   Home,
   Landmark,
   LogOut,
-  Package2,
   PanelLeft,
   Phone,
 } from 'lucide-react';
 import { usePathname } from 'next/navigation';
 import { cn } from '@/lib/utils';
+import Logo from '@/components/logo';
 
 const NavLink = ({ href, children }: { href: string; children: React.ReactNode }) => {
     const pathname = usePathname();
@@ -51,7 +51,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
           <NavLink href="/dashboard"><Home className="h-4 w-4" />Dashboard</NavLink>
           <NavLink href="/dashboard/book-shipment"><Book className="h-4 w-4" />Book Shipment</NavLink>
           <NavLink href="/dashboard/track-shipment"><Compass className="h-4 w-4" />Track Shipment</NavLink>
-          <NavLink href="/dashboard/my-shipments"><Package2 className="h-4 w-4" />My Shipments</NavLink>
+          <NavLink href="/dashboard/my-shipments"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-package-2"><path d="M3 9h18v10a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V9Z"/><path d="m3 9 2.45-4.9A2 2 0 0 1 7.24 3h9.52a2 2 0 0 1 1.8 1.1L21 9"/><path d="M12 3v6"/></svg>My Shipments</NavLink>
           <NavLink href="/dashboard/my-invoices"><FileText className="h-4 w-4" />My Invoices</NavLink>
           <NavLink href="/dashboard/my-payments"><Landmark className="h-4 w-4" />My Payments</NavLink>
           <NavLink href="/customer-care"><Phone className="h-4 w-4" />Contact</NavLink>
@@ -68,8 +68,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
         <div className="flex h-full max-h-screen flex-col gap-2">
           <div className="flex h-14 items-center border-b px-4 lg:h-[60px] lg:px-6">
             <Link href="/" className="flex items-center gap-2 font-semibold">
-              <Package2 className="h-6 w-6 text-primary" />
-              <span className="">RS SWIFT COURIERS</span>
+              <Logo />
             </Link>
           </div>
           <div className="flex-1 overflow-auto py-2">{navLinks}</div>
@@ -93,8 +92,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
             <SheetContent side="left" className="flex flex-col">
                 <div className="flex h-14 items-center border-b px-4">
                  <Link href="/" className="flex items-center gap-2 font-semibold">
-                    <Package2 className="h-6 w-6 text-primary" />
-                    <span className="">RS SWIFT COURIERS</span>
+                    <Logo />
                 </Link>
                 </div>
                 <div className="flex-1 overflow-auto py-2">{navLinks}</div>
