@@ -11,8 +11,8 @@ export default function Home() {
     <div className="flex flex-col min-h-dvh bg-background text-foreground">
       <Header />
       <main className="flex-1">
-        <section id="home" className="w-full py-12 md:py-24 lg:py-32 bg-white">
-          <div className="container px-4 md:px-6">
+        <section id="home" className="w-full py-24 md:py-32 lg:py-40 aurora-bg bg-background">
+          <div className="container px-4 md:px-6 z-10 relative">
             <div className="grid gap-10 lg:grid-cols-2 lg:gap-16">
               <div className="flex flex-col justify-center space-y-6">
                 <div className="space-y-4">
@@ -27,7 +27,7 @@ export default function Home() {
                   </p>
                 </div>
                  <div className="flex flex-col gap-2 min-[400px]:flex-row">
-                  <Button asChild size="lg">
+                  <Button asChild size="lg" className="transition-transform duration-300 hover:scale-105">
                     <Link href="/register">
                       Register Now
                       <ArrowRight className="ml-2 h-4 w-4" />
@@ -36,7 +36,11 @@ export default function Home() {
                 </div>
               </div>
               <div className="w-full mx-auto flex items-center justify-center">
-                 <img src="https://placehold.co/600x400.png" data-ai-hint="courier delivery logistics" alt="Courier Service" className="rounded-lg shadow-xl" />
+                 <div className="relative w-[300px] h-[300px] md:w-[400px] md:h-[400px]">
+                    <div className="absolute inset-0 bg-primary/20 rounded-full blur-3xl animate-pulse" />
+                    <div className="absolute inset-8 bg-primary/30 rounded-full blur-3xl animate-pulse animation-delay-2000" />
+                    <div className="absolute inset-16 bg-accent/20 rounded-full blur-3xl animate-pulse animation-delay-4000" />
+                 </div>
               </div>
             </div>
           </div>
@@ -58,7 +62,7 @@ export default function Home() {
           </div>
         </section>
 
-        <section id="testimonials" className="w-full py-12 md:py-24 lg:py-32 bg-white">
+        <section id="testimonials" className="w-full py-12 md:py-24 lg:py-32 bg-muted/40">
           <div className="container px-4 md:px-6">
             <div className="flex flex-col items-center justify-center space-y-4 text-center">
               <div className="space-y-2">

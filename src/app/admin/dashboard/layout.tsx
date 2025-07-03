@@ -15,6 +15,7 @@ import {
 } from 'lucide-react';
 import { usePathname } from 'next/navigation';
 import { cn } from '@/lib/utils';
+import { ThemeToggle } from '@/components/theme-toggle';
 
 const NavLink = ({ href, children }: { href: string; children: React.ReactNode }) => {
     const pathname = usePathname();
@@ -100,6 +101,7 @@ export default function AdminDashboardLayout({ children }: { children: React.Rea
           <div className="w-full flex-1">
              <h1 className="font-semibold text-lg">Welcome, {user?.firstName}!</h1>
           </div>
+          <ThemeToggle />
         </header>
         <main className="flex flex-1 flex-col gap-4 p-4 lg:gap-6 lg:p-6">
             {children}
