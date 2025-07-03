@@ -1,8 +1,10 @@
 import Header from '@/components/header';
 import Footer from '@/components/footer';
-import QuoteWidget from '@/components/quote-widget';
 import FeatureGrid from '@/components/feature-grid';
 import Testimonials from '@/components/testimonials';
+import Link from 'next/link';
+import { Button } from '@/components/ui/button';
+import { ArrowRight } from 'lucide-react';
 
 export default function Home() {
   return (
@@ -24,9 +26,17 @@ export default function Home() {
                     Fast, reliable, and secure delivery services with 24x7 support. Ship anything, anywhere in India with confidence.
                   </p>
                 </div>
+                 <div className="flex flex-col gap-2 min-[400px]:flex-row">
+                  <Button asChild size="lg">
+                    <Link href="/register">
+                      Register Now
+                      <ArrowRight className="ml-2 h-4 w-4" />
+                    </Link>
+                  </Button>
+                </div>
               </div>
-              <div className="w-full mx-auto">
-                <QuoteWidget />
+              <div className="w-full mx-auto flex items-center justify-center">
+                 <img src="https://placehold.co/600x400.png" data-ai-hint="courier delivery logistics" alt="Courier Service" className="rounded-lg shadow-xl" />
               </div>
             </div>
           </div>
