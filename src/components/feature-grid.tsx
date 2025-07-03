@@ -1,4 +1,3 @@
-import { Card, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
 import { Zap, ShieldCheck, Globe, Clock } from "lucide-react"
 
 const features = [
@@ -28,8 +27,12 @@ export default function FeatureGrid() {
   return (
     <>
       {features.map((feature, index) => (
-        <div key={index} className="flex flex-col items-center text-center gap-4">
-          <div className="bg-primary/10 p-4 rounded-full">
+        <div 
+          key={index} 
+          className="group flex flex-col items-center text-center gap-4 animate-in fade-in slide-in-from-bottom-10 duration-700 fill-mode-backwards transition-all hover:scale-105"
+          style={{ animationDelay: `${200 + index * 150}ms` }}
+        >
+          <div className="bg-primary/10 p-4 rounded-full transition-all duration-300 group-hover:scale-110 group-hover:bg-primary/20">
             {feature.icon}
           </div>
           <div className="space-y-2">
