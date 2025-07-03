@@ -12,7 +12,7 @@ export default function Logo() {
         priority
       />
       <Image
-        src="/images/dark.png"
+        src="/images/rsswift_dark.png"
         alt="RS SWIFT COURIERS Logo"
         width={160}
         height={25}
