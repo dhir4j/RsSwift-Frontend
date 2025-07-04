@@ -2,14 +2,13 @@
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Mail, Phone, MessageSquare, MapPin } from 'lucide-react';
-import Image from 'next/image';
 
 export default function ContactPage() {
   return (
     <div className="space-y-8 max-w-4xl mx-auto">
       <Card className="shadow-xl overflow-hidden">
-        <div className="md:flex">
-          <div className="md:w-1/2 p-8">
+        <div>
+          <div className="p-8">
             <CardHeader className="p-0 mb-6">
               <CardTitle className="font-headline text-2xl sm:text-3xl flex items-center gap-2">
                 <MessageSquare className="h-8 w-8 text-primary" /> Get In Touch
@@ -41,16 +40,6 @@ export default function ContactPage() {
                 </div>
               </div>
             </CardContent>
-          </div>
-           <div className="md:w-1/2 h-64 md:h-auto">
-             <Image
-                src="https://placehold.co/600x800.png"
-                data-ai-hint="customer support"
-                alt="Customer support representative"
-                width={600}
-                height={800}
-                className="object-cover w-full h-full"
-             />
           </div>
         </div>
       </Card>
