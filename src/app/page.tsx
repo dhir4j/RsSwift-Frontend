@@ -34,7 +34,7 @@ export default function Home() {
                     </Link>
                   </Button>
                 </div>
-                <div className="animate-in fade-in slide-in-from-bottom-8 duration-1000 delay-[800ms] ease-out fill-mode-backwards mt-16">
+                <div className="animate-in fade-in slide-in-from-bottom-8 duration-1000 delay-[800ms] ease-out fill-mode-backwards mt-24">
                   <ArrowDown className="h-8 w-8 text-muted-foreground animate-bounce" />
                 </div>
               </div>
