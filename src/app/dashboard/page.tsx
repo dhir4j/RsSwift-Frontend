@@ -5,10 +5,10 @@ import { useAuth } from '@/hooks/use-auth';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
-import { PackagePlus, Search, ListOrdered, Receipt, ArrowRight, Activity, CheckCircle, Clock } from 'lucide-react';
+import { PackagePlus, Search, ListOrdered, Receipt, ArrowRight } from 'lucide-react';
 import { Separator } from '@/components/ui/separator';
 import { useShipments } from '@/hooks/use-shipments';
-import { useEffect, useState, useMemo } from 'react';
+import { useEffect, useMemo } from 'react';
 import { formatDistanceToNow, parseISO } from 'date-fns';
 import { Skeleton } from '@/components/ui/skeleton';
 
@@ -19,39 +19,15 @@ const quickAccessItems = [
   { title: 'Manage Invoices', href: '/dashboard/my-invoices', icon: Receipt, description: 'Access and download all your invoices.' },
 ];
 
-const StatCard = ({ title, value, icon: Icon, isLoading }: { title: string; value: string | number; icon: React.ElementType, isLoading?: boolean }) => (
-    <div className="bg-card/50 p-4 rounded-lg flex items-center gap-4">
-        <div className="bg-primary/10 p-3 rounded-full">
-            <Icon className="w-6 h-6 text-primary" />
-        </div>
-        <div>
-            <p className="text-sm text-muted-foreground">{title}</p>
-            {isLoading ? <Skeleton className="h-8 w-16 mt-1" /> : <p className="text-2xl font-bold">{value}</p>}
-        </div>
-    </div>
-);
-
 export default function DashboardPage() {
   const { user } = useAuth();
   const { shipments, isLoading, fetchUserShipments } = useShipments();
-  const [stats, setStats] = useState({ inTransit: 0, delivered: 0, pending: 0 });
-
+  
   useEffect(() => {
     fetchUserShipments();
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  useEffect(() => {
-    if (shipments && shipments.length > 0) {
-      const newStats = {
-        inTransit: shipments.filter(s => s.status === 'In Transit' || s.status === 'Out for Delivery').length,
-        delivered: shipments.filter(s => s.status === 'Delivered').length,
-        pending: shipments.filter(s => s.status === 'Pending Payment' || s.status === 'Booked').length,
-      };
-      setStats(newStats);
-    }
-  }, [shipments]);
-  
   const recentShipments = useMemo(() => {
       if (!shipments) return [];
       return shipments
@@ -75,15 +51,6 @@ export default function DashboardPage() {
         <p className="text-muted-foreground">Here's your dashboard at a glance. Ready to ship?</p>
       </div>
       
-      <div 
-        className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 animate-enter" 
-        style={{ animationDelay: '200ms' }}
-      >
-        <StatCard title="In Transit" value={stats.inTransit} icon={Activity} isLoading={isLoading} />
-        <StatCard title="Delivered" value={stats.delivered} icon={CheckCircle} isLoading={isLoading} />
-        <StatCard title="Pending" value={stats.pending} icon={Clock} isLoading={isLoading} />
-      </div>
-
       <Separator />
 
       <div className="space-y-6">

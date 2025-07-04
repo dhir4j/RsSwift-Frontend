@@ -11,6 +11,7 @@ import { useToast } from '@/hooks/use-toast';
 import { useAuth } from '@/hooks/use-auth';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
+import { Skeleton } from '../ui/skeleton';
 
 interface AdminAnalyticsData {
   total_orders: number | null;
@@ -34,22 +35,12 @@ export function AdminDashboardContent() {
   const handleApiError = useCallback((error: any, operation: string) => {
     console.error(`API error during ${operation}:`, error);
     const errorMessage = error?.data?.error || error.message || "An unexpected error occurred.";
-    if (error.status === 422) {
-        toast({
-            title: "Authentication Issue",
-            description: "Your session may have expired or is invalid. Please log in again.",
-            variant: "destructive",
-        });
-        logoutUser();
-        router.replace('/login');
-    } else {
-        toast({
-          title: `Error ${operation}`,
-          description: errorMessage,
-          variant: "destructive",
-        });
-    }
-  }, [toast, logoutUser, router]);
+    toast({
+      title: `Error ${operation}`,
+      description: errorMessage,
+      variant: "destructive",
+    });
+  }, [toast]);
 
 
   useEffect(() => {
@@ -118,7 +109,7 @@ export function AdminDashboardContent() {
                     )}
                 </CardContent>
             </Card>
-            <Link href="/admin/users" className="group">
+            <Link href="/admin/dashboard/users" className="group">
                 <Card className="h-full transition-all duration-300 group-hover:shadow-lg group-hover:border-primary/50 group-hover:-translate-y-1">
                     <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                         <CardTitle className="text-sm font-medium">Total Users</CardTitle>
