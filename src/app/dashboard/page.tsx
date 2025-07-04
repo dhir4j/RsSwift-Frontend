@@ -2,11 +2,15 @@
 "use client";
 
 import { useAuth } from '@/hooks/use-auth';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
 import { PackagePlus, Search, ListOrdered, Receipt, ArrowRight, Activity, CheckCircle, Clock } from 'lucide-react';
 import { Separator } from '@/components/ui/separator';
+import { useShipments } from '@/hooks/use-shipments';
+import { useEffect, useState, useMemo } from 'react';
+import { formatDistanceToNow, parseISO } from 'date-fns';
+import { Skeleton } from '@/components/ui/skeleton';
 
 const quickAccessItems = [
   { title: 'Book a Shipment', href: '/dashboard/book-shipment', icon: PackagePlus, description: 'Create a new domestic or international shipment.' },
@@ -15,20 +19,52 @@ const quickAccessItems = [
   { title: 'Manage Invoices', href: '/dashboard/my-invoices', icon: Receipt, description: 'Access and download all your invoices.' },
 ];
 
-const StatCard = ({ title, value, icon: Icon }: { title: string; value: string | number; icon: React.ElementType }) => (
+const StatCard = ({ title, value, icon: Icon, isLoading }: { title: string; value: string | number; icon: React.ElementType, isLoading?: boolean }) => (
     <div className="bg-card/50 p-4 rounded-lg flex items-center gap-4">
         <div className="bg-primary/10 p-3 rounded-full">
             <Icon className="w-6 h-6 text-primary" />
         </div>
         <div>
             <p className="text-sm text-muted-foreground">{title}</p>
-            <p className="text-2xl font-bold">{value}</p>
+            {isLoading ? <Skeleton className="h-8 w-16 mt-1" /> : <p className="text-2xl font-bold">{value}</p>}
         </div>
     </div>
 );
 
 export default function DashboardPage() {
   const { user } = useAuth();
+  const { shipments, isLoading, fetchUserShipments } = useShipments();
+  const [stats, setStats] = useState({ inTransit: 0, delivered: 0, pending: 0 });
+
+  useEffect(() => {
+    fetchUserShipments();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  useEffect(() => {
+    if (shipments && shipments.length > 0) {
+      const newStats = {
+        inTransit: shipments.filter(s => s.status === 'In Transit' || s.status === 'Out for Delivery').length,
+        delivered: shipments.filter(s => s.status === 'Delivered').length,
+        pending: shipments.filter(s => s.status === 'Pending Payment' || s.status === 'Booked').length,
+      };
+      setStats(newStats);
+    }
+  }, [shipments]);
+  
+  const recentShipments = useMemo(() => {
+      if (!shipments) return [];
+      return shipments
+          .sort((a, b) => {
+            try {
+              return parseISO(b.booking_date).getTime() - parseISO(a.booking_date).getTime()
+            } catch (e) {
+              return 0;
+            }
+          })
+          .slice(0, 3);
+  }, [shipments]);
+
 
   if (!user) return null;
 
@@ -43,9 +79,9 @@ export default function DashboardPage() {
         className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 animate-enter" 
         style={{ animationDelay: '200ms' }}
       >
-        <StatCard title="In Transit" value="3" icon={Activity} />
-        <StatCard title="Delivered" value="12" icon={CheckCircle} />
-        <StatCard title="Pending" value="1" icon={Clock} />
+        <StatCard title="In Transit" value={stats.inTransit} icon={Activity} isLoading={isLoading} />
+        <StatCard title="Delivered" value={stats.delivered} icon={CheckCircle} isLoading={isLoading} />
+        <StatCard title="Pending" value={stats.pending} icon={Clock} isLoading={isLoading} />
       </div>
 
       <Separator />
@@ -81,18 +117,27 @@ export default function DashboardPage() {
         <Card className="mt-4">
             <CardContent className="p-0">
                 <div className="divide-y divide-border">
-                    <div className="flex items-center justify-between p-4">
-                        <p className="text-sm">Shipment <span className="font-mono text-primary">RS123456</span> is out for delivery.</p>
-                        <p className="text-xs text-muted-foreground">10 mins ago</p>
-                    </div>
-                    <div className="flex items-center justify-between p-4">
-                        <p className="text-sm">Shipment <span className="font-mono text-primary">RS987654</span> was delivered.</p>
-                        <p className="text-xs text-muted-foreground">2 hours ago</p>
-                    </div>
-                    <div className="flex items-center justify-between p-4">
-                        <p className="text-sm">New invoice created for shipment <span className="font-mono text-primary">RS555111</span>.</p>
-                        <p className="text-xs text-muted-foreground">1 day ago</p>
-                    </div>
+                   {isLoading && recentShipments.length === 0 ? (
+                        [...Array(3)].map((_, i) => (
+                            <div key={i} className="flex items-center justify-between p-4">
+                                <Skeleton className="h-5 w-3/4" />
+                                <Skeleton className="h-4 w-16" />
+                            </div>
+                        ))
+                    ) : recentShipments.length > 0 ? (
+                        recentShipments.map(shipment => (
+                             <div key={shipment.shipment_id_str} className="flex items-center justify-between p-4 gap-4">
+                                <p className="text-sm flex-grow">
+                                    Shipment <Link href={`/dashboard/track-shipment?id=${shipment.shipment_id_str}`} className="font-mono text-primary hover:underline">{shipment.shipment_id_str}</Link> has been updated to: <span className="font-semibold">{shipment.status}</span>.
+                                </p>
+                                <p className="text-xs text-muted-foreground flex-shrink-0">{formatDistanceToNow(parseISO(shipment.booking_date), { addSuffix: true })}</p>
+                            </div>
+                        ))
+                    ) : (
+                        <div className="p-4 text-center text-muted-foreground">
+                            No recent activity. Book a shipment to get started!
+                        </div>
+                    )}
                 </div>
             </CardContent>
         </Card>
