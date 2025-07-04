@@ -5,8 +5,8 @@ export default function Logo() {
     <Image
       src="/images/rsswift_logo.png"
       alt="RS SWIFT COURIERS Logo"
-      width={140}
-      height={22}
+      width={160}
+      height={25}
       priority
     />
   );
