@@ -12,7 +12,7 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { AlertTriangle, Mail, Lock, CheckCircle, User as UserIcon } from 'lucide-react';
-import { CompanyLogo } from '@/components/shared/logo';
+import Logo from '@/components/logo';
 import Link from 'next/link';
 import { useAuth } from '@/hooks/use-auth';
 import { useToast } from '@/hooks/use-toast';
@@ -78,9 +78,11 @@ export function SignupForm() {
   return (
     <Card className="w-full max-w-md shadow-xl">
       <CardHeader className="items-center text-center">
-        <CompanyLogo className="mb-4" />
+        <div className="mb-4">
+          <Logo />
+        </div>
         <CardTitle className="font-headline text-2xl sm:text-3xl">Create Account</CardTitle>
-        <CardDescription>Join Shed Load Overseas today.</CardDescription>
+        <CardDescription>Join RS SWIFT COURIERS today.</CardDescription>
       </CardHeader>
       <CardContent>
         <Form {...form}>
