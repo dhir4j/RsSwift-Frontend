@@ -19,10 +19,12 @@ export default function ShippingDelivery() {
                 <h2 className="text-2xl font-bold font-headline mt-6">2. Delivery Times</h2>
                 <p>
                   Delivery times are estimates and may vary depending on the destination, package size, and service type selected.
-                  <ul className="list-disc list-inside ml-4 mt-2">
-                    <li><strong>Express Delivery:</strong> 1-2 business days for metropolitan areas, 2-4 business days for other locations.</li>
-                    <li><strong>Standard Delivery:</strong> 3-5 business days for metropolitan areas, 5-7 business days for other locations.</li>
-                  </ul>
+                </p>
+                <ul className="list-disc list-inside ml-4">
+                  <li><strong>Express Delivery:</strong> 1-2 business days for metropolitan areas, 2-4 business days for other locations.</li>
+                  <li><strong>Standard Delivery:</strong> 3-5 business days for metropolitan areas, 5-7 business days for other locations.</li>
+                </ul>
+                <p>
                   Please note that delivery times are calculated from the day of dispatch. Business days do not include Sundays and public holidays.
                 </p>
 

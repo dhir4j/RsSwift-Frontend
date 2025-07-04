@@ -16,25 +16,25 @@ export default function PrivacyPolicy() {
                 <h2 className="text-2xl font-bold font-headline mt-6">1. Information We Collect</h2>
                 <p>
                   RS SWIFT COURIERS ("we," "our," or "us") collects information that you provide directly to us when you use our services. This may include:
-                  <ul className="list-disc list-inside ml-4 mt-2">
-                    <li>Personal identification information (Name, email address, phone number, address).</li>
-                    <li>Shipment details (Origin, destination, weight, dimensions, contents).</li>
-                    <li>Payment information (Credit/debit card details, billing address).</li>
-                    <li>Information you provide when you contact our customer support.</li>
-                  </ul>
                 </p>
+                <ul className="list-disc list-inside ml-4">
+                  <li>Personal identification information (Name, email address, phone number, address).</li>
+                  <li>Shipment details (Origin, destination, weight, dimensions, contents).</li>
+                  <li>Payment information (Credit/debit card details, billing address).</li>
+                  <li>Information you provide when you contact our customer support.</li>
+                </ul>
 
                 <h2 className="text-2xl font-bold font-headline mt-6">2. How We Use Your Information</h2>
                 <p>
                   We use the information we collect to:
-                  <ul className="list-disc list-inside ml-4 mt-2">
-                    <li>Provide, maintain, and improve our services.</li>
-                    <li>Process transactions and send you related information, including confirmations and invoices.</li>
-                    <li>Communicate with you about your shipments, services, offers, and promotions.</li>
-                    <li>Respond to your comments, questions, and requests and provide customer service.</li>
-                    <li>Monitor and analyze trends, usage, and activities in connection with our services.</li>
-                  </ul>
                 </p>
+                <ul className="list-disc list-inside ml-4">
+                  <li>Provide, maintain, and improve our services.</li>
+                  <li>Process transactions and send you related information, including confirmations and invoices.</li>
+                  <li>Communicate with you about your shipments, services, offers, and promotions.</li>
+                  <li>Respond to your comments, questions, and requests and provide customer service.</li>
+                  <li>Monitor and analyze trends, usage, and activities in connection with our services.</li>
+                </ul>
 
                 <h2 className="text-2xl font-bold font-headline mt-6">3. Sharing of Information</h2>
                 <p>
