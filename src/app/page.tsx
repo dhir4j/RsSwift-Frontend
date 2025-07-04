@@ -25,7 +25,7 @@ export default function Home() {
                   Fast, reliable, and secure delivery services with 24x7 support. Ship anything, anywhere in India with confidence.
                 </p>
               </div>
-              <div className="flex flex-col items-center gap-4">
+              <div className="flex flex-col items-center">
                 <div className="animate-in fade-in zoom-in-95 slide-in-from-bottom-8 duration-1000 delay-600 ease-out fill-mode-backwards">
                   <Button asChild size="lg">
                     <Link href="/register">
@@ -34,7 +34,7 @@ export default function Home() {
                     </Link>
                   </Button>
                 </div>
-                <div className="animate-in fade-in slide-in-from-bottom-8 duration-1000 delay-[800ms] ease-out fill-mode-backwards">
+                <div className="animate-in fade-in slide-in-from-bottom-8 duration-1000 delay-[800ms] ease-out fill-mode-backwards mt-8">
                   <ArrowDown className="h-8 w-8 text-muted-foreground animate-bounce" />
                 </div>
               </div>
