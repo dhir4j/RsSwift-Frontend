@@ -11,6 +11,7 @@ import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import { ArrowRight, Zap, ShieldCheck, Search, Headphones, Star } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Loader2 } from 'lucide-react';
+import { ThemeToggle } from '@/components/theme-toggle';
 
 export function LandingHeader() {
   return (
@@ -31,6 +32,7 @@ export function LandingHeader() {
           <Link href="#testimonials" className="text-muted-foreground hover:text-foreground transition-colors">Testimonials</Link>
       </nav>
       <div className="flex items-center gap-2">
+        <ThemeToggle />
         <Button asChild variant="ghost" className="hidden sm:inline-flex">
           <Link href="/login">Login</Link>
         </Button>
