@@ -4,7 +4,7 @@ import FeatureGrid from '@/components/feature-grid';
 import Testimonials from '@/components/testimonials';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
-import { ArrowRight } from 'lucide-react';
+import { ArrowDown, ArrowRight } from 'lucide-react';
 
 export default function Home() {
   return (
@@ -25,13 +25,18 @@ export default function Home() {
                   Fast, reliable, and secure delivery services with 24x7 support. Ship anything, anywhere in India with confidence.
                 </p>
               </div>
-              <div className="animate-in fade-in zoom-in-95 slide-in-from-bottom-8 duration-1000 delay-600 ease-out fill-mode-backwards">
-                <Button asChild size="lg">
-                  <Link href="/register">
-                    Register Now
-                    <ArrowRight className="ml-2 h-4 w-4" />
-                  </Link>
-                </Button>
+              <div className="flex flex-col items-center gap-4">
+                <div className="animate-in fade-in zoom-in-95 slide-in-from-bottom-8 duration-1000 delay-600 ease-out fill-mode-backwards">
+                  <Button asChild size="lg">
+                    <Link href="/register">
+                      Register Now
+                      <ArrowRight className="ml-2 h-4 w-4" />
+                    </Link>
+                  </Button>
+                </div>
+                <div className="animate-in fade-in slide-in-from-bottom-8 duration-1000 delay-[800ms] ease-out fill-mode-backwards">
+                  <ArrowDown className="h-8 w-8 text-muted-foreground animate-bounce" />
+                </div>
               </div>
             </div>
           </div>
