@@ -94,21 +94,25 @@ export function BookShipmentForm() {
     resolver: zodResolver(shipmentFormSchema),
     defaultValues: {
       shipmentTypeOption: "Domestic",
-      senderAddressCountry: 'India',
-      receiverAddressCountry: 'India',
-      serviceType: 'Standard',
+      senderName: '',
+      senderAddressLine1: '', senderAddressLine2: '',
+      senderAddressCity: '', senderAddressState: '', senderAddressPincode: '', senderAddressCountry: 'India',
+      senderPhone: '',
+      receiverName: '',
+      receiverAddressLine1: '', receiverAddressLine2: '',
+      receiverAddressCity: '', receiverAddressState: '', receiverAddressPincode: '', receiverAddressCountry: 'India',
+      receiverPhone: '',
       packageWeightKg: 0.5,
-      packageWidthCm: 10,
-      packageHeightCm: 10,
-      packageLengthCm: 10,
+      packageWidthCm: 10, packageHeightCm: 10, packageLengthCm: 10,
       pickupDate: new Date(),
+      serviceType: "Standard",
     },
   });
 
   const shipmentTypeOption = form.watch("shipmentTypeOption");
 
   useEffect(() => {
-    if (user) {
+    if (user && user.firstName && user.lastName && !form.getValues('senderName')) {
       form.setValue('senderName', `${user.firstName} ${user.lastName}`);
     }
   }, [user, form]);
@@ -222,20 +226,64 @@ export function BookShipmentForm() {
 
   if (submissionStatus?.shipment_id_str) {
     return (
-      <Alert className="border-green-500 bg-green-50/50 text-green-700">
-        <CheckCircle className="h-5 w-5 text-green-500" />
-        <AlertTitle className="font-headline text-green-800">Payment Submitted for Review</AlertTitle>
-        <AlertDescription>
-          <p className="text-green-700">{submissionStatus.message}</p>
-          <p className="text-green-700">Shipment ID: <strong>{submissionStatus.shipment_id_str}</strong></p>
-          <div className="mt-4 flex gap-2">
-            <Button onClick={() => setSubmissionStatus(null)} variant="outline">Book Another</Button>
-            <Button asChild><Link href="/dashboard/my-payments">View Payments</Link></Button>
-          </div>
-        </AlertDescription>
-      </Alert>
+        <div className="flex flex-col items-center justify-center p-4 md:p-8 animate-enter">
+            <Card className="w-full max-w-lg text-center shadow-2xl futuristic-grid-glow">
+                <CardHeader>
+                    <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-primary/10 mb-4">
+                        <CheckCircle className="h-10 w-10 text-primary" />
+                    </div>
+                    <CardTitle className="font-headline text-2xl">Submission Successful!</CardTitle>
+                    <CardDescription className="text-muted-foreground">
+                        Your payment is under review and your shipment has been initiated.
+                    </CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                    <div className="rounded-md border bg-muted/50 p-3">
+                        <p className="text-sm text-muted-foreground">Your Shipment ID</p>
+                        <p className="font-mono text-xl font-bold tracking-widest text-primary">
+                            {submissionStatus.shipment_id_str}
+                        </p>
+                    </div>
+                    <p className="text-xs text-muted-foreground">
+                        You can track the verification status on the 'My Payments' page. Once approved, your shipment status will update to 'Booked'.
+                    </p>
+                </CardContent>
+                <CardFooter className="flex flex-col sm:flex-row gap-4 p-6">
+                    <Button
+                        onClick={() => {
+                            setSubmissionStatus(null);
+                            form.reset({
+                                shipmentTypeOption: "Domestic",
+                                senderName: (user && user.firstName && user.lastName) ? `${user.firstName} ${user.lastName}` : '',
+                                senderAddressLine1: '', senderAddressLine2: '',
+                                senderAddressCity: '', senderAddressState: '', senderAddressPincode: '', senderAddressCountry: 'India',
+                                senderPhone: '',
+                                receiverName: '',
+                                receiverAddressLine1: '', receiverAddressLine2: '',
+                                receiverAddressCity: '', receiverAddressState: '', receiverAddressPincode: '', receiverAddressCountry: 'India',
+                                receiverPhone: '',
+                                packageWeightKg: 0.5,
+                                packageWidthCm: 10, packageHeightCm: 10, packageLengthCm: 10,
+                                pickupDate: new Date(),
+                                serviceType: "Standard",
+                            });
+                        }}
+                        className="w-full"
+                        variant="outline"
+                    >
+                        Book Another Shipment
+                    </Button>
+                    <Button asChild className="w-full">
+                        <Link href="/dashboard/my-payments">
+                            <Wallet className="mr-2 h-4 w-4" /> View My Payments
+                        </Link>
+                    </Button>
+                </CardFooter>
+            </Card>
+        </div>
     );
   }
+
 
   if (paymentStep.show && paymentStep.formData) {
     return (
