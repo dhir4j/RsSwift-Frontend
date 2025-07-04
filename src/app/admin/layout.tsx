@@ -1,15 +1,22 @@
-
 "use client";
-
-import React, { useEffect } from 'react';
-import { useRouter, usePathname } from 'next/navigation';
-import { useAdminAuth } from '@/hooks/use-admin-auth'; 
-import { useAuth } from '@/hooks/use-auth'; 
-import { adminNavItems, siteConfig } from '@/config/site';
+import React from 'react';
 import Link from 'next/link';
+import { useRouter, usePathname } from 'next/navigation';
+import { useAuth } from '@/hooks/use-auth';
 import { Button } from '@/components/ui/button';
-import { LogOut, UserCircle, Loader2 } from 'lucide-react';
-import Image from 'next/image';
+import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
+import {
+  Home,
+  LogOut,
+  PanelLeft,
+  Users,
+  CreditCard,
+  Loader2,
+  UserCircle
+} from 'lucide-react';
+import { cn } from '@/lib/utils';
+import { ThemeToggle } from '@/components/theme-toggle';
+import Logo from '@/components/logo';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -19,8 +26,24 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
-import { cn } from '@/lib/utils';
+import { useAdminAuth } from '@/hooks/use-admin-auth';
 
+const NavLink = ({ href, children, closeSheet }: { href: string; children: React.ReactNode, closeSheet?: () => void }) => {
+    const pathname = usePathname();
+    const isActive = pathname === href;
+    return (
+        <Link 
+            href={href} 
+            onClick={closeSheet}
+            className={cn(
+                "flex items-center gap-3 rounded-lg px-3 py-2 text-muted-foreground transition-all hover:text-primary", 
+                isActive && "text-primary bg-muted"
+            )}
+        >
+            {children}
+        </Link>
+    );
+}
 
 function AdminUserNav() {
   const { user } = useAuth(); 
@@ -29,7 +52,7 @@ function AdminUserNav() {
 
   const handleLogout = () => {
     adminLogout(); 
-    router.replace('/login');
+    router.replace('/admin/login');
   };
 
   if (!user || !user.isAdmin) return null; 
@@ -37,22 +60,17 @@ function AdminUserNav() {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Button variant="ghost" className="relative h-10 w-10 rounded-full">
-          <Avatar className="h-10 w-10 border-2 border-primary">
-            <AvatarFallback>
-              <UserCircle className="h-7 w-7" />
-            </AvatarFallback>
-          </Avatar>
+        <Button variant="secondary" size="icon" className="rounded-full">
+            <UserCircle className="h-5 w-5" />
+            <span className="sr-only">Toggle user menu</span>
         </Button>
       </DropdownMenuTrigger>
-      <DropdownMenuContent className="w-64" align="end" forceMount>
-        <DropdownMenuLabel className="font-normal">
-          <div className="flex flex-col space-y-1">
-            <p className="text-sm font-medium leading-none">{user.firstName} {user.lastName} (Admin)</p>
-            <p className="text-xs leading-none text-muted-foreground">
-              {user.email}
-            </p>
-          </div>
+      <DropdownMenuContent align="end">
+        <DropdownMenuLabel>
+            <div className="flex flex-col space-y-1">
+                <p className="text-sm font-medium leading-none">{user.firstName} {user.lastName}</p>
+                <p className="text-xs leading-none text-muted-foreground">{user.email}</p>
+            </div>
         </DropdownMenuLabel>
         <DropdownMenuSeparator />
         <DropdownMenuItem onClick={handleLogout} className="cursor-pointer">
@@ -64,98 +82,103 @@ function AdminUserNav() {
   );
 }
 
-
-function AdminHeader() {
-  const pathname = usePathname();
-  return (
-    <header className="sticky top-0 z-50 flex h-20 items-center justify-between gap-4 border-b bg-background/80 backdrop-blur-sm px-4 md:px-6">
-      <div className="flex items-center gap-6">
-        <Link href="/admin/dashboard" className="flex items-center gap-2 text-lg font-semibold">
-          <Image src="/images/rsswift_logo.png" alt={siteConfig.name} width={180} height={45} className="object-contain"/>
-          <span className="font-headline text-primary">Admin</span>
-        </Link>
-        <nav className="hidden md:flex items-center gap-4">
-          {adminNavItems.map(item => (
-            <Link
-              key={item.href}
-              href={item.href}
-              className={cn(
-                "flex items-center gap-2 text-sm font-medium transition-colors hover:text-primary",
-                pathname === item.href ? "text-primary" : "text-muted-foreground"
-              )}
-            >
-              <item.icon className="h-4 w-4" />
-              {item.title}
-            </Link>
-          ))}
-        </nav>
-      </div>
-      <AdminUserNav />
-    </header>
-  );
-}
-
-export default function AdminLayout({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
-  const { isAdminAuthenticated, isAdminLoading } = useAdminAuth();
-  const { reloadUserFromStorage } = useAuth(); 
+export default function AdminLayout({ children }: { children: React.ReactNode }) {
+  const { user, logoutUser, isLoading } = useAuth();
   const router = useRouter();
   const pathname = usePathname();
+  const [isSheetOpen, setIsSheetOpen] = React.useState(false);
+  const isAdmin = user?.isAdmin;
 
-  useEffect(() => {
-    reloadUserFromStorage(); 
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-
-  useEffect(() => {
-    if (!isAdminLoading && !isAdminAuthenticated && pathname !== '/admin/login' && pathname !== '/login') {
-      router.replace('/login');
+  React.useEffect(() => {
+    if (!isLoading && !isAdmin && pathname !== '/admin/login') {
+      router.replace('/admin/login');
     }
-  }, [isAdminAuthenticated, isAdminLoading, router, pathname]);
+  }, [isAdmin, isLoading, router, pathname]);
+
+  const handleLogout = () => {
+    logoutUser();
+    router.push('/admin/login');
+  };
+
+  const closeSheet = () => setIsSheetOpen(false);
+  
+  const navLinks = (
+      <nav className="grid items-start px-2 text-sm font-medium lg:px-4">
+          <NavLink href="/admin/dashboard" closeSheet={closeSheet}><Home className="h-4 w-4" />Dashboard</NavLink>
+          <NavLink href="/admin/dashboard/payments" closeSheet={closeSheet}><CreditCard className="h-4 w-4" />Payments</NavLink>
+          <NavLink href="/admin/dashboard/users" closeSheet={closeSheet}><Users className="h-4 w-4" />Users</NavLink>
+      </nav>
+  );
 
   if (pathname === '/admin/login') {
-    return (
-      <div className="flex min-h-screen w-full flex-col bg-muted/40">
-        <main className="flex-1">
-          {children}
-        </main>
-        <footer className="py-4 px-6 md:px-10 text-center border-t bg-background text-xs text-muted-foreground">
-          © {new Date().getFullYear()} {siteConfig.name} Admin Panel. All rights reserved.
-        </footer>
-      </div>
-    );
+    return <main>{children}</main>;
   }
 
-  if (isAdminLoading) {
+  if (isLoading || !isAdmin) {
     return (
-        <div className="flex h-screen items-center justify-center bg-background text-foreground">
-            <Loader2 className="h-12 w-12 animate-spin text-primary" />
-            <span className="ml-3 text-lg">Loading Admin Access...</span>
+        <div className="flex min-h-screen w-full items-center justify-center bg-background">
+            <Loader2 className="h-8 w-8 animate-spin text-primary" />
+            <span className="ml-3 text-lg text-muted-foreground">Loading Admin Panel...</span>
         </div>
     );
   }
 
-  if (!isAdminAuthenticated) {
-    return (
-        <div className="flex h-screen items-center justify-center bg-background text-foreground">
-            <Loader2 className="h-12 w-12 animate-spin text-destructive" />
-            <span className="ml-3 text-lg text-destructive">Redirecting...</span>
-        </div>
-    );
-  }
-  
   return (
-    <div className="flex min-h-screen w-full flex-col bg-muted/40">
-      <AdminHeader />
-      <main className="flex-1 p-4 md:p-6 lg:p-8">
-        {children}
-      </main>
-      <footer className="py-4 px-6 md:px-10 text-center border-t bg-background text-xs text-muted-foreground">
-        © {new Date().getFullYear()} {siteConfig.name} Admin Panel. All rights reserved.
-      </footer>
+    <div className="grid min-h-screen w-full md:grid-cols-[220px_1fr] lg:grid-cols-[280px_1fr]">
+      <div className="hidden border-r bg-muted/40 md:block">
+        <div className="flex h-full max-h-screen flex-col gap-2">
+          <div className="flex h-20 items-center border-b px-4 lg:h-20 lg:px-6">
+            <Link href="/admin/dashboard" className="flex items-center gap-2 font-semibold">
+              <Logo />
+              <span className="border-l-2 border-border pl-2 ml-2">Admin Panel</span>
+            </Link>
+          </div>
+          <div className="flex-1 overflow-auto py-2">{navLinks}</div>
+          <div className="mt-auto p-4">
+             <Button onClick={handleLogout} variant="ghost" className="w-full justify-start gap-2">
+               <LogOut className="h-4 w-4" />
+               Logout
+             </Button>
+          </div>
+        </div>
+      </div>
+      <div className="flex flex-col">
+        <header className="flex h-20 items-center gap-4 border-b bg-muted/40 px-4 lg:h-20 lg:px-6">
+          <Sheet open={isSheetOpen} onOpenChange={setIsSheetOpen}>
+            <SheetTrigger asChild>
+              <Button variant="outline" size="icon" className="shrink-0 md:hidden">
+                <PanelLeft className="h-5 w-5" />
+                <span className="sr-only">Toggle navigation menu</span>
+              </Button>
+            </SheetTrigger>
+            <SheetContent side="left" className="flex flex-col">
+                <div className="flex h-20 items-center border-b px-4">
+                 <Link href="/admin/dashboard" className="flex items-center gap-2 font-semibold">
+                    <Logo />
+                    <span className="ml-2 font-semibold">Admin Panel</span>
+                </Link>
+                </div>
+                <div className="flex-1 overflow-auto py-2">{navLinks}</div>
+                <div className="mt-auto p-4 border-t">
+                    <Button onClick={handleLogout} variant="ghost" className="w-full justify-start gap-2">
+                    <LogOut className="h-4 w-4" />
+                    Logout
+                    </Button>
+                </div>
+            </SheetContent>
+          </Sheet>
+          <div className="w-full flex-1">
+             <h1 className="font-semibold text-lg">Welcome, {user?.firstName}!</h1>
+          </div>
+          <div className="flex items-center gap-2">
+            <ThemeToggle />
+            <AdminUserNav />
+          </div>
+        </header>
+        <main className="flex flex-1 flex-col gap-4 p-4 lg:gap-6 lg:p-6">
+            {children}
+        </main>
+      </div>
     </div>
   );
 }
