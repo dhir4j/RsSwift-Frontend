@@ -4,7 +4,7 @@ import Link from "next/link"
 import { Menu, ArrowRight, User } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Sheet, SheetTrigger, SheetContent } from "@/components/ui/sheet"
-import { useAuth } from "@/contexts/auth-context"
+import { useAuth } from "@/hooks/use-auth"
 import { useRouter } from "next/navigation"
 import {
   DropdownMenu,
@@ -18,11 +18,11 @@ import { ThemeToggle } from "./theme-toggle"
 import Logo from "./logo"
 
 export default function Header() {
-  const { isLoggedIn, logout } = useAuth()
+  const { isAuthenticated, logoutUser } = useAuth()
   const router = useRouter()
 
   const handleLogout = () => {
-    logout()
+    logoutUser()
     router.push('/')
   }
 
@@ -45,7 +45,7 @@ export default function Header() {
         </nav>
         <div className="ml-auto flex items-center gap-2">
           <ThemeToggle />
-          {isLoggedIn ? (
+          {isAuthenticated ? (
              <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <Button variant="secondary" size="icon" className="rounded-full">
@@ -91,7 +91,7 @@ export default function Header() {
                   Contact
                 </Link>
                 <div className="border-t pt-6 mt-4">
-                 {isLoggedIn ? (
+                 {isAuthenticated ? (
                     <Button onClick={handleLogout} className="w-full">Logout</Button>
                  ) : (
                     <div className="grid gap-4">
