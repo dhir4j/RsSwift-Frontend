@@ -5,39 +5,27 @@ import { useAuth } from '@/hooks/use-auth';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
-import { PackagePlus, Search, ListOrdered, ArrowRight, Settings2, BarChartBig, Gift, Receipt } from 'lucide-react';
-import Image from 'next/image';
+import { PackagePlus, Search, ListOrdered, Receipt, ArrowRight, Activity, CheckCircle, Clock } from 'lucide-react';
+import { Separator } from '@/components/ui/separator';
 
 const quickAccessItems = [
-  { title: 'Book a New Shipment', href: '/dashboard/book-shipment', icon: PackagePlus, description: 'Start a new shipment process quickly.' },
-  { title: 'Track Your Package', href: '/dashboard/track-shipment', icon: Search, description: 'Check the status of your existing shipment.' },
-  { title: 'View My Shipments', href: '/dashboard/my-shipments', icon: ListOrdered, description: 'Access your shipment history and details.' },
-  { title: 'View My Invoices', href: '/dashboard/my-invoices', icon: Receipt, description: 'Access your invoice history.' },
+  { title: 'Book a Shipment', href: '/dashboard/book-shipment', icon: PackagePlus, description: 'Create a new domestic or international shipment.' },
+  { title: 'Track a Package', href: '/dashboard/track-shipment', icon: Search, description: 'Get real-time status updates on your package.' },
+  { title: 'View All Shipments', href: '/dashboard/my-shipments', icon: ListOrdered, description: 'Browse your complete shipment history.' },
+  { title: 'Manage Invoices', href: '/dashboard/my-invoices', icon: Receipt, description: 'Access and download all your invoices.' },
 ];
 
-const additionalInfoCards = [
-  {
-    icon: Settings2,
-    title: "Our Core Services",
-    description: "From express delivery to bulk cargo and international shipping, we offer a wide range of logistics solutions tailored to your needs.",
-    link: "/about",
-    linkLabel: "Learn More"
-  },
-  {
-    icon: BarChartBig,
-    title: "Solutions for Your Business",
-    description: "Empower your e-commerce, supply chain, and enterprise logistics with our reliable and scalable B2B services, including COD and reverse pickups.",
-    link: "/dashboard/contact",
-    linkLabel: "Discuss Your Needs"
-  },
-  {
-    icon: Gift,
-    title: "Latest Updates & Offers",
-    description: "Stay informed about new service areas, special promotions, and operational updates to make the most of SwiftShip.",
-    link: "#", 
-    linkLabel: "View Announcements"
-  }
-];
+const StatCard = ({ title, value, icon: Icon }: { title: string; value: string | number; icon: React.ElementType }) => (
+    <div className="bg-card/50 p-4 rounded-lg flex items-center gap-4">
+        <div className="bg-primary/10 p-3 rounded-full">
+            <Icon className="w-6 h-6 text-primary" />
+        </div>
+        <div>
+            <p className="text-sm text-muted-foreground">{title}</p>
+            <p className="text-2xl font-bold">{value}</p>
+        </div>
+    </div>
+);
 
 export default function DashboardPage() {
   const { user } = useAuth();
@@ -46,57 +34,69 @@ export default function DashboardPage() {
 
   return (
     <div className="space-y-8">
-      <Card className="shadow-lg border-primary/20">
-        <CardHeader>
-          <CardTitle className="font-headline text-2xl sm:text-3xl text-primary">Welcome, {user.firstName || user.email.split('@')[0]}!</CardTitle>
-          <CardDescription className="text-lg">Manage your shipments efficiently with SwiftShip.</CardDescription>
-        </CardHeader>
-        <CardContent>
-          <p>This is your central hub for all courier activities. You can book new shipments, track existing ones, view your history and invoices, and get in touch with us for support.</p>
-        </CardContent>
-      </Card>
-
-      <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
-        {quickAccessItems.map((item) => (
-          <Card key={item.href} className="shadow-md hover:shadow-lg transition-shadow duration-300">
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-xl font-headline font-medium">{item.title}</CardTitle>
-              <item.icon className="h-6 w-6 text-primary" />
-            </CardHeader>
-            <CardContent>
-              <p className="text-sm text-muted-foreground mb-4">{item.description}</p>
-              <Button asChild variant="outline" className="w-full border-primary text-primary hover:bg-primary/10 animated-outline-hover">
-                <Link href={item.href}>
-                  Go to {item.title.split(' ')[0]} <ArrowRight className="ml-2 h-4 w-4" />
-                </Link>
-              </Button>
-            </CardContent>
-          </Card>
-        ))}
+      <div className="animate-enter" style={{ animationDelay: '100ms' }}>
+        <h1 className="text-3xl font-bold font-headline tracking-tight">Welcome back, {user.firstName || 'User'}!</h1>
+        <p className="text-muted-foreground">Here's your dashboard at a glance. Ready to ship?</p>
+      </div>
+      
+      <div 
+        className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 animate-enter" 
+        style={{ animationDelay: '200ms' }}
+      >
+        <StatCard title="In Transit" value="3" icon={Activity} />
+        <StatCard title="Delivered" value="12" icon={CheckCircle} />
+        <StatCard title="Pending" value="1" icon={Clock} />
       </div>
 
-      <div className="grid gap-6 md:grid-cols-1 lg:grid-cols-3">
-        {additionalInfoCards.map((card) => (
-          <Card key={card.title} className="shadow-md hover:shadow-lg transition-shadow duration-300 flex flex-col">
-            <CardHeader className="flex-shrink-0">
-              <div className="flex items-center gap-3 mb-2">
-                <card.icon className="h-7 w-7 text-primary" />
-                <CardTitle className="text-xl font-headline font-medium">{card.title}</CardTitle>
-              </div>
-            </CardHeader>
-            <CardContent className="flex-grow">
-              <p className="text-sm text-muted-foreground">{card.description}</p>
-            </CardContent>
-            <CardContent className="pt-0 flex-shrink-0"> 
-              <Button asChild variant="link" className="p-0 text-primary hover:text-primary/80">
-                <Link href={card.link}>
-                  {card.linkLabel} <ArrowRight className="ml-1 h-4 w-4" />
-                </Link>
-              </Button>
-            </CardContent>
-          </Card>
-        ))}
+      <Separator />
+
+      <div className="space-y-6">
+        <h2 className="text-2xl font-bold font-headline animate-enter" style={{ animationDelay: '300ms' }}>Quick Actions</h2>
+        <div className="grid gap-6 md:grid-cols-2">
+          {quickAccessItems.map((item, index) => (
+            <Link href={item.href} key={item.href} className="group">
+                <Card 
+                  className="bg-card/70 hover:bg-card border-border/50 hover:border-primary/50 transition-all duration-300 futuristic-grid-glow animate-enter"
+                  style={{ animationDelay: `${400 + index * 100}ms` }}
+                >
+                    <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                        <CardTitle className="text-lg font-semibold">{item.title}</CardTitle>
+                        <item.icon className="h-6 w-6 text-muted-foreground group-hover:text-primary transition-colors" />
+                    </CardHeader>
+                    <CardContent>
+                        <p className="text-sm text-muted-foreground">{item.description}</p>
+                        <div className="flex items-center text-primary font-medium text-sm mt-4">
+                            <span>Go to {item.title.split(' ')[0]}</span>
+                            <ArrowRight className="ml-2 h-4 w-4 transition-transform group-hover:translate-x-1" />
+                        </div>
+                    </CardContent>
+                </Card>
+            </Link>
+          ))}
+        </div>
       </div>
+
+       <div className="animate-enter" style={{ animationDelay: '800ms' }}>
+        <h2 className="text-2xl font-bold font-headline">Recent Activity</h2>
+        <Card className="mt-4">
+            <CardContent className="p-0">
+                <div className="divide-y divide-border">
+                    <div className="flex items-center justify-between p-4">
+                        <p className="text-sm">Shipment <span className="font-mono text-primary">RS123456</span> is out for delivery.</p>
+                        <p className="text-xs text-muted-foreground">10 mins ago</p>
+                    </div>
+                    <div className="flex items-center justify-between p-4">
+                        <p className="text-sm">Shipment <span className="font-mono text-primary">RS987654</span> was delivered.</p>
+                        <p className="text-xs text-muted-foreground">2 hours ago</p>
+                    </div>
+                    <div className="flex items-center justify-between p-4">
+                        <p className="text-sm">New invoice created for shipment <span className="font-mono text-primary">RS555111</span>.</p>
+                        <p className="text-xs text-muted-foreground">1 day ago</p>
+                    </div>
+                </div>
+            </CardContent>
+        </Card>
+       </div>
     </div>
   );
 }

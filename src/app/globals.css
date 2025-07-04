@@ -63,14 +63,14 @@
 @layer utilities {
   .animated-outline-hover {
     position: relative;
-    overflow: hidden; /* To contain the pseudo-element */
+    overflow: hidden;
   }
   .animated-outline-hover::before {
     content: '';
     position: absolute;
-    top: -2px; left: -2px; right: -2px; bottom: -2px; /* Control outline thickness */
+    top: -2px; left: -2px; right: -2px; bottom: -2px;
     border: 2px solid transparent;
-    border-radius: inherit; /* Use button's border-radius */
+    border-radius: inherit;
     z-index: -1;
     opacity: 0;
     transition: opacity 0.3s ease-out;
@@ -78,7 +78,7 @@
   .animated-outline-hover:hover::before {
     opacity: 1;
     animation: pulse-outline 1.5s infinite ease-in-out;
-    border-color: hsl(var(--primary)); /* Or var(--accent) if preferred */
+    border-color: hsl(var(--primary));
   }
 
   @keyframes pulse-outline {
@@ -87,7 +87,7 @@
       opacity: 0.7;
     }
     50% {
-      transform: scale(1.05); /* Control pulse size */
+      transform: scale(1.05);
       opacity: 1;
     }
     100% {
@@ -96,50 +96,52 @@
     }
   }
 
-  @keyframes fadeInUpSlo {
-    from {
-      opacity: 0;
-      transform: translateY(15px);
-    }
-    to {
-      opacity: 1;
-      transform: translateY(0);
-    }
+  /* Added for futuristic animations */
+  @keyframes grid-glow {
+      0% {
+        background-position: 0% 50%;
+      }
+      50% {
+        background-position: 100% 50%;
+      }
+      100% {
+        background-position: 0% 50%;
+      }
   }
-
-  .animate-fadeInUpSlo {
-    animation: fadeInUpSlo 0.8s ease-out forwards;
+  .futuristic-grid-glow {
+    position: relative;
+    overflow: hidden;
   }
-
-  @keyframes bounceSlo {
-    0%, 100% {
-      transform: translateY(-25%);
-      animation-timing-function: cubic-bezier(0.8,0,1,1);
-    }
-    50% {
-      transform: translateY(0);
-      animation-timing-function: cubic-bezier(0,0,0.2,1);
-    }
-  }
-  .animate-bounceSlo {
-    animation: bounceSlo 2s infinite;
-  }
-
-  @keyframes animate-particles {
-    from {
-      transform: translateY(0);
-      opacity: 1;
-    }
-    to {
-      transform: translateY(-100vh);
-      opacity: 0;
-    }
-  }
-
-  .particle {
+  .futuristic-grid-glow::before {
+    content: '';
     position: absolute;
-    border-radius: 50%;
-    background: hsl(var(--primary) / 0.4);
-    animation: animate-particles linear infinite;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-image: radial-gradient(circle at center, hsl(var(--primary)/0.15), transparent 60%);
+    background-size: 400% 400%;
+    animation: grid-glow 8s ease infinite;
+    opacity: 0;
+    transition: opacity 0.5s ease;
+    z-index: 0;
+  }
+  .futuristic-grid-glow:hover::before {
+    opacity: 1;
+  }
+
+  @keyframes enter {
+    from {
+      opacity: 0;
+      transform: translateY(10px);
+    }
+    to {
+      opacity: 1;
+      transform: none;
+    }
+  }
+  
+  .animate-enter {
+    animation: enter 0.6s ease-out both;
   }
 }
