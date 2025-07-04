@@ -154,7 +154,6 @@ export function BookShipmentForm() {
     
     const data = paymentStep.formData;
     const apiShipmentData: AddShipmentPayload = {
-      ...data,
       sender_name: data.senderName,
       sender_address_street: data.senderAddressLine1,
       sender_address_city: data.senderAddressCity,
