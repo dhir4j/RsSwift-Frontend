@@ -7,113 +7,113 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { useAuth } from '@/hooks/use-auth';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
-import { Input } from '@/components/ui/input';
-import { ArrowRight, DollarSign, PackageCheck, SearchCheck, ShieldCheck, Zap, Loader2, Globe, CreditCard, Send, Repeat, Truck, Users, Info, ChevronDown } from 'lucide-react';
+import { Card, CardContent, CardHeader } from '@/components/ui/card';
+import { ArrowRight, Zap, ShieldCheck, Search, Headphones, Star } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import { useToast } from '@/hooks/use-toast';
+import { Loader2 } from 'lucide-react';
 
 export function LandingHeader() {
   return (
-    <header className="py-4 px-6 md:px-10 flex justify-between items-center sticky top-0 z-50 bg-background/90 backdrop-blur-sm border-b">
-      <Link href="/" className="flex items-center text-primary hover:text-primary/90">
+    <header className="py-4 px-6 md:px-10 flex justify-between items-center sticky top-0 z-50 bg-background/80 backdrop-blur-sm border-b">
+      <Link href="/" className="flex items-center gap-2 text-primary hover:text-primary/90">
         <Image
           src="/images/rsswift_logo.png"
           alt="SwiftShip Logo"
-          width={180} 
-          height={45} 
+          width={150} 
+          height={40} 
           className="object-contain"
           priority 
         />
       </Link>
-      <nav className="flex flex-col space-y-2 sm:flex-row sm:space-y-0 sm:items-center sm:space-x-2">
-        <Button asChild variant="ghost" className="w-full sm:w-auto text-base sm:text-sm hover:bg-white/10">
+      <nav className="hidden md:flex items-center gap-6 text-sm font-medium">
+          <Link href="#features" className="text-muted-foreground hover:text-foreground transition-colors">Features</Link>
+          <Link href="#how-it-works" className="text-muted-foreground hover:text-foreground transition-colors">How It Works</Link>
+          <Link href="#testimonials" className="text-muted-foreground hover:text-foreground transition-colors">Testimonials</Link>
+      </nav>
+      <div className="flex items-center gap-2">
+        <Button asChild variant="ghost" className="hidden sm:inline-flex">
           <Link href="/login">Login</Link>
         </Button>
-        <Button asChild className="w-full sm:w-auto text-base sm:text-sm">
-          <Link href="/signup">Sign Up</Link>
+        <Button asChild>
+          <Link href="/signup">Sign Up Free</Link>
         </Button>
-      </nav>
+      </div>
     </header>
   );
 }
 
 export function LandingFooter() {
-  const [currentYear, setCurrentYear] = useState('');
+    const [currentYear, setCurrentYear] = useState('');
 
-  useEffect(() => {
-    setCurrentYear(new Date().getFullYear().toString());
-  }, []);
+    useEffect(() => {
+        setCurrentYear(new Date().getFullYear().toString());
+    }, []);
 
-  return (
-    <footer className="py-8 px-6 md:px-10 text-center border-t bg-secondary">
-      <div className="container mx-auto">
-        <div className="mb-4">
-           <Image src="/images/rsswift_logo.png" alt="SwiftShip Footer Logo" width={150} height={40} className="object-contain mx-auto"/>
-        </div>
-        <p className="text-sm text-muted-foreground">
-          &copy; {currentYear} RS SWIFT COURIERS LLP. All rights reserved.
-        </p>
-        <div className="mt-4 space-x-4 flex flex-wrap justify-center">
-          <Link href="/about" className="text-xs text-muted-foreground hover:text-primary">About Us</Link>
-          <Link href="/privacy-policy" className="text-xs text-muted-foreground hover:text-primary">Privacy Policy</Link>
-          <Link href="/terms-of-service" className="text-xs text-muted-foreground hover:text-primary">Terms of Service</Link>
-          <Link href="/shipping-and-delivery" className="text-xs text-muted-foreground hover:text-primary">Shipping & Delivery</Link>
-          <Link href="/refund-and-cancellation" className="text-xs text-muted-foreground hover:text-primary">Refund & Cancellation</Link>
-        </div>
-      </div>
-    </footer>
-  );
-}
-
-function QuoteWidget() {
-  const [origin, setOrigin] = useState('');
-  const [destination, setDestination] = useState('');
-  const [weight, setWeight] = useState('');
-  const { toast } = useToast();
-
-  const handleGetQuote = () => {
-    if (!origin || !destination || !weight) {
-      toast({
-        title: "Incomplete Information",
-        description: "Please fill in all fields to get a quote.",
-        variant: "destructive"
-      });
-      return;
-    }
-    toast({
-      title: "Quote Estimate",
-      description: `Your placeholder quote for shipping ${weight}kg from ${origin} to ${destination} is ready! Sign up to get precise pricing.`,
-    });
-  };
-
-  return (
-    <Card className="w-full max-w-sm shadow-2xl">
-      <CardHeader>
-        <CardTitle className="font-headline text-xl text-center">Instant Quote</CardTitle>
-      </CardHeader>
-      <CardContent className="space-y-4">
-        <Input placeholder="Origin Pincode" value={origin} onChange={(e) => setOrigin(e.target.value)} />
-        <Input placeholder="Destination Pincode" value={destination} onChange={(e) => setDestination(e.target.value)} />
-        <Input type="number" placeholder="Weight (kg)" value={weight} onChange={(e) => setWeight(e.target.value)} />
-      </CardContent>
-      <CardFooter>
-        <Button className="w-full" onClick={handleGetQuote}>Get Estimate</Button>
-      </CardFooter>
-    </Card>
-  );
+    return (
+        <footer className="bg-secondary text-secondary-foreground">
+            <div className="container mx-auto px-6 md:px-10 py-12">
+                <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
+                    <div className="lg:col-span-4">
+                        <Link href="/" className="flex items-center gap-2 mb-4">
+                            <Image
+                                src="/images/rsswift_logo.png"
+                                alt="SwiftShip Footer Logo"
+                                width={150}
+                                height={40}
+                                className="object-contain"
+                            />
+                        </Link>
+                        <p className="text-sm max-w-xs text-muted-foreground">
+                            Reliable shipping, redefined. Fast, secure, and transparent courier services designed for you.
+                        </p>
+                    </div>
+                    <div className="lg:col-span-8 grid grid-cols-2 md:grid-cols-4 gap-8">
+                        <div>
+                            <h3 className="font-semibold mb-4">Company</h3>
+                            <ul className="space-y-2 text-sm">
+                                <li><Link href="/about-us" className="text-muted-foreground hover:text-foreground">About Us</Link></li>
+                                <li><Link href="#" className="text-muted-foreground hover:text-foreground">Careers</Link></li>
+                                <li><Link href="#" className="text-muted-foreground hover:text-foreground">Press</Link></li>
+                            </ul>
+                        </div>
+                        <div>
+                            <h3 className="font-semibold mb-4">Services</h3>
+                            <ul className="space-y-2 text-sm">
+                                <li><Link href="/dashboard/book-shipment" className="text-muted-foreground hover:text-foreground">Domestic</Link></li>
+                                <li><Link href="/dashboard/book-shipment" className="text-muted-foreground hover:text-foreground">International</Link></li>
+                                <li><Link href="#" className="text-muted-foreground hover:text-foreground">Business Solutions</Link></li>
+                                <li><Link href="#" className="text-muted-foreground hover:text-foreground">Pricing</Link></li>
+                            </ul>
+                        </div>
+                        <div>
+                            <h3 className="font-semibold mb-4">Legal</h3>
+                            <ul className="space-y-2 text-sm">
+                                <li><Link href="/terms-of-service" className="text-muted-foreground hover:text-foreground">Terms of Service</Link></li>
+                                <li><Link href="/privacy-policy" className="text-muted-foreground hover:text-foreground">Privacy Policy</Link></li>
+                                <li><Link href="/shipping-delivery" className="text-muted-foreground hover:text-foreground">Shipping Policy</Link></li>
+                            </ul>
+                        </div>
+                        <div>
+                            <h3 className="font-semibold mb-4">Support</h3>
+                            <ul className="space-y-2 text-sm">
+                                <li><Link href="/customer-care" className="text-muted-foreground hover:text-foreground">Contact Us</Link></li>
+                                <li><Link href="#" className="text-muted-foreground hover:text-foreground">Help Center</Link></li>
+                                <li><Link href="/dashboard/track-shipment" className="text-muted-foreground hover:text-foreground">Track Package</Link></li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                <div className="mt-12 border-t pt-8 text-center text-sm text-muted-foreground">
+                    &copy; {currentYear} RS SWIFT COURIERS LLP. All rights reserved.
+                </div>
+            </div>
+        </footer>
+    );
 }
 
 export default function HomePage() {
   const { isAuthenticated, isLoading } = useAuth();
   const router = useRouter();
-
-  const slideshowImages = [
-    'https://placehold.co/1920x1080.png',
-    'https://placehold.co/1920x1080.png',
-    'https://placehold.co/1920x1080.png',
-  ];
-  const [currentImageIndex, setCurrentImageIndex] = useState(0);
 
   useEffect(() => {
     if (!isLoading && isAuthenticated) {
@@ -121,16 +121,8 @@ export default function HomePage() {
     }
   }, [isAuthenticated, isLoading, router]);
 
-  useEffect(() => {
-    const timer = setInterval(() => {
-      setCurrentImageIndex((prevIndex) => (prevIndex + 1) % slideshowImages.length);
-    }, 5000); // Change image every 5 seconds
 
-    return () => clearInterval(timer);
-  }, [slideshowImages.length]);
-
-
-  if (isLoading) {
+  if (isLoading || isAuthenticated) {
     return (
       <div className="flex items-center justify-center min-h-screen bg-background">
         <Loader2 className="h-12 w-12 animate-spin text-primary" />
@@ -138,49 +130,47 @@ export default function HomePage() {
     );
   }
 
-  if (isAuthenticated) return null;
-
-  const coreFeatures = [
+  const features = [
     {
       icon: Zap,
-      title: "Easy Booking",
-      description: "Schedule shipments in clicks with our intuitive platform.",
-    },
-    {
-      icon: SearchCheck,
-      title: "Real-Time Tracking",
-      description: "Live tracking from pickup to delivery via Web, SMS, & Email.",
+      title: "Speed & Efficiency",
+      description: "Optimized routes and express options ensure your packages arrive on time, every time.",
     },
     {
       icon: ShieldCheck,
-      title: "Secure & Reliable",
-      description: "Trust us with your valuable shipments. Safety and reliability, every step.",
+      title: "Secure & Insured",
+      description: "Every shipment is handled with care and protected with comprehensive insurance.",
     },
     {
-      icon: DollarSign,
-      title: "Transparent Pricing",
-      description: "No hidden fees. Get an instant quote for your shipment.",
+      icon: Search,
+      title: "Transparent Tracking",
+      description: "Follow your package's journey from pickup to delivery with our real-time tracking.",
+    },
+    {
+      icon: Headphones,
+      title: "Dedicated Support",
+      description: "Our customer service team is available 24/7 to assist you with any questions.",
     },
   ];
 
   const testimonials = [
       {
-          name: "Rohan K.",
-          role: "E-commerce Seller",
-          image: "https://placehold.co/40x40.png",
-          text: "SwiftShip has revolutionized our logistics. The speed and reliability are unmatched, and the real-time tracking gives us peace of mind."
+          name: "Rohan Kapoor",
+          role: "E-commerce Store Owner",
+          avatar: "RK",
+          text: "Switching to SwiftShip was the best decision for my business. Their reliability and speed have significantly improved my customer satisfaction."
       },
       {
-          name: "Priya S.",
+          name: "Anjali Sharma",
           role: "Small Business Owner",
-          image: "https://placehold.co/40x40.png",
-          text: "The instant quote widget is a fantastic tool. It's transparent and helps us budget our shipping costs effectively. Highly recommended!"
+          avatar: "AS",
+          text: "The platform is so easy to use, and the transparent pricing is a breath of fresh air. I can finally manage my shipping without any headaches."
       },
       {
-          name: "Amit V.",
-          role: "Corporate Client",
-          image: "https://placehold.co/40x40.png",
-          text: "Their customer support is top-notch. Any issues are resolved quickly, and they are always willing to go the extra mile."
+          name: "Vikram Mehta",
+          role: "Logistics Manager",
+          avatar: "VM",
+          text: "Impressive service. The real-time tracking is accurate, and their support team is always helpful and responsive. Highly recommended for businesses."
       }
   ];
 
@@ -188,131 +178,137 @@ export default function HomePage() {
     <div className="flex flex-col flex-1 bg-background text-foreground">
       <LandingHeader />
       <main className="flex-1">
-        <section className="relative flex items-center justify-center text-center text-white min-h-screen px-6 md:px-10 overflow-hidden">
-          <div className="absolute inset-0 w-full h-full z-0">
-            {slideshowImages.map((src, index) => {
-              const getTransformClass = (imageIndex: number, currentIndex: number) => {
-                if (imageIndex === currentIndex) return 'translate-x-0';
-                if ((currentIndex === 0 && imageIndex === slideshowImages.length - 1) || (imageIndex === currentIndex - 1)) return '-translate-x-full';
-                return 'translate-x-full';
-              };
-              return (
-                <Image
-                  key={src}
-                  src={src}
-                  alt={`Logistics background ${index + 1}`}
-                  data-ai-hint="logistics background"
-                  width={1920}
-                  height={1080}
-                  className={cn(
-                    'absolute inset-0 w-full h-full object-cover transition-transform duration-1000 ease-in-out',
-                    getTransformClass(index, currentImageIndex)
-                  )}
-                  priority={index === 0}
-                />
-              );
-            })}
-            <div className="absolute inset-0 bg-black/60 z-10"></div>
-          </div>
-          
-          <div className="relative z-20 container mx-auto grid md:grid-cols-2 gap-10 items-center">
-            <div className="text-left space-y-6">
-                <h1 className="text-4xl md:text-5xl lg:text-6xl font-headline">
-                <span className="font-extrabold text-white drop-shadow-lg inline-block animate-fadeInUpSlo">SwiftShip</span>
-                <span className="block text-2xl md:text-3xl lg:text-4xl text-gray-200 font-medium mt-1 sm:mt-2 drop-shadow-md">
-                    Your Global Logistics Partner.
-                </span>
-                </h1>
-                <p className="text-lg md:text-xl text-gray-100 mb-10 max-w-xl drop-shadow-sm">
-                Experience seamless courier and cargo services with SwiftShip. Book, track, and manage your deliveries with unparalleled ease and confidence, worldwide.
-                </p>
-                <div className="space-y-4 sm:space-y-0 sm:flex sm:space-x-4">
-                  <Button size="lg" asChild className="font-semibold text-lg py-3 px-8 w-full sm:w-auto shadow-lg hover:shadow-xl transition-shadow">
-                    <Link href="/signup">
-                      Get Started <ArrowRight className="ml-2 h-5 w-5" />
-                    </Link>
-                  </Button>
+        {/* Hero Section */}
+        <section className="relative overflow-hidden">
+            <div className="absolute inset-0 bg-gradient-to-br from-secondary via-background to-background -z-10"></div>
+            <div className="container mx-auto px-6 md:px-10 py-24 sm:py-32 text-center">
+                <div className="max-w-3xl mx-auto">
+                    <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold font-headline tracking-tighter text-foreground">
+                        Reliable Shipping, <span className="text-primary">Redefined</span>.
+                    </h1>
+                    <p className="mt-6 text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto">
+                       Fast, secure, and transparent courier services designed for individuals and businesses. Ship with confidence, track with ease.
+                    </p>
+                    <div className="mt-10 flex justify-center gap-4">
+                        <Button size="lg" asChild className="font-semibold text-lg py-3 px-8 shadow-lg hover:shadow-xl transition-shadow">
+                            <Link href="/signup">
+                            Get Started Now <ArrowRight className="ml-2 h-5 w-5" />
+                            </Link>
+                        </Button>
+                         <Button size="lg" variant="outline" asChild className="font-semibold text-lg py-3 px-8">
+                            <Link href="/dashboard/track-shipment">
+                            Track a Package
+                            </Link>
+                        </Button>
+                    </div>
                 </div>
             </div>
-            <div className="flex justify-center md:justify-end">
-                <QuoteWidget />
-            </div>
-          </div>
-
-          <div className="absolute bottom-20 left-1/2 -translate-x-1/2 z-20">
-            <Link href="#features" aria-label="Scroll to features section">
-              <div className="p-2 rounded-full bg-white/80 hover:bg-white/100 transition-colors animate-bounceSlo shadow-lg">
-                <ChevronDown className="h-8 w-8 text-primary" />
-              </div>
-            </Link>
-          </div>
         </section>
 
-        <div className="bg-background text-foreground">
-          <section id="features" className="px-6 md:px-10 py-16 md:py-24">
-            <div className="container mx-auto">
-              <h2 className="text-3xl sm:text-4xl font-headline font-semibold text-center mb-4">
-                Everything You Need for Effortless Shipping
-              </h2>
-              <p className="text-lg text-muted-foreground text-center mb-12 max-w-2xl mx-auto">
-                SwiftShip provides a comprehensive suite of tools to make your shipping experience smooth and efficient.
-              </p>
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-                {coreFeatures.map((feature) => (
-                  <Card key={feature.title} className="shadow-lg hover:shadow-xl transition-shadow duration-300 ease-in-out transform hover:-translate-y-1">
-                    <CardHeader className="items-center text-center">
-                      <div className="p-3 bg-primary/10 rounded-full inline-block mb-4 border border-primary/20">
-                        <feature.icon className="h-8 w-8 text-primary" />
-                      </div>
-                      <CardTitle className="font-headline text-xl sm:text-2xl">{feature.title}</CardTitle>
-                    </CardHeader>
-                    <CardContent className="text-center">
-                      <p className="text-muted-foreground text-sm">{feature.description}</p>
-                    </CardContent>
-                  </Card>
+        {/* Features Section */}
+        <section id="features" className="py-20 md:py-28 bg-background">
+             <div className="container mx-auto px-6 md:px-10">
+                <div className="text-center max-w-2xl mx-auto mb-16">
+                    <h2 className="text-3xl sm:text-4xl font-bold font-headline tracking-tight">Why Choose SwiftShip?</h2>
+                    <p className="mt-4 text-lg text-muted-foreground">
+                        We provide a seamless shipping experience backed by powerful features and a commitment to reliability.
+                    </p>
+                </div>
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+                {features.map((feature, index) => (
+                  <div key={index} className="text-center p-6 bg-card rounded-xl border border-transparent hover:border-primary/20 hover:shadow-lg transition-all duration-300">
+                    <div className="flex justify-center items-center mb-5">
+                       <div className="bg-primary/10 p-4 rounded-full">
+                         <feature.icon className="h-8 w-8 text-primary" />
+                       </div>
+                    </div>
+                    <h3 className="text-xl font-semibold font-headline mb-2">{feature.title}</h3>
+                    <p className="text-sm text-muted-foreground">{feature.description}</p>
+                  </div>
                 ))}
               </div>
+             </div>
+        </section>
+
+        {/* How it Works Section */}
+        <section id="how-it-works" className="py-20 md:py-28 bg-secondary">
+            <div className="container mx-auto px-6 md:px-10">
+                <div className="text-center max-w-2xl mx-auto mb-16">
+                    <h2 className="text-3xl sm:text-4xl font-bold font-headline tracking-tight">Three Simple Steps to Ship</h2>
+                    <p className="mt-4 text-lg text-muted-foreground">Our streamlined process makes sending packages easier than ever.</p>
+                </div>
+                <div className="relative">
+                    <div className="hidden md:block absolute top-1/2 left-0 w-full h-0.5 bg-border -translate-y-1/2"></div>
+                    <div className="relative grid grid-cols-1 md:grid-cols-3 gap-12">
+                         <div className="text-center">
+                            <div className="relative mb-6">
+                                <div className="w-16 h-16 mx-auto bg-primary text-primary-foreground rounded-full flex items-center justify-center text-2xl font-bold font-headline">1</div>
+                            </div>
+                            <h3 className="text-xl font-semibold font-headline mb-2">Book Online</h3>
+                            <p className="text-muted-foreground">Enter shipment details and get an instant price quote on our user-friendly platform.</p>
+                        </div>
+                         <div className="text-center">
+                            <div className="relative mb-6">
+                                <div className="w-16 h-16 mx-auto bg-primary text-primary-foreground rounded-full flex items-center justify-center text-2xl font-bold font-headline">2</div>
+                            </div>
+                            <h3 className="text-xl font-semibold font-headline mb-2">We Pick Up</h3>
+                            <p className="text-muted-foreground">Schedule a convenient pickup time, and our courier will collect the package from your doorstep.</p>
+                        </div>
+                         <div className="text-center">
+                            <div className="relative mb-6">
+                                <div className="w-16 h-16 mx-auto bg-primary text-primary-foreground rounded-full flex items-center justify-center text-2xl font-bold font-headline">3</div>
+                            </div>
+                            <h3 className="text-xl font-semibold font-headline mb-2">Track & Deliver</h3>
+                            <p className="text-muted-foreground">Monitor your package's journey in real-time until it is safely delivered to its destination.</p>
+                        </div>
+                    </div>
+                </div>
             </div>
-          </section>
+        </section>
 
-           <section id="testimonials" className="px-6 md:px-10 py-16 md:py-24 bg-secondary">
-              <div className="container mx-auto text-center">
-                  <h2 className="text-3xl sm:text-4xl font-headline font-semibold mb-4">What Our Customers Say</h2>
-                  <p className="text-lg text-muted-foreground mb-12 max-w-2xl mx-auto">
-                      Real stories from people who trust SwiftShip with their deliveries.
-                  </p>
-                  <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-                      {testimonials.map((testimonial, index) => (
-                          <Card key={index} className="text-left shadow-lg">
-                              <CardContent className="p-6">
-                                  <p className="text-muted-foreground mb-4">"{testimonial.text}"</p>
-                                  <div className="flex items-center gap-3">
-                                      <Image src={testimonial.image} alt={testimonial.name} data-ai-hint="person avatar" width={40} height={40} className="rounded-full" />
-                                      <div>
-                                          <p className="font-semibold">{testimonial.name}</p>
-                                          <p className="text-sm text-muted-foreground">{testimonial.role}</p>
-                                      </div>
-                                  </div>
-                              </CardContent>
-                          </Card>
-                      ))}
-                  </div>
-              </div>
-          </section>
+        {/* Testimonials Section */}
+        <section id="testimonials" className="py-20 md:py-28 bg-background">
+            <div className="container mx-auto px-6 md:px-10">
+                 <div className="text-center max-w-2xl mx-auto mb-16">
+                    <h2 className="text-3xl sm:text-4xl font-bold font-headline tracking-tight">Trusted by Businesses and Individuals</h2>
+                    <p className="mt-4 text-lg text-muted-foreground">See what our satisfied customers have to say about their experience with SwiftShip.</p>
+                </div>
+                <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                     {testimonials.map((testimonial, index) => (
+                        <Card key={index} className="flex flex-col justify-between">
+                            <CardContent className="p-6">
+                                <div className="flex mb-4">
+                                    {[...Array(5)].map((_, i) => <Star key={i} className="w-5 h-5 text-yellow-400 fill-yellow-400" />)}
+                                </div>
+                                <blockquote className="text-muted-foreground italic">"{testimonial.text}"</blockquote>
+                            </CardContent>
+                            <CardHeader className="p-6 pt-0 flex flex-row items-center gap-4">
+                                <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center font-bold text-primary">
+                                    {testimonial.avatar}
+                                </div>
+                                <div>
+                                    <p className="font-semibold text-foreground">{testimonial.name}</p>
+                                    <p className="text-sm text-muted-foreground">{testimonial.role}</p>
+                                </div>
+                            </CardHeader>
+                        </Card>
+                    ))}
+                </div>
+            </div>
+        </section>
 
-        </div>
-
-        <section className="py-16 md:py-24 px-6 md:px-10 bg-primary text-center text-primary-foreground">
-          <div className="container mx-auto max-w-3xl">
-            <h2 className="text-3xl sm:text-4xl font-headline font-bold mb-6">
-              Ready to Streamline Your Shipments?
+        {/* CTA Section */}
+        <section className="py-20 md:py-28 bg-secondary">
+          <div className="container mx-auto px-6 md:px-10 text-center max-w-3xl">
+            <h2 className="text-3xl sm:text-4xl font-bold font-headline mb-6 text-foreground">
+              Ready to Ship with Confidence?
             </h2>
-            <p className="text-lg text-primary-foreground/90 mb-8">
-              Join businesses worldwide who trust SwiftShip for their critical courier and cargo needs. Sign up today and experience the difference.
+            <p className="text-lg text-muted-foreground mb-8">
+              Create an account in minutes and join thousands of satisfied customers who trust SwiftShip for their critical deliveries.
             </p>
-            <Button size="lg" asChild className="font-semibold text-lg py-3 px-8 bg-background text-primary hover:bg-background/90 shadow-xl hover:shadow-2xl transition-shadow">
+            <Button size="lg" asChild className="font-semibold text-lg py-3 px-8 shadow-xl hover:shadow-2xl transition-shadow">
               <Link href="/signup">
-                Create Your First Shipment <ArrowRight className="ml-2 h-5 w-5" />
+                Sign Up for Free <ArrowRight className="ml-2 h-5 w-5" />
               </Link>
             </Button>
           </div>
