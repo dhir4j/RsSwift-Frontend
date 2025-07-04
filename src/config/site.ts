@@ -20,10 +20,6 @@ export const dashboardNavItems: NavItem[] = [
     description: 'Overview of your activities.',
   },
   {
-    title: 'Separator1',
-    isSeparator: true,
-  },
-  {
     title: 'Book Shipment',
     href: '/dashboard/book-shipment',
     icon: PackagePlus,
@@ -34,10 +30,6 @@ export const dashboardNavItems: NavItem[] = [
     href: '/dashboard/track-shipment',
     icon: Search,
     description: 'Track an existing shipment.',
-  },
-  {
-    title: 'Separator2',
-    isSeparator: true,
   },
   {
     title: 'My Shipments',
@@ -56,10 +48,6 @@ export const dashboardNavItems: NavItem[] = [
     href: '/dashboard/my-payments',
     icon: Wallet,
     description: 'Track your payment statuses.',
-  },
-  {
-    title: 'Separator3',
-    isSeparator: true,
   },
   {
     title: 'Contact',

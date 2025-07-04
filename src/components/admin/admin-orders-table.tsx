@@ -1,4 +1,3 @@
-
 "use client";
 
 import React, { useState, useCallback, useEffect } from 'react';
@@ -100,6 +99,51 @@ export function AdminOrdersTable() {
     }
   };
 
+  const exportToCSV = useCallback(() => {
+    if (allShipments.length === 0) {
+        toast({ title: "No Data", description: "Nothing to export.", variant: "default"});
+        return;
+    }
+    const headers = [
+      "Order Number (shipment_id_str)",
+      "Customer Name (sender_name)",
+      "Description",
+      "Price (w/o Tax)",
+      "Tax (18%)",
+      "Total Price",
+      "Status",
+      "Booking Date"
+    ];
+
+    const rows = allShipments.map(order => {
+        const description = `${order.service_type || 'N/A'} (${order.package_weight_kg || 'N/A'}kg) to ${order.receiver_address_city || 'N/A'}`;
+        const bookingDate = order.booking_date && isValid(parseISO(order.booking_date)) ? format(parseISO(order.booking_date), 'yyyy-MM-dd HH:mm') : 'N/A';
+        return [
+            `"${order.shipment_id_str || 'Unknown ID'}"`,
+            `"${order.sender_name || 'N/A'}"`,
+            `"${description}"`,
+            typeof order.price_without_tax === 'number' ? order.price_without_tax.toFixed(2) : 'N/A',
+            typeof order.tax_amount_18_percent === 'number' ? order.tax_amount_18_percent.toFixed(2) : 'N/A',
+            typeof order.total_with_tax_18_percent === 'number' ? order.total_with_tax_18_percent.toFixed(2) : 'N/A',
+            `"${order.status || 'N/A'}"`,
+            `"${bookingDate}"`
+        ];
+    });
+
+    let csvContent = "data:text/csv;charset=utf-8,"
+      + headers.join(",") + "\n"
+      + rows.map(e => e.join(",")).join("\n");
+
+    const encodedUri = encodeURI(csvContent);
+    const link = document.createElement("a");
+    link.setAttribute("href", encodedUri);
+    link.setAttribute("download", `swiftship_all_orders_${new Date().toISOString().split('T')[0]}.csv`);
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  }, [allShipments, toast]);
+
+
   return (
     <Card>
       <CardHeader className="flex flex-col md:flex-row md:justify-between md:items-center">
@@ -109,6 +153,9 @@ export function AdminOrdersTable() {
           </CardTitle>
           <CardDescription>View, manage, and export all customer orders.</CardDescription>
         </div>
+         <Button onClick={exportToCSV} variant="outline" size="sm" className="mt-4 md:mt-0" disabled={allShipments.length === 0}>
+          <FileDown className="mr-2 h-4 w-4" /> Export to CSV
+        </Button>
       </CardHeader>
       <CardContent>
         <div className="mb-6 p-4 border rounded-lg bg-muted/50 space-y-4 md:space-y-0 md:flex md:items-center md:justify-between md:gap-4">
