@@ -1,10 +1,20 @@
+
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { AdminPaymentsTable } from '@/components/admin/admin-payments-table';
+import { Wallet } from 'lucide-react';
 
 export default function AdminPaymentsPage() {
-  return (
-    <div className="space-y-6">
-      <h1 className="text-3xl font-headline font-bold text-primary">Payment Requests</h1>
-      <AdminPaymentsTable />
-    </div>
-  );
+    return (
+        <Card>
+            <CardHeader>
+                <CardTitle className="font-headline text-2xl sm:text-3xl flex items-center gap-2">
+                    <Wallet className="h-8 w-8 text-primary" /> Payment Submissions
+                </CardTitle>
+                <CardDescription>Review and process pending payment submissions.</CardDescription>
+            </CardHeader>
+            <CardContent>
+                <AdminPaymentsTable />
+            </CardContent>
+        </Card>
+    );
 }
