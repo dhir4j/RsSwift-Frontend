@@ -17,7 +17,7 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover
 import { Calendar } from "@/components/ui/calendar";
 import { cn } from "@/lib/utils";
 import { format } from "date-fns";
-import { CalendarIcon, Package, User, ArrowRight, CheckCircle, PackagePlus, ScanLine, Globe, Home, Loader2, Edit3, Info, Wallet, IndianRupee } from 'lucide-react';
+import { CalendarIcon, Package, User, ArrowRight, CheckCircle, PackagePlus, ScanLine, Globe, Home, Loader2, Edit3, Info, Wallet } from 'lucide-react';
 import { useShipments } from '@/hooks/use-shipments';
 import type { ServiceType, CreateShipmentResponse, ShipmentTypeOption, DomesticPriceRequest, DomesticPriceResponse, InternationalPriceRequest, InternationalPriceResponse, PriceApiResponse, AddShipmentPayload, SubmitUtrPayload, SubmitUtrResponse } from '@/lib/types';
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
@@ -33,6 +33,7 @@ const shipmentFormSchema = z.object({
 
   senderName: z.string().min(2, "Sender name is required"),
   senderAddressLine1: z.string().min(5, "Address Line 1 is required (min 5 chars)"),
+  senderAddressLine2: z.string().optional(),
   senderAddressCity: z.string().min(2, "City is required"),
   senderAddressState: z.string().min(2, "State is required"),
   senderAddressPincode: z.string().regex(/^\d{6}$/, "Pincode must be 6 digits"),
@@ -41,6 +42,7 @@ const shipmentFormSchema = z.object({
 
   receiverName: z.string().min(2, "Receiver name is required"),
   receiverAddressLine1: z.string().min(5, "Address Line 1 is required (min 5 chars)"),
+  receiverAddressLine2: z.string().optional(),
   receiverAddressCity: z.string().min(2, "City is required"),
   receiverAddressState: z.string().min(2, "State/Province is required"),
   receiverAddressPincode: z.string().regex(/^\d{3,10}$/, "Pincode/ZIP must be 3-10 digits"),
@@ -64,6 +66,19 @@ interface PaymentStepData {
   numericAmount: number | null;
   formData: ShipmentFormValues | null;
 }
+
+const parsePriceStringToNumber = (priceStr: string | number | undefined | null): number | null => {
+  if (typeof priceStr === 'number') {
+    return priceStr;
+  }
+  if (typeof priceStr === 'string') {
+    const numericString = priceStr.replace(/[^0-9.-]+/g,"");
+    const parsed = parseFloat(numericString);
+    return isNaN(parsed) ? null : parsed;
+  }
+  return null;
+};
+
 
 export function BookShipmentForm() {
   const [submissionStatus, setSubmissionStatus] = useState<Partial<CreateShipmentResponse> | null>(null);
@@ -104,7 +119,7 @@ export function BookShipmentForm() {
         form.setValue("serviceType", "Standard");
     } else if (shipmentTypeOption === "International") {
         form.setValue("serviceType", "Express");
-        form.setValue("receiverAddressCountry", ""); // Use setValue to clear
+        form.setValue("receiverAddressCountry", "");
     }
   }, [shipmentTypeOption, form]);
 
@@ -153,16 +168,25 @@ export function BookShipmentForm() {
     }
     
     const data = paymentStep.formData;
+
+    const senderStreetCombined = data.senderAddressLine2
+      ? `${data.senderAddressLine1}, ${data.senderAddressLine2}`
+      : data.senderAddressLine1;
+
+    const receiverStreetCombined = data.receiverAddressLine2
+      ? `${data.receiverAddressLine1}, ${data.receiverAddressLine2}`
+      : data.receiverAddressLine1;
+      
     const apiShipmentData: AddShipmentPayload = {
       sender_name: data.senderName,
-      sender_address_street: data.senderAddressLine1,
+      sender_address_street: senderStreetCombined,
       sender_address_city: data.senderAddressCity,
       sender_address_state: data.senderAddressState,
       sender_address_pincode: data.senderAddressPincode,
       sender_address_country: data.senderAddressCountry,
       sender_phone: data.senderPhone,
       receiver_name: data.receiverName,
-      receiver_address_street: data.receiverAddressLine1,
+      receiver_address_street: receiverStreetCombined,
       receiver_address_city: data.receiverAddressCity,
       receiver_address_state: data.receiverAddressState,
       receiver_address_pincode: data.receiverAddressPincode,
@@ -263,7 +287,8 @@ export function BookShipmentForm() {
                 <div className="space-y-4 pt-4 border-t">
                   <h3 className="text-lg font-semibold flex items-center gap-2"><User /> Sender Details</h3>
                   <FormField control={form.control} name="senderName" render={({ field }) => ( <FormItem><FormLabel>Name</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem> )} />
-                  <FormField control={form.control} name="senderAddressLine1" render={({ field }) => ( <FormItem><FormLabel>Address</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem> )} />
+                  <FormField control={form.control} name="senderAddressLine1" render={({ field }) => ( <FormItem><FormLabel>Address Line 1</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem> )} />
+                  <FormField control={form.control} name="senderAddressLine2" render={({ field }) => ( <FormItem><FormLabel>Address Line 2 (Optional)</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem> )} />
                   <div className="grid md:grid-cols-3 gap-4">
                     <FormField control={form.control} name="senderAddressCity" render={({ field }) => ( <FormItem><FormLabel>City</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem> )} />
                     <FormField control={form.control} name="senderAddressState" render={({ field }) => ( <FormItem><FormLabel>State</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem> )} />
@@ -276,7 +301,8 @@ export function BookShipmentForm() {
                 <div className="space-y-4 pt-4 border-t">
                   <h3 className="text-lg font-semibold flex items-center gap-2"><User /> Receiver Details</h3>
                   <FormField control={form.control} name="receiverName" render={({ field }) => ( <FormItem><FormLabel>Name</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem> )} />
-                  <FormField control={form.control} name="receiverAddressLine1" render={({ field }) => ( <FormItem><FormLabel>Address</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem> )} />
+                  <FormField control={form.control} name="receiverAddressLine1" render={({ field }) => ( <FormItem><FormLabel>Address Line 1</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem> )} />
+                  <FormField control={form.control} name="receiverAddressLine2" render={({ field }) => ( <FormItem><FormLabel>Address Line 2 (Optional)</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem> )} />
                   <div className="grid md:grid-cols-3 gap-4">
                     <FormField control={form.control} name="receiverAddressCity" render={({ field }) => ( <FormItem><FormLabel>City</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem> )} />
                     <FormField control={form.control} name="receiverAddressState" render={({ field }) => ( <FormItem><FormLabel>State/Province</FormLabel>
