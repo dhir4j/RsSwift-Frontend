@@ -19,7 +19,7 @@ export default function RefundCancellation() {
                   <li><strong>Before Pickup:</strong> A booking can be cancelled any time before the package has been picked up by our courier agent. A full refund of the shipping charges will be processed.</li>
                   <li><strong>After Pickup:</strong> Once a package has been picked up, the booking cannot be cancelled, and no refund will be issued for the shipping charges.</li>
                 </ul>
-                <p>To cancel a booking, please contact our customer care team at +91 9541195406 or email us at RSSWIFTCOURIERS@GMAIL.COM with your booking details.</p>
+                <p>To cancel a booking, please contact our customer care team at +91 8544970282 or email us at RSSWIFTCOURIERS@GMAIL.COM with your booking details.</p>
 
                 <h2 className="text-2xl font-bold font-headline mt-6">2. Refund Policy</h2>
                 <p>Refunds are applicable in the following scenarios:</p>

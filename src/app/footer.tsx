@@ -40,8 +40,8 @@ export default function Footer() {
             <a href="mailto:RSSWIFTCOURIERS@GMAIL.COM" className="hover:text-primary hover:underline">
               RSSWIFTCOURIERS@GMAIL.COM
             </a>
-            <a href="tel:+919541195406" className="hover:text-primary hover:underline">
-              +91 9541195406
+            <a href="tel:+918544970282" className="hover:text-primary hover:underline">
+              +91 8544970282
             </a>
           </div>
           <div className="grid gap-2 text-sm">

@@ -22,8 +22,8 @@ export default function CustomerCare() {
                 </div>
                 <h3 className="text-xl font-bold font-headline">Phone Support</h3>
                 <p className="text-muted-foreground">Speak directly to our support team for immediate assistance.</p>
-                <a href="tel:+919541195406" className="font-semibold text-primary hover:underline">
-                  +91 9541195406
+                <a href="tel:+918544970282" className="font-semibold text-primary hover:underline">
+                  +91 8544970282
                 </a>
               </div>
               <div className="flex flex-col items-center text-center gap-4 p-6 rounded-lg border shadow-sm">
