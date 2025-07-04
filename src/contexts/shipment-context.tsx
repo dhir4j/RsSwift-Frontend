@@ -20,24 +20,7 @@ export const ShipmentContext = createContext<ShipmentContextType | undefined>(un
 export const mapApiShipmentToFrontend = (apiShipment: any): Shipment => {
   if (!apiShipment) {
     console.error("mapApiShipmentToFrontend received null or undefined apiShipment");
-    return {
-        id: -1, 
-        shipment_id_str: 'ERROR_INVALID_INPUT',
-        sender_name: '', sender_address_street: '', sender_address_city: '', sender_address_state: '', sender_address_pincode: '', sender_address_country: '', sender_phone: '',
-        receiver_name: '', receiver_address_street: '', receiver_address_city: '', receiver_address_state: '', receiver_address_pincode: '', receiver_address_country: '', receiver_phone: '',
-        package_weight_kg: 0, package_width_cm: 0, package_height_cm: 0, package_length_cm: 0,
-        pickup_date: new Date().toISOString(), service_type: 'Standard', booking_date: new Date().toISOString(), status: 'Booked',
-        price_without_tax: 0, tax_amount_18_percent: 0, total_with_tax_18_percent: 0,
-        tracking_history: [],
-        
-        shipmentIdStr: 'ERROR_INVALID_INPUT',
-        senderName: '', senderAddressStreet: '', senderAddressCity: '', senderAddressState: '', senderAddressPincode: '', senderAddressCountry: '', senderPhone: '',
-        receiverName: '', receiverAddressStreet: '', receiverAddressCity: '', receiverAddressState: '', receiverAddressPincode: '', receiverAddressCountry: '', receiverPhone: '',
-        packageWeightKg: 0, packageWidthCm: 0, packageHeightCm: 0, packageLengthCm: 0,
-        pickupDate: new Date().toISOString(), serviceType: 'Standard', bookingDate: new Date().toISOString(),
-        priceWithoutTax: 0, taxAmount18Percent: 0, totalWithTax18Percent: 0,
-        trackingHistory: [],
-    } as Shipment;
+    return {} as Shipment;
   }
 
   const senderStreet = apiShipment.sender_address_street || apiShipment.sender_address_line1 || '';

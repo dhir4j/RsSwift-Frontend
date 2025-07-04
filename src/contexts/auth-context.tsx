@@ -5,7 +5,6 @@ import type { User, LoginResponse } from '@/lib/types';
 import React, { createContext, useState, useEffect, ReactNode, useCallback } from 'react';
 import apiClient from '@/lib/api-client';
 import { USER_DATA_KEY } from '@/lib/constants';
-import { useToast } from '@/hooks/use-toast';
 
 interface AuthContextType {
   user: User | null;
@@ -22,7 +21,6 @@ export const AuthContext = createContext<AuthContextType | undefined>(undefined)
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [user, setUser] = useState<User | null>(null);
   const [isLoading, setIsLoading] = useState(true);
-  const { toast } = useToast();
 
   const performLogout = useCallback(() => {
     setUser(null);

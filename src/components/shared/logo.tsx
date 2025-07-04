@@ -7,7 +7,7 @@ export function Logo({ collapsed }: { collapsed?: boolean }) {
     <Link href="/dashboard" className="flex items-center justify-start gap-2 p-2 text-primary hover:text-primary/90">
       {collapsed ? (
         <Image
-          src="/images/brand.png"
+          src="/images/rsswift_logo.png"
           alt="App Icon"
           width={32}
           height={32}
@@ -15,7 +15,7 @@ export function Logo({ collapsed }: { collapsed?: boolean }) {
         />
       ) : (
         <Image
-          src="/images/brand.png"
+          src="/images/rsswift_logo.png"
           alt="App Logo"
           width={150} 
           height={40} 
@@ -29,7 +29,7 @@ export function Logo({ collapsed }: { collapsed?: boolean }) {
 export function CompanyLogo({ className }: { className?: string }) {
   return (
     <div className={`flex flex-col items-center justify-center ${className}`}>
-      <Image src="/images/brand.png" alt="Shed Load Overseas Logo" width={120} height={32} className="object-contain mb-2"/>
+      <Image src="/images/rsswift_logo.png" alt="SwiftShip Logo" width={120} height={32} className="object-contain mb-2"/>
     </div>
   );
 }

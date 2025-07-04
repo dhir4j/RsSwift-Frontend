@@ -107,10 +107,10 @@ export interface Shipment {
 }
 
 
-// API response for login - NO TOKEN
+// API response for login
 export interface LoginResponse {
-  user: User;
   message: string;
+  user: User; 
 }
 
 // API response for creating shipment (snake_case)
@@ -205,7 +205,7 @@ export interface InternationalPriceResponse {
   weight_kg: number;
   rounded_weight: number;
   price_per_kg: string;
-  total_price: number; 
+  total_price: number;
   formatted_total?: string;
   error?: string;
 }
@@ -213,10 +213,9 @@ export interface InternationalPriceResponse {
 export type PriceApiResponse = DomesticPriceResponse | InternationalPriceResponse;
 
 // Payload for creating a shipment (POST /api/shipments)
-// Matches the backend specification from the user.
 export interface AddShipmentPayload {
     sender_name: string;
-    sender_address_street: string; // Combined from line1 and line2
+    sender_address_street: string;
     sender_address_city: string;
     sender_address_state: string;
     sender_address_pincode: string;
@@ -224,7 +223,7 @@ export interface AddShipmentPayload {
     sender_phone: string;
 
     receiver_name: string;
-    receiver_address_street: string; // Combined from line1 and line2
+    receiver_address_street: string;
     receiver_address_city: string;
     receiver_address_state: string;
     receiver_address_pincode: string;
@@ -235,8 +234,8 @@ export interface AddShipmentPayload {
     package_width_cm: number;
     package_height_cm: number;
     package_length_cm: number;
-    pickup_date: string; // Formatted as "yyyy-MM-dd"
-    service_type: ServiceType; // "Express" or "Standard"
+    pickup_date: string;
+    service_type: ServiceType;
     
     final_total_price_with_tax: number;
     user_email: string;
@@ -252,7 +251,7 @@ export interface SubmitUtrPayload {
 export interface SubmitUtrResponse {
   message: string;
   payment_id: number;
-  status: string; // e.g., "Pending"
+  status: string;
 }
 
 export type PaymentStatus = "Pending" | "Approved" | "Rejected";
@@ -263,7 +262,7 @@ export interface UserPayment {
     utr: string;
     amount: number;
     status: PaymentStatus;
-    created_at: string; // ISO Date string
+    created_at: string;
 }
 
 // Type for admin view of payments
@@ -275,7 +274,7 @@ export interface AdminPayment {
   amount: number;
   utr: string;
   status: PaymentStatus;
-  created_at: string; // ISO String
+  created_at: string;
 }
 
 export type AdminPaymentsResponse = AdminPayment[];
@@ -290,7 +289,7 @@ export interface AdminUserListItem {
   first_name: string;
   last_name: string;
   email: string;
-  created_at: string; // ISO date string
+  created_at: string;
   shipment_count: number;
 }
 
@@ -306,7 +305,7 @@ export interface UserShipmentSummary {
     id: number;
     shipment_id_str: string;
     receiver_name: string;
-    booking_date: string; // ISO Date string
+    booking_date: string;
     status: TrackingStage;
     total_with_tax_18_percent: number;
 }
@@ -317,7 +316,7 @@ export interface AdminUserDetailsResponse {
         first_name: string;
         last_name: string;
         email: string;
-        created_at: string; // ISO Date string
+        created_at: string;
     };
     shipments: UserShipmentSummary[];
     payments: UserPayment[];

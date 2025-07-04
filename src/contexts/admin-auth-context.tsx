@@ -5,9 +5,9 @@ import React, { createContext, useCallback, ReactNode } from 'react';
 import { useAuth } from '@/hooks/use-auth';
 
 interface AdminAuthContextType {
-  isAdminAuthenticated: boolean; // Based on user.isAdmin
-  isAdminLoading: boolean;       // Directly from main auth loading
-  adminLogout: () => void;       // Wraps main logout
+  isAdminAuthenticated: boolean;
+  isAdminLoading: boolean;
+  adminLogout: () => void;
 }
 
 export const AdminAuthContext = createContext<AdminAuthContextType | undefined>(undefined);

@@ -1,4 +1,3 @@
-
 import { Home, PackagePlus, Search, ListOrdered, MessageSquare, Receipt, Wallet, LayoutDashboard, Users } from 'lucide-react'; 
 import type { LucideIcon } from 'lucide-react';
 
@@ -49,12 +48,6 @@ export const dashboardNavItems: NavItem[] = [
     icon: Wallet,
     description: 'Track your payment statuses.',
   },
-  {
-    title: 'Contact',
-    href: '/dashboard/contact',
-    icon: MessageSquare,
-    description: 'Get support and contact information.',
-  },
 ];
 
 export const adminNavItems: NavItem[] = [
@@ -76,18 +69,18 @@ export const adminNavItems: NavItem[] = [
 ];
 
 export const siteConfig = {
-  name: "Shed Load Overseas", // Brand name for UI
-  description: "Courier and shipment management solutions by SHEDLOAD OVERSEAS LLP.",
-  url: "https://shedloadoverseas.example.com", 
-  ogImage: "https://shedloadoverseas.example.com/og.jpg", 
+  name: "SwiftShip",
+  description: "Courier and shipment management solutions by RS SWIFT COURIERS LLP.",
+  url: "https://swiftship.example.com", 
+  ogImage: "https://swiftship.example.com/og.jpg", 
   mainNav: dashboardNavItems,
-  company: { // New section for formal company details
-    legalName: "SHEDLOAD OVERSEAS LLP",
-    address: "Showroom no. 30, B Block, LGF, CHD, Citi Center, Zirakpur, Mohali, SAS Nagar, Punjab, 140603",
-    email: "SHEDLOADOVERSEAS@GMAIL.COM",
-    phone: "+91 8544970282",
-    gstin: "03AFPFS8245B1ZY",
-    pan: "AFPFS8245B"
+  company: {
+    legalName: "RS SWIFT COURIERS LLP",
+    address: "Your Company Address, City, State, Pincode",
+    email: "support@swiftship.example.com",
+    phone: "+91 12345 67890",
+    gstin: "YOUR_GSTIN_HERE",
+    pan: "YOUR_PAN_HERE"
   },
   links: {
   },

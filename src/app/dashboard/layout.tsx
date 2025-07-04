@@ -184,12 +184,13 @@ export default function DashboardLayout({
 }: {
   children: React.ReactNode;
 }) {
-  const { isAuthenticated, isLoading, user, reloadUserFromStorage } = useAuth();
+  const { isAuthenticated, isLoading, reloadUserFromStorage } = useAuth();
   const router = useRouter();
   const pathname = usePathname();
 
   useEffect(() => {
     reloadUserFromStorage();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []); 
 
   useEffect(() => {

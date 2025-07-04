@@ -140,7 +140,7 @@ export const InvoiceProvider = ({ children }: { children: ReactNode }) => {
 
 
   return (
-    <InvoiceContext.Provider value={{ displayInvoices, isLoading, fetchUserShipmentsForInvoices, getDisplayInvoiceByShipmentId }}>
+    <InvoiceContext.Provider value={{ displayInvoices, isLoading, fetchUserShipmentsForInvoices, getDisplayInvoiceByShipmentId: getDisplayInvoiceByShipmentId }}>
       {children}
     </InvoiceContext.Provider>
   );
