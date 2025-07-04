@@ -1,9 +1,14 @@
+
 "use client";
 
-import { AuthProvider } from "@/contexts/auth-context";
+import React, { ReactNode } from 'react';
+import { AuthProvider } from '@/contexts/auth-context';
+import { ShipmentProvider } from '@/contexts/shipment-context';
+import { AdminAuthProvider } from '@/contexts/admin-auth-context';
+import { InvoiceProvider } from '@/contexts/invoice-context';
 import { ThemeProvider } from "@/components/theme-provider";
 
-export function Providers({ children }: { children: React.ReactNode }) {
+export function Providers({ children }: { children: ReactNode }) {
   return (
     <ThemeProvider
       attribute="class"
@@ -11,7 +16,15 @@ export function Providers({ children }: { children: React.ReactNode }) {
       enableSystem
       disableTransitionOnChange
     >
-      <AuthProvider>{children}</AuthProvider>
+      <AuthProvider>
+        <AdminAuthProvider>
+          <ShipmentProvider>
+            <InvoiceProvider>
+              {children}
+            </InvoiceProvider>
+          </ShipmentProvider>
+        </AdminAuthProvider>
+      </AuthProvider>
     </ThemeProvider>
   );
-}
+};

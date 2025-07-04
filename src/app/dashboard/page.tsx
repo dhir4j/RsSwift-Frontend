@@ -1,253 +1,131 @@
+
 "use client";
 
-import { useEffect, useState, useMemo } from "react";
-import Link from "next/link";
-import { useAuth } from "@/contexts/auth-context";
-import { useToast } from "@/hooks/use-toast";
-import {
-  ArrowUpRight,
-  Book,
-  CreditCard,
-  Package2,
-  PackageCheck,
-} from "lucide-react";
+import { useAuth } from '@/hooks/use-auth';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import Link from 'next/link';
+import { PackagePlus, Search, ListOrdered, MessageSquare, ArrowRight, Settings2, BarChartBig, Gift, Receipt } from 'lucide-react';
+import Image from 'next/image';
 
-import { Button } from "@/components/ui/button";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
-import { Badge } from "@/components/ui/badge";
-import { Skeleton } from "@/components/ui/skeleton";
+const quickAccessItems = [
+  { title: 'Book a New Shipment', href: '/dashboard/book-shipment', icon: PackagePlus, description: 'Start a new shipment process quickly.' },
+  { title: 'Track Your Package', href: '/dashboard/track-shipment', icon: Search, description: 'Check the status of your existing shipment.' },
+  { title: 'View My Shipments', href: '/dashboard/my-shipments', icon: ListOrdered, description: 'Access your shipment history and details.' },
+  { title: 'View My Invoices', href: '/dashboard/my-invoices', icon: Receipt, description: 'Access your invoice history.' },
+];
 
-interface Shipment {
-  id: number;
-  shipment_id_str: string;
-  receiver_name: string;
-  booking_date: string;
-  status: string;
-  total_with_tax_18_percent: number;
-}
-
-interface DashboardStats {
-  totalShipments: number;
-  pendingPaymentsAmount: number;
-  deliveredShipments: number;
-}
-
-export default function Dashboard() {
-  const [shipments, setShipments] = useState<Shipment[]>([]);
-  const [loading, setLoading] = useState(true);
-  const { user } = useAuth();
-  const { toast } = useToast();
-
-  useEffect(() => {
-    async function fetchShipments() {
-      if (!user?.email) return;
-
-      try {
-        setLoading(true);
-        const response = await fetch(`https://www.server.shedloadoverseas.com/api/shipments?email=${user.email}`);
-        if (!response.ok) {
-          throw new Error('Failed to fetch shipments');
-        }
-        const data = await response.json();
-        setShipments(data);
-      } catch (error) {
-        toast({
-          variant: "destructive",
-          title: "Error",
-          description: "Could not fetch dashboard data."
-        });
-        console.error(error);
-      } finally {
-        setLoading(false);
-      }
-    }
-
-    if (user) {
-        fetchShipments();
-    }
-  }, [user, toast]);
-
-  const stats: DashboardStats = useMemo(() => {
-    return {
-      totalShipments: shipments.length,
-      pendingPaymentsAmount: shipments
-        .filter(s => s.status === 'Pending Payment')
-        .reduce((sum, s) => sum + s.total_with_tax_18_percent, 0),
-      deliveredShipments: shipments.filter(s => s.status.toLowerCase().includes('delivered')).length
-    };
-  }, [shipments]);
-
-  const getBadgeVariant = (status: string) => {
-    const lowerStatus = status.toLowerCase();
-    if (lowerStatus.includes('delivered')) return 'default';
-    if (lowerStatus.includes('pending')) return 'destructive';
-    return 'outline';
-  };
-  
-  const recentShipments = shipments.slice(0, 5);
-
-  if (loading) {
-    return (
-      <div className="flex flex-1 flex-col gap-4 md:gap-8">
-        <div className="grid gap-4 md:grid-cols-2 md:gap-8 lg:grid-cols-4">
-          {[...Array(4)].map((_, i) => (
-            <Card key={i}>
-              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <Skeleton className="h-5 w-24" />
-                <Skeleton className="h-4 w-4" />
-              </CardHeader>
-              <CardContent>
-                <Skeleton className="h-8 w-32" />
-              </CardContent>
-            </Card>
-          ))}
-        </div>
-        <Card>
-          <CardHeader>
-            <Skeleton className="h-7 w-1/3" />
-            <Skeleton className="h-5 w-1/2" />
-          </CardHeader>
-          <CardContent>
-             <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead><Skeleton className="h-5 w-24" /></TableHead>
-                  <TableHead><Skeleton className="h-5 w-24" /></TableHead>
-                  <TableHead className="hidden md:table-cell"><Skeleton className="h-5 w-20" /></TableHead>
-                  <TableHead><Skeleton className="h-5 w-20" /></TableHead>
-                  <TableHead className="text-right"><Skeleton className="h-5 w-16 ml-auto" /></TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {[...Array(3)].map((_, i) => (
-                    <TableRow key={i}>
-                        <TableCell><Skeleton className="h-5 w-24" /></TableCell>
-                        <TableCell><Skeleton className="h-5 w-24" /></TableCell>
-                        <TableCell className="hidden md:table-cell"><Skeleton className="h-5 w-20" /></TableCell>
-                        <TableCell><Skeleton className="h-6 w-20" /></TableCell>
-                        <TableCell className="text-right"><Skeleton className="h-5 w-16 ml-auto" /></TableCell>
-                    </TableRow>
-                ))}
-              </TableBody>
-             </Table>
-          </CardContent>
-        </Card>
-      </div>
-    );
+const additionalInfoCards = [
+  {
+    icon: Settings2,
+    title: "Our Core Services",
+    description: "From express delivery to bulk cargo and international shipping, we offer a wide range of logistics solutions tailored to your needs.",
+    link: "/about",
+    linkLabel: "Learn More"
+  },
+  {
+    icon: BarChartBig,
+    title: "Solutions for Your Business",
+    description: "Empower your e-commerce, supply chain, and enterprise logistics with our reliable and scalable B2B services, including COD and reverse pickups.",
+    link: "/dashboard/contact",
+    linkLabel: "Discuss Your Needs"
+  },
+  {
+    icon: Gift,
+    title: "Latest Updates & Offers",
+    description: "Stay informed about new service areas, special promotions, and operational updates to make the most of Shed Load Overseas.",
+    link: "#", 
+    linkLabel: "View Announcements"
   }
+];
+
+export default function DashboardPage() {
+  const { user } = useAuth();
+
+  if (!user) return null;
 
   return (
-    <div className="flex flex-1 flex-col gap-4 md:gap-8">
-      <div className="grid gap-4 md:grid-cols-2 md:gap-8 lg:grid-cols-4">
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">
-              Total Shipments
-            </CardTitle>
-            <Package2 className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{stats.totalShipments}</div>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">
-              Pending Payments
-            </CardTitle>
-            <CreditCard className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">₹{stats.pendingPaymentsAmount.toLocaleString()}</div>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Delivered Shipments</CardTitle>
-            <PackageCheck className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{stats.deliveredShipments}</div>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">
-              New Shipment
-            </CardTitle>
-            <Book className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-             <Button size="sm" asChild className="mt-2">
-              <Link href="/dashboard/book-shipment">Book Now</Link>
-            </Button>
-          </CardContent>
-        </Card>
-      </div>
-      <Card>
-        <CardHeader className="flex flex-row items-center">
-          <div className="grid gap-2">
-            <CardTitle>Recent Shipments</CardTitle>
-            <CardDescription>
-              An overview of your most recent shipments.
-            </CardDescription>
-          </div>
-          <Button asChild size="sm" className="ml-auto gap-1">
-            <Link href="/dashboard/my-shipments">
-              View All
-              <ArrowUpRight className="h-4 w-4" />
-            </Link>
-          </Button>
+    <div className="space-y-8">
+      <Card className="shadow-lg border-primary/20">
+        <CardHeader>
+          <CardTitle className="font-headline text-2xl sm:text-3xl text-primary">Welcome, {user.firstName || user.email.split('@')[0]}!</CardTitle>
+          <CardDescription className="text-lg">Manage your shipments efficiently with Shed Load Overseas.</CardDescription>
         </CardHeader>
         <CardContent>
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead>Tracking ID</TableHead>
-                <TableHead>Destination</TableHead>
-                <TableHead className="hidden md:table-cell">Date</TableHead>
-                <TableHead>Status</TableHead>
-                <TableHead className="text-right">Amount</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {recentShipments.length > 0 ? (
-                recentShipments.map((shipment) => (
-                  <TableRow key={shipment.id}>
-                    <TableCell>
-                      <div className="font-medium">{shipment.shipment_id_str}</div>
-                    </TableCell>
-                    <TableCell>{shipment.receiver_name}</TableCell>
-                    <TableCell className="hidden md:table-cell">{new Date(shipment.booking_date).toLocaleDateString()}</TableCell>
-                    <TableCell><Badge variant={getBadgeVariant(shipment.status)}>{shipment.status}</Badge></TableCell>
-                    <TableCell className="text-right">₹{shipment.total_with_tax_18_percent.toLocaleString()}</TableCell>
-                  </TableRow>
-                ))
-              ) : (
-                <TableRow>
-                    <TableCell colSpan={5} className="h-24 text-center">
-                        No recent shipments.
-                    </TableCell>
-                </TableRow>
-              )}
-            </TableBody>
-          </Table>
+          <p>This is your central hub for all courier activities. You can book new shipments, track existing ones, view your history and invoices, and get in touch with us for support.</p>
         </CardContent>
       </Card>
+
+      <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
+        {quickAccessItems.map((item) => (
+          <Card key={item.href} className="shadow-md hover:shadow-lg transition-shadow duration-300">
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardTitle className="text-xl font-headline font-medium">{item.title}</CardTitle>
+              <item.icon className="h-6 w-6 text-primary" />
+            </CardHeader>
+            <CardContent>
+              <p className="text-sm text-muted-foreground mb-4">{item.description}</p>
+              <Button asChild variant="outline" className="w-full border-primary text-primary hover:bg-primary/10">
+                <Link href={item.href}>
+                  Go to {item.title.split(' ')[0]} <ArrowRight className="ml-2 h-4 w-4" />
+                </Link>
+              </Button>
+            </CardContent>
+          </Card>
+        ))}
+      </div>
+
+      <Card className="shadow-lg overflow-hidden">
+        <div className="grid md:grid-cols-3 items-center"> 
+          <div className="p-6 md:p-8 md:col-span-2"> 
+            <h3 className="font-headline text-xl sm:text-2xl font-semibold mb-3 text-primary">Need Assistance?</h3>
+            <p className="text-muted-foreground mb-4">
+              Our support team is ready to help you with any queries or issues you might have.
+              Explore our contact options.
+            </p>
+            <div className="flex flex-col sm:flex-row gap-4">
+              <Button asChild className="bg-accent text-accent-foreground hover:bg-accent/90">
+                <Link href="/dashboard/contact">
+                  <MessageSquare className="mr-2 h-4 w-4" /> Contact Support
+                </Link>
+              </Button>
+            </div>
+          </div>
+          <div className="hidden md:block p-4 md:col-span-1"> 
+            <Image
+              src="/images/second.png"
+              alt="Customer Support Illustration"
+              width={200} 
+              height={133} 
+              className="object-contain rounded-md mx-auto" 
+              data-ai-hint="customer service"
+            />
+          </div>
+        </div>
+      </Card>
+
+      <div className="grid gap-6 md:grid-cols-1 lg:grid-cols-3">
+        {additionalInfoCards.map((card) => (
+          <Card key={card.title} className="shadow-md hover:shadow-lg transition-shadow duration-300 flex flex-col">
+            <CardHeader className="flex-shrink-0">
+              <div className="flex items-center gap-3 mb-2">
+                <card.icon className="h-7 w-7 text-primary" />
+                <CardTitle className="text-xl font-headline font-medium">{card.title}</CardTitle>
+              </div>
+            </CardHeader>
+            <CardContent className="flex-grow">
+              <p className="text-sm text-muted-foreground">{card.description}</p>
+            </CardContent>
+            <CardContent className="pt-0 flex-shrink-0"> 
+              <Button asChild variant="link" className="p-0 text-primary hover:text-primary/80">
+                <Link href={card.link}>
+                  {card.linkLabel} <ArrowRight className="ml-1 h-4 w-4" />
+                </Link>
+              </Button>
+            </CardContent>
+          </Card>
+        ))}
+      </div>
     </div>
-  )
+  );
 }

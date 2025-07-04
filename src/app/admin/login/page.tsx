@@ -1,97 +1,141 @@
-"use client"
-import { useState } from "react"
-import Link from "next/link"
-import { useRouter } from "next/navigation"
-import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { useAuth } from "@/contexts/auth-context"
-import { useToast } from "@/hooks/use-toast"
-import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
-import { AlertCircle, Loader2 } from "lucide-react"
+"use client";
 
-export default function AdminLoginForm() {
-    const [email, setEmail] = useState("")
-    const [password, setPassword] = useState("")
-    const [error, setError] = useState<string | null>(null)
-    const [isLoading, setIsLoading] = useState(false)
-    const { login } = useAuth()
-    const router = useRouter()
-    const { toast } = useToast()
+import { useState, useEffect } from 'react';
+import Link from 'next/link';
+import { useRouter } from 'next/navigation';
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import * as z from 'zod';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
+import { Input } from '@/components/ui/input';
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
+import { useAuth } from '@/hooks/use-auth';
+import { useToast } from '@/hooks/use-toast';
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import { AlertCircle, Loader2 } from "lucide-react";
+import Logo from '@/components/logo';
 
-    const handleLogin = async (e: React.FormEvent) => {
-        e.preventDefault()
-        setIsLoading(true)
-        setError(null)
+const loginSchema = z.object({
+  email: z.string().email({ message: "A valid email is required." }),
+  password: z.string().min(1, { message: "Password is required." }),
+});
 
-        try {
-            const response = await fetch("https://www.server.shedloadoverseas.com/api/auth/login", {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ email, password })
-            })
+type LoginFormValues = z.infer<typeof loginSchema>;
 
-            const data = await response.json()
+export default function AdminLoginPage() {
+    const [apiError, setApiError] = useState<string | null>(null);
+    const router = useRouter();
+    const { loginUser, user, isAuthenticated, isLoading } = useAuth();
+    const { toast } = useToast();
 
-            if (!response.ok) {
-                throw new Error(data.message || "An error occurred")
-            }
+    const form = useForm<LoginFormValues>({
+        resolver: zodResolver(loginSchema),
+        defaultValues: {
+            email: "",
+            password: "",
+        },
+    });
 
-            if (!data.user.isAdmin) {
-                throw new Error("You do not have administrative privileges.")
-            }
-
-            login(data.user)
-            toast({ title: "Admin Login Successful", description: "Welcome back!" })
-            router.push('/admin/dashboard')
-
-        } catch (err: any) {
-            setError(err.message)
-        } finally {
-            setIsLoading(false)
+    useEffect(() => {
+        if (!isLoading && isAuthenticated && user?.isAdmin) {
+            router.replace('/admin/dashboard');
         }
-    }
+    }, [user, isAuthenticated, isLoading, router]);
+
+    const onSubmit = async (data: LoginFormValues) => {
+        setApiError(null);
+        try {
+            const loggedInUser = await loginUser(data.email, data.password);
+            if (loggedInUser.isAdmin) {
+                toast({
+                    title: "Admin Login Successful",
+                    description: `Welcome back, ${loggedInUser.firstName}!`,
+                });
+                router.replace('/admin/dashboard');
+            } else {
+                setApiError("Access denied. You do not have administrative privileges.");
+            }
+        } catch (err: any) {
+            const errorMessage = err.data?.error || err.message || "An unexpected error occurred.";
+            setApiError(errorMessage);
+        }
+    };
 
     return (
-        <div className="flex flex-col min-h-screen items-center justify-center bg-muted/40">
-            <Card className="mx-auto max-w-sm">
-                <CardHeader>
-                    <CardTitle className="text-2xl">Admin Login</CardTitle>
+        <div className="flex flex-col min-h-screen items-center justify-center bg-muted/40 p-4">
+            <Card className="mx-auto max-w-sm w-full">
+                <CardHeader className="text-center">
+                    <div className="mx-auto mb-4">
+                        <Logo />
+                    </div>
+                    <CardTitle className="text-2xl font-headline">Admin Panel Login</CardTitle>
                     <CardDescription>
-                        Enter your credentials to access the admin panel.
+                        Enter your admin credentials to access the dashboard.
                     </CardDescription>
                 </CardHeader>
                 <CardContent>
-                    <form onSubmit={handleLogin} className="grid gap-4">
-                        <div className="grid gap-2">
-                            <Label htmlFor="email">Email</Label>
-                            <Input id="email" type="email" placeholder="admin@example.com" required value={email} onChange={e => setEmail(e.target.value)} disabled={isLoading}/>
-                        </div>
-                        <div className="grid gap-2">
-                            <Label htmlFor="password">Password</Label>
-                            <Input id="password" type="password" required value={password} onChange={e => setPassword(e.target.value)} disabled={isLoading} />
-                        </div>
-                        {error && (
-                             <Alert variant="destructive">
-                                <AlertCircle className="h-4 w-4" />
-                                <AlertTitle>Login Failed</AlertTitle>
-                                <AlertDescription>{error}</AlertDescription>
-                            </Alert>
-                        )}
-                        <Button type="submit" className="w-full" disabled={isLoading}>
-                            {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                            Login
-                        </Button>
-                    </form>
-                    <div className="mt-4 text-center text-sm">
+                    <Form {...form}>
+                        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+                            <FormField
+                                control={form.control}
+                                name="email"
+                                render={({ field }) => (
+                                    <FormItem>
+                                        <FormLabel>Email</FormLabel>
+                                        <FormControl>
+                                            <Input
+                                                type="email"
+                                                placeholder="admin@example.com"
+                                                {...field}
+                                                disabled={form.formState.isSubmitting}
+                                            />
+                                        </FormControl>
+                                        <FormMessage />
+                                    </FormItem>
+                                )}
+                            />
+                            <FormField
+                                control={form.control}
+                                name="password"
+                                render={({ field }) => (
+                                    <FormItem>
+                                        <FormLabel>Password</FormLabel>
+                                        <FormControl>
+                                            <Input
+                                                type="password"
+                                                placeholder="••••••••"
+                                                {...field}
+                                                disabled={form.formState.isSubmitting}
+                                            />
+                                        </FormControl>
+                                        <FormMessage />
+                                    </FormItem>
+                                )}
+                            />
+                            {apiError && (
+                                <Alert variant="destructive">
+                                    <AlertCircle className="h-4 w-4" />
+                                    <AlertTitle>Login Failed</AlertTitle>
+                                    <AlertDescription>{apiError}</AlertDescription>
+                                </Alert>
+                            )}
+                            <Button type="submit" className="w-full" disabled={form.formState.isSubmitting}>
+                                {form.formState.isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                                Sign In
+                            </Button>
+                        </form>
+                    </Form>
+                </CardContent>
+                <CardFooter>
+                    <div className="mt-4 text-center text-sm w-full">
                         Not an admin?{" "}
                         <Link href="/login" className="underline">
-                            User Sign in
+                            Return to User Sign in
                         </Link>
                     </div>
-                </CardContent>
+                </CardFooter>
             </Card>
         </div>
-    )
+    );
 }

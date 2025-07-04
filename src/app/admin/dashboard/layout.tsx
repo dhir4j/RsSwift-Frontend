@@ -1,8 +1,8 @@
 "use client";
 import React from 'react';
 import Link from 'next/link';
-import { useRouter } from 'next/navigation';
-import { useAuth } from '@/contexts/auth-context';
+import { useRouter, usePathname } from 'next/navigation';
+import { useAuth } from '@/hooks/use-auth';
 import { Button } from '@/components/ui/button';
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
 import {
@@ -10,9 +10,9 @@ import {
   LogOut,
   PanelLeft,
   Users,
-  CreditCard
+  CreditCard,
+  Loader2
 } from 'lucide-react';
-import { usePathname } from 'next/navigation';
 import { cn } from '@/lib/utils';
 import { ThemeToggle } from '@/components/theme-toggle';
 import Logo from '@/components/logo';
@@ -28,17 +28,18 @@ const NavLink = ({ href, children }: { href: string; children: React.ReactNode }
 }
 
 export default function AdminDashboardLayout({ children }: { children: React.ReactNode }) {
-  const { user, logout, isAdmin } = useAuth();
+  const { user, logoutUser, isLoading } = useAuth();
   const router = useRouter();
+  const isAdmin = user?.isAdmin;
 
   React.useEffect(() => {
-    if (!isAdmin) {
-      router.push('/admin/login');
+    if (!isLoading && !isAdmin) {
+      router.replace('/admin/login');
     }
-  }, [isAdmin, router]);
+  }, [isAdmin, isLoading, router]);
 
   const handleLogout = () => {
-    logout();
+    logoutUser();
     router.push('/admin/login');
   };
   
@@ -50,8 +51,13 @@ export default function AdminDashboardLayout({ children }: { children: React.Rea
       </nav>
   );
 
-  if (!isAdmin) {
-    return <div className="flex min-h-screen w-full items-center justify-center">Loading...</div>;
+  if (isLoading || !isAdmin) {
+    return (
+        <div className="flex min-h-screen w-full items-center justify-center">
+            <Loader2 className="h-8 w-8 animate-spin" />
+            <span className="ml-2">Loading Admin Panel...</span>
+        </div>
+    );
   }
 
   return (

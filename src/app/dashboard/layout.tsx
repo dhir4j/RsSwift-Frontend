@@ -1,116 +1,243 @@
+
 "use client";
-import React from 'react';
+
+import React, { useEffect } from 'react';
+import { useRouter, usePathname } from 'next/navigation'; 
+import { useAuth } from '@/hooks/use-auth';
+import { dashboardNavItems, siteConfig } from '@/config/site';
+import { Logo } from '@/components/shared/logo';
 import Link from 'next/link';
-import { useRouter } from 'next/navigation';
-import { useAuth } from '@/contexts/auth-context';
 import { Button } from '@/components/ui/button';
-import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
+import { Avatar, AvatarFallback } from '@/components/ui/avatar'; 
 import {
-  Book,
-  Compass,
-  FileText,
-  Home,
-  Landmark,
-  LogOut,
-  PanelLeft,
-  Phone,
-} from 'lucide-react';
-import { usePathname } from 'next/navigation';
-import { cn } from '@/lib/utils';
-import Logo from '@/components/logo';
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
+import {
+  SidebarProvider,
+  Sidebar,
+  SidebarHeader,
+  SidebarContent,
+  SidebarFooter,
+  SidebarMenu,
+  SidebarMenuItem,
+  SidebarMenuButton,
+  SidebarInset,
+  useSidebar,
+} from '@/components/ui/sidebar';
+import { LogOut, Menu, UserCircle, Loader2 } from 'lucide-react'; 
+import { Sheet, SheetContent, SheetTrigger, SheetTitle } from '@/components/ui/sheet'; 
+import { ScrollArea } from '@/components/ui/scroll-area';
+import { LandingFooter } from '@/app/page'; 
 
-const NavLink = ({ href, children }: { href: string; children: React.ReactNode }) => {
-    const pathname = usePathname();
-    const isActive = pathname === href;
-    return (
-        <Link href={href} className={cn("flex items-center gap-3 rounded-lg px-3 py-2 text-muted-foreground transition-all hover:text-primary", isActive && "text-primary bg-muted")}>
-            {children}
-        </Link>
-    );
-}
-
-export default function DashboardLayout({ children }: { children: React.ReactNode }) {
-  const { isLoggedIn, logout, isAdmin } = useAuth();
+function UserNav() {
+  const { user, logoutUser } = useAuth(); 
   const router = useRouter();
-  const pathname = usePathname();
-
-  React.useEffect(() => {
-    // Redirect to login if not logged in OR if an admin tries to access the user dashboard
-    if (!isLoggedIn || isAdmin) {
-      router.push('/login');
-    }
-  }, [isLoggedIn, isAdmin, router]);
 
   const handleLogout = () => {
-    logout();
-    router.push('/');
+    logoutUser(); 
+    router.replace('/login');
+  };
+
+  if (!user) return null;
+
+  return (
+    <DropdownMenu>
+      <DropdownMenuTrigger asChild>
+        <Button variant="ghost" className="relative h-10 w-10 rounded-full">
+          <Avatar className="h-10 w-10 border-2 border-primary">
+            <AvatarFallback>
+              <UserCircle className="h-7 w-7" />
+            </AvatarFallback>
+          </Avatar>
+        </Button>
+      </DropdownMenuTrigger>
+      <DropdownMenuContent className="w-64" align="end" forceMount>
+        <DropdownMenuLabel className="font-normal">
+          <div className="flex flex-col space-y-1">
+            <p className="text-sm font-medium leading-none">{user.firstName} {user.lastName}</p>
+            <p className="text-xs leading-none text-muted-foreground">
+              {user.email}
+            </p>
+          </div>
+        </DropdownMenuLabel>
+        <DropdownMenuSeparator />
+        <DropdownMenuItem onClick={handleLogout} className="cursor-pointer">
+          <LogOut className="mr-2 h-4 w-4" />
+          <span>Log out</span>
+        </DropdownMenuItem>
+      </DropdownMenuContent>
+    </DropdownMenu>
+  );
+}
+
+function AppSidebar() {
+  const pathname = usePathname();
+  const { logoutUser } = useAuth(); 
+  const router = useRouter();
+  const { state } = useSidebar();
+
+  const handleLogout = () => {
+    logoutUser(); 
+    router.replace('/login');
+  };
+
+  return (
+    <Sidebar collapsible="icon" side="left" variant="sidebar">
+      <SidebarHeader>
+        <Logo collapsed={state === 'collapsed'} />
+      </SidebarHeader>
+      <SidebarContent className="p-2">
+        <SidebarMenu>
+          {dashboardNavItems.map((item) => (
+            <SidebarMenuItem key={item.href}>
+              <Link href={item.href}>
+                <SidebarMenuButton
+                  isActive={pathname === item.href || (item.href !== '/dashboard' && pathname.startsWith(item.href))}
+                  tooltip={{ children: item.title, className: "font-headline"}}
+                  className="font-body"
+                >
+                  <item.icon />
+                  <span>{item.title}</span>
+                </SidebarMenuButton>
+              </Link>
+            </SidebarMenuItem>
+          ))}
+        </SidebarMenu>
+      </SidebarContent>
+      <SidebarFooter className="p-2">
+        <SidebarMenu>
+          <SidebarMenuItem>
+             <SidebarMenuButton onClick={handleLogout} tooltip={{children: "Log Out", className: "font-headline"}} className="font-body">
+              <LogOut />
+              <span>Log Out</span>
+            </SidebarMenuButton>
+          </SidebarMenuItem>
+        </SidebarMenu>
+      </SidebarFooter>
+    </Sidebar>
+  );
+}
+
+
+function MobileSidebar() {
+  const pathname = usePathname();
+  const { logoutUser } = useAuth(); 
+  const router = useRouter();
+  const [open, setOpen] = React.useState(false);
+
+  const handleLogout = () => {
+    logoutUser(); 
+    router.replace('/login');
+    setOpen(false);
   };
   
-  const navLinks = (
-      <nav className="grid items-start px-2 text-sm font-medium lg:px-4">
-          <NavLink href="/dashboard"><Home className="h-4 w-4" />Dashboard</NavLink>
-          <NavLink href="/dashboard/book-shipment"><Book className="h-4 w-4" />Book Shipment</NavLink>
-          <NavLink href="/dashboard/track-shipment"><Compass className="h-4 w-4" />Track Shipment</NavLink>
-          <NavLink href="/dashboard/my-shipments"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-package-2"><path d="M3 9h18v10a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V9Z"/><path d="m3 9 2.45-4.9A2 2 0 0 1 7.24 3h9.52a2 2 0 0 1 1.8 1.1L21 9"/><path d="M12 3v6"/></svg>My Shipments</NavLink>
-          <NavLink href="/dashboard/my-invoices"><FileText className="h-4 w-4" />My Invoices</NavLink>
-          <NavLink href="/dashboard/my-payments"><Landmark className="h-4 w-4" />My Payments</NavLink>
-          <NavLink href="/customer-care"><Phone className="h-4 w-4" />Contact</NavLink>
-      </nav>
-  );
-
-  if (!isLoggedIn || isAdmin) {
-    return <div className="flex min-h-screen w-full items-center justify-center">Loading...</div>;
+  const handleLinkClick = () => {
+    setOpen(false);
   }
 
   return (
-    <div className="grid min-h-screen w-full md:grid-cols-[220px_1fr] lg:grid-cols-[280px_1fr]">
-      <div className="hidden border-r bg-muted/40 md:block">
-        <div className="flex h-full max-h-screen flex-col gap-2">
-          <div className="flex h-20 items-center border-b px-4 lg:h-20 lg:px-6">
-            <Link href="/" className="flex items-center gap-2 font-semibold">
-              <Logo />
-            </Link>
+    <Sheet open={open} onOpenChange={setOpen}>
+      <SheetTrigger asChild>
+        <Button variant="ghost" size="icon" className="md:hidden">
+          <Menu className="h-6 w-6" />
+          <span className="sr-only">Toggle Menu</span>
+        </Button>
+      </SheetTrigger>
+      <SheetContent side="left" className="p-0 w-72 bg-sidebar text-sidebar-foreground">
+        <ScrollArea className="h-full">
+          <div className="p-4">
+            <SheetTitle className="sr-only">{siteConfig.name} Menu</SheetTitle> 
+            <Logo />
           </div>
-          <div className="flex-1 overflow-auto py-2">{navLinks}</div>
-          <div className="mt-auto p-4">
-             <Button onClick={handleLogout} variant="ghost" className="w-full justify-start gap-2">
-               <LogOut className="h-4 w-4" />
-               Logout
-             </Button>
+          <nav className="mt-4 flex flex-col gap-2 px-4">
+            {dashboardNavItems.map((item) => (
+              <Link
+                key={item.href}
+                href={item.href}
+                onClick={handleLinkClick}
+                className={`flex items-center gap-3 rounded-lg px-3 py-2 transition-all hover:bg-sidebar-accent hover:text-sidebar-accent-foreground
+                  ${(pathname === item.href || (item.href !== '/dashboard' && pathname.startsWith(item.href))) ? 'bg-sidebar-primary text-sidebar-primary-foreground' : 'text-sidebar-foreground'}`}
+              >
+                <item.icon className="h-5 w-5" />
+                <span className="font-body text-base">{item.title}</span>
+              </Link>
+            ))}
+            <Button onClick={handleLogout} variant="ghost" className="w-full justify-start gap-3 px-3 py-2 text-base text-sidebar-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground">
+              <LogOut className="h-5 w-5" />
+              <span className="font-body">Log Out</span>
+            </Button>
+          </nav>
+        </ScrollArea>
+      </SheetContent>
+    </Sheet>
+  );
+}
+
+
+export default function DashboardLayout({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
+  const { isAuthenticated, isLoading, user, reloadUserFromStorage } = useAuth();
+  const router = useRouter();
+  const pathname = usePathname();
+
+  useEffect(() => {
+    reloadUserFromStorage();
+  }, []); 
+
+  useEffect(() => {
+    if (!isLoading && !isAuthenticated) {
+      router.replace('/login');
+    }
+  }, [isAuthenticated, isLoading, router]);
+
+
+  if (isLoading || !isAuthenticated) { 
+    return (
+      <div className="flex h-screen items-center justify-center bg-background text-foreground">
+        <Loader2 className="h-12 w-12 animate-spin text-primary" />
+        <span className="ml-3 text-lg">Loading Dashboard...</span>
+      </div>
+    );
+  }
+  
+  const currentPage = dashboardNavItems.find(item => item.href === pathname || (item.href !== '/dashboard' && pathname.startsWith(item.href)));
+  const pageTitle = currentPage ? currentPage.title : siteConfig.name;
+
+
+  return (
+    <SidebarProvider>
+      <div className="flex min-h-screen w-full">
+        <div className="print:hidden">
+          <AppSidebar />
+        </div>
+        <div className="flex flex-1 flex-col"> 
+          <div className="print:hidden">
+            <header className="sticky top-0 z-10 flex h-20 items-center justify-between gap-4 border-b bg-background/80 backdrop-blur-sm px-4 md:px-6">
+              <div className="flex items-center gap-2">
+                <MobileSidebar />
+                <h1 className="text-xl font-headline font-semibold hidden md:block">{pageTitle}</h1>
+              </div>
+              <UserNav />
+            </header>
+          </div>
+          <SidebarInset className="flex-1 print:m-0 print:p-0"> 
+            <main className="flex-1 p-4 md:p-6 lg:p-8 print:p-0 print:m-0"> 
+              {children}
+            </main>
+          </SidebarInset>
+          <div className="print:hidden">
+            <LandingFooter /> 
           </div>
         </div>
       </div>
-      <div className="flex flex-col">
-        <header className="flex h-20 items-center gap-4 border-b bg-muted/40 px-4 lg:h-20 lg:px-6">
-          <Sheet>
-            <SheetTrigger asChild>
-              <Button variant="outline" size="icon" className="shrink-0 md:hidden">
-                <PanelLeft className="h-5 w-5" />
-                <span className="sr-only">Toggle navigation menu</span>
-              </Button>
-            </SheetTrigger>
-            <SheetContent side="left" className="flex flex-col">
-                <div className="flex h-20 items-center border-b px-4">
-                 <Link href="/" className="flex items-center gap-2 font-semibold">
-                    <Logo />
-                </Link>
-                </div>
-                <div className="flex-1 overflow-auto py-2">{navLinks}</div>
-                <div className="mt-auto p-4 border-t">
-                    <Button onClick={handleLogout} variant="ghost" className="w-full justify-start gap-2">
-                    <LogOut className="h-4 w-4" />
-                    Logout
-                    </Button>
-                </div>
-            </SheetContent>
-          </Sheet>
-          <div className="w-full flex-1">
-          </div>
-        </header>
-        <main className="flex flex-1 flex-col gap-4 p-4 lg:gap-6 lg:p-6">
-            {children}
-        </main>
-      </div>
-    </div>
+    </SidebarProvider>
   );
 }
