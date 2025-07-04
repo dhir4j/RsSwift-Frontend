@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useState, useEffect } from 'react';
@@ -76,7 +77,17 @@ export function BookShipmentForm() {
 
   const form = useForm<ShipmentFormValues>({
     resolver: zodResolver(shipmentFormSchema),
-    defaultValues: { senderAddressCountry: 'India' },
+    defaultValues: {
+      shipmentTypeOption: "Domestic",
+      senderAddressCountry: 'India',
+      receiverAddressCountry: 'India',
+      serviceType: 'Standard',
+      packageWeightKg: 0.5,
+      packageWidthCm: 10,
+      packageHeightCm: 10,
+      packageLengthCm: 10,
+      pickupDate: new Date(),
+    },
   });
 
   const shipmentTypeOption = form.watch("shipmentTypeOption");
@@ -89,11 +100,11 @@ export function BookShipmentForm() {
 
   useEffect(() => {
     if (shipmentTypeOption === "Domestic") {
-      form.setValue("receiverAddressCountry", "India");
-      form.setValue("serviceType", "Standard");
+        form.setValue("receiverAddressCountry", "India");
+        form.setValue("serviceType", "Standard");
     } else if (shipmentTypeOption === "International") {
-      form.setValue("serviceType", "Express");
-      form.resetField("receiverAddressCountry");
+        form.setValue("serviceType", "Express");
+        form.setValue("receiverAddressCountry", ""); // Use setValue to clear
     }
   }, [shipmentTypeOption, form]);
 
@@ -241,7 +252,7 @@ export function BookShipmentForm() {
           <form onSubmit={form.handleSubmit(onSubmitToPayment)} className="space-y-8">
             <FormField control={form.control} name="shipmentTypeOption" render={({ field }) => (
               <FormItem className="space-y-3"><FormLabel className="font-semibold">Shipment Type</FormLabel><FormControl>
-                <RadioGroup onValueChange={field.onChange} defaultValue={field.value} className="flex gap-4">
+                <RadioGroup onValueChange={field.onChange} value={field.value} className="flex gap-4">
                   <FormItem className="flex items-center space-x-3 space-y-0"><FormControl><RadioGroupItem value="Domestic" /></FormControl><FormLabel className="font-normal flex items-center gap-2"><Home /> Domestic</FormLabel></FormItem>
                   <FormItem className="flex items-center space-x-3 space-y-0"><FormControl><RadioGroupItem value="International" /></FormControl><FormLabel className="font-normal flex items-center gap-2"><Globe /> International</FormLabel></FormItem>
                 </RadioGroup></FormControl><FormMessage /></FormItem>
@@ -271,14 +282,14 @@ export function BookShipmentForm() {
                     <FormField control={form.control} name="receiverAddressCity" render={({ field }) => ( <FormItem><FormLabel>City</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem> )} />
                     <FormField control={form.control} name="receiverAddressState" render={({ field }) => ( <FormItem><FormLabel>State/Province</FormLabel>
                       {shipmentTypeOption === "Domestic" ? (
-                        <Select onValueChange={field.onChange} defaultValue={field.value}><FormControl><SelectTrigger><SelectValue placeholder="Select State" /></SelectTrigger></FormControl><SelectContent>{indianStatesAndUTs.map(s => <SelectItem key={s} value={s}>{s}</SelectItem>)}</SelectContent></Select>
+                        <Select onValueChange={field.onChange} value={field.value}><FormControl><SelectTrigger><SelectValue placeholder="Select State" /></SelectTrigger></FormControl><SelectContent>{indianStatesAndUTs.map(s => <SelectItem key={s} value={s}>{s}</SelectItem>)}</SelectContent></Select>
                       ) : (<Input {...field} />)
                       }<FormMessage /></FormItem> )} />
                     <FormField control={form.control} name="receiverAddressPincode" render={({ field }) => ( <FormItem><FormLabel>Pincode/ZIP</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem> )} />
                   </div>
                    <FormField control={form.control} name="receiverAddressCountry" render={({ field }) => ( <FormItem><FormLabel>Country</FormLabel>
                       {shipmentTypeOption === "International" ? (
-                         <Select onValueChange={field.onChange} defaultValue={field.value}><FormControl><SelectTrigger><SelectValue placeholder="Select Country" /></SelectTrigger></FormControl><SelectContent>{internationalCountryList.map(c => <SelectItem key={c} value={c}>{c}</SelectItem>)}</SelectContent></Select>
+                         <Select onValueChange={field.onChange} value={field.value}><FormControl><SelectTrigger><SelectValue placeholder="Select Country" /></SelectTrigger></FormControl><SelectContent>{internationalCountryList.map(c => <SelectItem key={c} value={c}>{c}</SelectItem>)}</SelectContent></Select>
                       ) : (<Input {...field} disabled />)
                       }<FormMessage /></FormItem> )} />
                   <FormField control={form.control} name="receiverPhone" render={({ field }) => ( <FormItem><FormLabel>Phone</FormLabel><FormControl><Input type="tel" {...field} /></FormControl><FormMessage /></FormItem> )} />
