@@ -8,110 +8,10 @@ import Link from 'next/link';
 import { useAuth } from '@/hooks/use-auth';
 import { Button } from '@/components/ui/button';
 import { ArrowRight, Zap, ShieldCheck, Search, Headphones, Star } from 'lucide-react';
-import { cn } from '@/lib/utils';
 import { Loader2 } from 'lucide-react';
-import { ThemeToggle } from '@/components/theme-toggle';
 import { Card, CardContent, CardHeader } from '@/components/ui/card';
-
-export function LandingHeader() {
-  return (
-    <header className="py-4 px-6 md:px-10 flex justify-between items-center sticky top-0 z-50 bg-background/80 backdrop-blur-sm border-b">
-      <Link href="/" className="flex items-center gap-2 text-primary hover:text-primary/90">
-        <Image
-          src="/images/rsswift_logo.png"
-          alt="SwiftShip Logo"
-          width={150} 
-          height={40} 
-          className="object-contain"
-          priority 
-        />
-      </Link>
-      <nav className="hidden md:flex items-center gap-6 text-sm font-medium">
-          <Link href="#features" className="text-muted-foreground hover:text-foreground transition-colors">Features</Link>
-          <Link href="#how-it-works" className="text-muted-foreground hover:text-foreground transition-colors">How It Works</Link>
-          <Link href="#testimonials" className="text-muted-foreground hover:text-foreground transition-colors">Testimonials</Link>
-      </nav>
-      <div className="flex items-center gap-2">
-        <ThemeToggle />
-        <Button asChild variant="ghost" className="hidden sm:inline-flex">
-          <Link href="/login">Login</Link>
-        </Button>
-        <Button asChild>
-          <Link href="/signup">Sign Up Free</Link>
-        </Button>
-      </div>
-    </header>
-  );
-}
-
-export function LandingFooter() {
-    const [currentYear, setCurrentYear] = useState('');
-
-    useEffect(() => {
-        setCurrentYear(new Date().getFullYear().toString());
-    }, []);
-
-    return (
-        <footer className="bg-secondary text-secondary-foreground">
-            <div className="container mx-auto px-6 md:px-10 py-12">
-                <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
-                    <div className="lg:col-span-4">
-                        <Link href="/" className="flex items-center gap-2 mb-4">
-                            <Image
-                                src="/images/rsswift_logo.png"
-                                alt="SwiftShip Footer Logo"
-                                width={150}
-                                height={40}
-                                className="object-contain"
-                            />
-                        </Link>
-                        <p className="text-sm max-w-xs text-muted-foreground">
-                            Reliable shipping, redefined. Fast, secure, and transparent courier services designed for you.
-                        </p>
-                    </div>
-                    <div className="lg:col-span-8 grid grid-cols-2 md:grid-cols-4 gap-8">
-                        <div>
-                            <h3 className="font-semibold mb-4">Company</h3>
-                            <ul className="space-y-2 text-sm">
-                                <li><Link href="/about-us" className="text-muted-foreground hover:text-foreground">About Us</Link></li>
-                                <li><Link href="#" className="text-muted-foreground hover:text-foreground">Careers</Link></li>
-                                <li><Link href="#" className="text-muted-foreground hover:text-foreground">Press</Link></li>
-                            </ul>
-                        </div>
-                        <div>
-                            <h3 className="font-semibold mb-4">Services</h3>
-                            <ul className="space-y-2 text-sm">
-                                <li><Link href="/dashboard/book-shipment" className="text-muted-foreground hover:text-foreground">Domestic</Link></li>
-                                <li><Link href="/dashboard/book-shipment" className="text-muted-foreground hover:text-foreground">International</Link></li>
-                                <li><Link href="#" className="text-muted-foreground hover:text-foreground">Business Solutions</Link></li>
-                                <li><Link href="#" className="text-muted-foreground hover:text-foreground">Pricing</Link></li>
-                            </ul>
-                        </div>
-                        <div>
-                            <h3 className="font-semibold mb-4">Legal</h3>
-                            <ul className="space-y-2 text-sm">
-                                <li><Link href="/terms-of-service" className="text-muted-foreground hover:text-foreground">Terms of Service</Link></li>
-                                <li><Link href="/privacy-policy" className="text-muted-foreground hover:text-foreground">Privacy Policy</Link></li>
-                                <li><Link href="/shipping-delivery" className="text-muted-foreground hover:text-foreground">Shipping Policy</Link></li>
-                            </ul>
-                        </div>
-                        <div>
-                            <h3 className="font-semibold mb-4">Support</h3>
-                            <ul className="space-y-2 text-sm">
-                                <li><Link href="/customer-care" className="text-muted-foreground hover:text-foreground">Contact Us</Link></li>
-                                <li><Link href="#" className="text-muted-foreground hover:text-foreground">Help Center</Link></li>
-                                <li><Link href="/dashboard/track-shipment" className="text-muted-foreground hover:text-foreground">Track Package</Link></li>
-                            </ul>
-                        </div>
-                    </div>
-                </div>
-                <div className="mt-12 border-t pt-8 text-center text-sm text-muted-foreground">
-                    &copy; {currentYear} RS SWIFT COURIERS LLP. All rights reserved.
-                </div>
-            </div>
-        </footer>
-    );
-}
+import Header from '@/components/header';
+import Footer from '@/components/footer';
 
 export default function HomePage() {
   const { isAuthenticated, isLoading } = useAuth();
@@ -178,7 +78,7 @@ export default function HomePage() {
 
   return (
     <div className="flex flex-col flex-1 bg-background text-foreground">
-      <LandingHeader />
+      <Header />
       <main className="flex-1">
         {/* Hero Section */}
         <section className="relative overflow-hidden">
@@ -316,7 +216,7 @@ export default function HomePage() {
           </div>
         </section>
       </main>
-      <LandingFooter />
+      <Footer />
     </div>
   );
 }

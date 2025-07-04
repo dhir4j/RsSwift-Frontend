@@ -32,7 +32,8 @@ import {
 import { LogOut, Menu, UserCircle, Loader2 } from 'lucide-react'; 
 import { Sheet, SheetContent, SheetTrigger, SheetTitle } from '@/components/ui/sheet'; 
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { LandingFooter } from '@/app/page'; 
+import Footer from '@/components/footer';
+import { Separator } from '@/components/ui/separator';
 
 function UserNav() {
   const { user, logoutUser } = useAuth(); 
@@ -93,20 +94,24 @@ function AppSidebar() {
       </SidebarHeader>
       <SidebarContent className="p-2">
         <SidebarMenu>
-          {dashboardNavItems.map((item) => (
-            <SidebarMenuItem key={item.href}>
-              <Link href={item.href}>
-                <SidebarMenuButton
-                  isActive={pathname === item.href || (item.href !== '/dashboard' && pathname.startsWith(item.href))}
-                  tooltip={{ children: item.title, className: "font-headline"}}
-                  className="font-body"
-                >
-                  <item.icon />
-                  <span>{item.title}</span>
-                </SidebarMenuButton>
-              </Link>
-            </SidebarMenuItem>
-          ))}
+          {dashboardNavItems.map((item) =>
+            item.isSeparator ? (
+              <Separator key={item.title} className="my-2 bg-sidebar-border" />
+            ) : (
+              <SidebarMenuItem key={item.href}>
+                <Link href={item.href!}>
+                  <SidebarMenuButton
+                    isActive={pathname === item.href || (item.href !== '/dashboard' && pathname.startsWith(item.href!))}
+                    tooltip={{ children: item.title, className: "font-headline"}}
+                    className="font-body"
+                  >
+                    {item.icon && <item.icon />}
+                    <span>{item.title}</span>
+                  </SidebarMenuButton>
+                </Link>
+              </SidebarMenuItem>
+            )
+          )}
         </SidebarMenu>
       </SidebarContent>
       <SidebarFooter className="p-2">
@@ -154,19 +159,24 @@ function MobileSidebar() {
             <SheetTitle className="sr-only">{siteConfig.name} Menu</SheetTitle> 
             <Logo />
           </div>
-          <nav className="mt-4 flex flex-col gap-2 px-4">
-            {dashboardNavItems.map((item) => (
-              <Link
-                key={item.href}
-                href={item.href}
-                onClick={handleLinkClick}
-                className={`flex items-center gap-3 rounded-lg px-3 py-2 transition-all hover:bg-sidebar-accent hover:text-sidebar-accent-foreground
-                  ${(pathname === item.href || (item.href !== '/dashboard' && pathname.startsWith(item.href))) ? 'bg-sidebar-primary text-sidebar-primary-foreground' : 'text-sidebar-foreground'}`}
-              >
-                <item.icon className="h-5 w-5" />
-                <span className="font-body text-base">{item.title}</span>
-              </Link>
-            ))}
+          <nav className="mt-4 flex flex-col gap-1 px-2">
+            {dashboardNavItems.map((item) =>
+              item.isSeparator ? (
+                <Separator key={item.title} className="my-2 bg-sidebar-border" />
+              ) : (
+                <Link
+                  key={item.href}
+                  href={item.href!}
+                  onClick={handleLinkClick}
+                  className={`flex items-center gap-3 rounded-lg px-3 py-2 transition-all hover:bg-sidebar-accent hover:text-sidebar-accent-foreground
+                    ${(pathname === item.href || (item.href !== '/dashboard' && pathname.startsWith(item.href!))) ? 'bg-sidebar-primary text-sidebar-primary-foreground' : 'text-sidebar-foreground'}`}
+                >
+                  {item.icon && <item.icon className="h-5 w-5" />}
+                  <span className="font-body text-base">{item.title}</span>
+                </Link>
+              )
+            )}
+            <Separator className="my-2 bg-sidebar-border" />
             <Button onClick={handleLogout} variant="ghost" className="w-full justify-start gap-3 px-3 py-2 text-base text-sidebar-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground">
               <LogOut className="h-5 w-5" />
               <span className="font-body">Log Out</span>
@@ -209,7 +219,7 @@ export default function DashboardLayout({
     );
   }
   
-  const currentPage = dashboardNavItems.find(item => item.href === pathname || (item.href !== '/dashboard' && pathname.startsWith(item.href)));
+  const currentPage = dashboardNavItems.find(item => !item.isSeparator && (item.href === pathname || (item.href !== '/dashboard' && pathname.startsWith(item.href!))));
   const pageTitle = currentPage ? currentPage.title : siteConfig.name;
 
 
@@ -235,7 +245,7 @@ export default function DashboardLayout({
             </main>
           </SidebarInset>
           <div className="print:hidden">
-            <LandingFooter /> 
+            <Footer /> 
           </div>
         </div>
       </div>

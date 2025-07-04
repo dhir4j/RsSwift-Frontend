@@ -1,5 +1,6 @@
 import Link from "next/link"
-import { Package2, Twitter, Facebook, Instagram, Linkedin } from "lucide-react"
+import { Twitter, Facebook, Instagram, Linkedin } from "lucide-react"
+import Logo from "./logo"
 
 export default function Footer() {
   return (
@@ -8,8 +9,7 @@ export default function Footer() {
         <div className="grid gap-10 sm:grid-cols-2 md:grid-cols-4">
           <div className="flex flex-col items-start gap-4">
             <Link href="/" className="flex items-center gap-2" prefetch={false}>
-              <Package2 className="h-8 w-8 text-primary" />
-              <span className="text-xl font-bold font-headline">RS SWIFT COURIERS</span>
+              <Logo />
             </Link>
             <p className="text-sm">Your trusted partner for swift and secure deliveries across India.</p>
           </div>
@@ -40,8 +40,8 @@ export default function Footer() {
             <a href="mailto:RSSWIFTCOURIERS@GMAIL.COM" className="hover:text-primary hover:underline">
               RSSWIFTCOURIERS@GMAIL.COM
             </a>
-            <a href="tel:+919541195406" className="hover:text-primary hover:underline">
-              +91 9541195406
+            <a href="tel:+918544970282" className="hover:text-primary hover:underline">
+              +91 8544970282
             </a>
           </div>
           <div className="grid gap-2 text-sm">

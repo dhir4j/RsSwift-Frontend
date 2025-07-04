@@ -3,12 +3,13 @@ import type { LucideIcon } from 'lucide-react';
 
 export interface NavItem {
   title: string;
-  href: string;
-  icon: LucideIcon;
+  href?: string;
+  icon?: LucideIcon;
   disabled?: boolean;
   external?: boolean;
   label?: string;
   description?: string;
+  isSeparator?: boolean;
 }
 
 export const dashboardNavItems: NavItem[] = [
@@ -17,6 +18,10 @@ export const dashboardNavItems: NavItem[] = [
     href: '/dashboard',
     icon: Home,
     description: 'Overview of your activities.',
+  },
+  {
+    title: 'Separator1',
+    isSeparator: true,
   },
   {
     title: 'Book Shipment',
@@ -29,6 +34,10 @@ export const dashboardNavItems: NavItem[] = [
     href: '/dashboard/track-shipment',
     icon: Search,
     description: 'Track an existing shipment.',
+  },
+  {
+    title: 'Separator2',
+    isSeparator: true,
   },
   {
     title: 'My Shipments',
@@ -47,6 +56,10 @@ export const dashboardNavItems: NavItem[] = [
     href: '/dashboard/my-payments',
     icon: Wallet,
     description: 'Track your payment statuses.',
+  },
+  {
+    title: 'Separator3',
+    isSeparator: true,
   },
   {
     title: 'Contact',
