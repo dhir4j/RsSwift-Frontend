@@ -1,5 +1,4 @@
-
-import { Home, PackagePlus, Search, ListOrdered, MessageSquare, Receipt, Wallet, LayoutDashboard, Users } from 'lucide-react'; 
+import { Home, PackagePlus, Search, ListOrdered, Receipt, Wallet, LayoutDashboard, Users, MessageSquare } from 'lucide-react'; 
 import type { LucideIcon } from 'lucide-react';
 
 export interface NavItem {
@@ -49,6 +48,12 @@ export const dashboardNavItems: NavItem[] = [
     icon: Wallet,
     description: 'Track your payment statuses.',
   },
+  {
+    title: 'Contact',
+    href: '/dashboard/contact',
+    icon: MessageSquare,
+    description: 'Get support and contact information.',
+  },
 ];
 
 export const adminNavItems: NavItem[] = [
@@ -70,16 +75,16 @@ export const adminNavItems: NavItem[] = [
 ];
 
 export const siteConfig = {
-  name: "SwiftShip",
+  name: "RS SWIFT",
   description: "Courier and shipment management solutions by RS SWIFT COURIERS LLP.",
-  url: "https://swiftship.example.com", 
-  ogImage: "https://swiftship.example.com/og.jpg", 
+  url: "https://rsswift.example.com", 
+  ogImage: "https://rsswift.example.com/og.jpg", 
   mainNav: dashboardNavItems,
   company: {
     legalName: "RS SWIFT COURIERS LLP",
-    address: "Your Company Address, City, State, Pincode",
-    email: "support@swiftship.example.com",
-    phone: "+91 12345 67890",
+    address: "18AX MODEL TOWN EXTENSION LUDHIANA NEAR PUNJAB & SIND BANK",
+    email: "RSSWIFTCOURIERS@GMAIL.COM",
+    phone: "+91 8544970282",
     gstin: "YOUR_GSTIN_HERE",
     pan: "YOUR_PAN_HERE"
   },

@@ -7,26 +7,13 @@ import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { Eye, Search } from "lucide-react";
-
-interface User {
-  id: number;
-  first_name: string;
-  last_name: string;
-  email: string;
-  created_at: string;
-  shipment_count: number;
-}
-
-interface ApiResponse {
-    users: User[];
-    totalPages: number;
-    currentPage: number;
-    totalCount: number;
-}
+import { Eye, Search, Loader2 } from "lucide-react";
+import type { AdminUserListItem, AdminUsersResponse } from '@/lib/types';
+import apiClient from '@/lib/api-client';
+import { format, parseISO } from 'date-fns';
 
 export default function UsersTable() {
-  const [data, setData] = useState<ApiResponse | null>(null);
+  const [data, setData] = useState<AdminUsersResponse | null>(null);
   const [loading, setLoading] = useState(true);
   const [page, setPage] = useState(1);
   const [query, setQuery] = useState("");
@@ -36,19 +23,12 @@ export default function UsersTable() {
   const fetchUsers = async (pageNum = 1, searchQuery = "") => {
     try {
       setLoading(true);
-      const url = new URL("https://www.server.shedloadoverseas.com/api/admin/users");
-      url.searchParams.append("page", pageNum.toString());
-      url.searchParams.append("limit", "10");
-      if (searchQuery) {
-        url.searchParams.append("q", searchQuery);
-      }
-      
-      const response = await fetch(url.toString());
-      if (!response.ok) throw new Error("Failed to fetch users");
-      const result: ApiResponse = await response.json();
+      const params = new URLSearchParams({ page: pageNum.toString(), limit: '10' });
+      if (searchQuery) params.set('q', searchQuery);
+      const result: AdminUsersResponse = await apiClient(`/api/admin/users?${params.toString()}`);
       setData(result);
-    } catch (error) {
-      toast({ variant: "destructive", title: "Error", description: (error as Error).message });
+    } catch (error: any) {
+      toast({ variant: "destructive", title: "Error", description: error.message || "Failed to fetch users" });
     } finally {
       setLoading(false);
     }
@@ -57,7 +37,7 @@ export default function UsersTable() {
   useEffect(() => {
     const timer = setTimeout(() => {
         fetchUsers(page, query);
-    }, 500); // Debounce search
+    }, 300); // Debounce search
     return () => clearTimeout(timer);
   }, [page, query]);
   
@@ -68,13 +48,13 @@ export default function UsersTable() {
 
   return (
     <div className="space-y-4">
-        <div className="flex items-center gap-2">
-            <Search className="h-4 w-4 text-muted-foreground" />
+        <div className="relative max-w-sm">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
             <Input 
                 placeholder="Search by name or email..."
                 value={query}
                 onChange={handleSearchChange}
-                className="max-w-sm"
+                className="pl-10"
             />
         </div>
         <div className="rounded-md border">
@@ -85,14 +65,16 @@ export default function UsersTable() {
                 <TableHead>Name</TableHead>
                 <TableHead>Email</TableHead>
                 <TableHead>Joined</TableHead>
-                <TableHead>Shipments</TableHead>
+                <TableHead className="text-center">Shipments</TableHead>
                 <TableHead className="text-right">Actions</TableHead>
                 </TableRow>
             </TableHeader>
             <TableBody>
                 {loading ? (
                 <TableRow>
-                    <TableCell colSpan={6} className="text-center">Loading users...</TableCell>
+                    <TableCell colSpan={6} className="h-24 text-center">
+                        <Loader2 className="mx-auto h-6 w-6 animate-spin text-primary" />
+                    </TableCell>
                 </TableRow>
                 ) : data?.users?.length ? (
                 data.users.map((user) => (
@@ -100,8 +82,8 @@ export default function UsersTable() {
                     <TableCell>{user.id}</TableCell>
                     <TableCell className="font-medium">{user.first_name} {user.last_name}</TableCell>
                     <TableCell>{user.email}</TableCell>
-                    <TableCell>{new Date(user.created_at).toLocaleDateString()}</TableCell>
-                    <TableCell>{user.shipment_count}</TableCell>
+                    <TableCell>{format(parseISO(user.created_at), 'dd MMM, yyyy')}</TableCell>
+                    <TableCell className="text-center">{user.shipment_count}</TableCell>
                     <TableCell className="text-right">
                        <Button variant="ghost" size="icon" asChild>
                            <Link href={`/admin/dashboard/users/${user.id}`}>
@@ -114,7 +96,7 @@ export default function UsersTable() {
                 ))
                 ) : (
                 <TableRow>
-                    <TableCell colSpan={6} className="text-center">No users found.</TableCell>
+                    <TableCell colSpan={6} className="h-24 text-center">No users found.</TableCell>
                 </TableRow>
                 )}
             </TableBody>
@@ -129,7 +111,7 @@ export default function UsersTable() {
             >
             Previous
             </Button>
-            <span className="text-sm">
+            <span className="text-sm text-muted-foreground">
                 Page {data?.currentPage || 0} of {data?.totalPages || 0}
             </span>
             <Button

@@ -1,4 +1,3 @@
-
 "use client";
 
 import React, { useState, useEffect } from 'react';
@@ -15,10 +14,8 @@ import { ShipmentStatusIndicator } from './shipment-status-indicator';
 import type { Shipment } from '@/lib/types';
 import apiClient from '@/lib/api-client'; 
 import { useToast } from '@/hooks/use-toast';
-import { useAuth } from '@/hooks/use-auth';
 import { mapApiShipmentToFrontend } from '@/contexts/shipment-context';
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
-
 
 const trackSchema = z.object({
   shipmentId: z.string().min(3, "Shipment ID is required").regex(/^RS\d{6}$/, "Invalid Shipment ID format (e.g., RS123456)"),
@@ -31,7 +28,6 @@ export function TrackShipmentForm() {
   const [apiError, setApiError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const { toast } = useToast();
-  const { logoutUser } = useAuth();
   const searchParams = useSearchParams();
   const router = useRouter();
 
@@ -52,12 +48,8 @@ export function TrackShipmentForm() {
       const mappedShipment = mapApiShipmentToFrontend(shipmentFromApi);
       setTrackingResult(mappedShipment);
     } catch (error: any) {
-      const errorMessage = error?.data?.error || error.message || "Failed to track shipment.";
-       if (error.status === 404) {
-        setApiError(`Shipment with ID "${shipmentId}" not found.`);
-      } else {
-        setApiError(errorMessage);
-      }
+      const errorMessage = error?.data?.error || "Failed to track shipment.";
+      setApiError(errorMessage);
       toast({
         title: "Tracking Error",
         description: errorMessage,
@@ -79,12 +71,11 @@ export function TrackShipmentForm() {
 
   const onSubmit = (data: TrackFormValues) => {
     router.push(`/dashboard/track-shipment?id=${data.shipmentId}`, { scroll: false });
-    fetchShipmentDetails(data.shipmentId);
   };
 
   return (
     <div className="space-y-6">
-      <Card className="w-full max-w-2xl mx-auto">
+      <Card className="w-full max-w-2xl mx-auto shadow-xl">
         <CardHeader>
           <CardTitle className="font-headline text-2xl sm:text-3xl flex items-center gap-2">
             <Search className="h-8 w-8 text-primary" /> Track Your Shipment
@@ -115,6 +106,13 @@ export function TrackShipmentForm() {
           </Form>
         </CardContent>
       </Card>
+
+      {isLoading && (
+          <div className="flex justify-center items-center p-8">
+              <Loader2 className="h-8 w-8 animate-spin text-primary" />
+              <p className="ml-2 text-muted-foreground">Fetching shipment data...</p>
+          </div>
+      )}
 
       {apiError && !isLoading && (
         <Alert variant="destructive" className="max-w-2xl mx-auto">

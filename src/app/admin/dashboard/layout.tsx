@@ -17,11 +17,18 @@ import { cn } from '@/lib/utils';
 import { ThemeToggle } from '@/components/theme-toggle';
 import Logo from '@/components/logo';
 
-const NavLink = ({ href, children }: { href: string; children: React.ReactNode }) => {
+const NavLink = ({ href, children, closeSheet }: { href: string; children: React.ReactNode, closeSheet?: () => void }) => {
     const pathname = usePathname();
     const isActive = pathname === href;
     return (
-        <Link href={href} className={cn("flex items-center gap-3 rounded-lg px-3 py-2 text-muted-foreground transition-all hover:text-primary", isActive && "text-primary bg-muted")}>
+        <Link 
+            href={href} 
+            onClick={closeSheet}
+            className={cn(
+                "flex items-center gap-3 rounded-lg px-3 py-2 text-muted-foreground transition-all hover:text-primary", 
+                isActive && "text-primary bg-muted"
+            )}
+        >
             {children}
         </Link>
     );
@@ -30,6 +37,7 @@ const NavLink = ({ href, children }: { href: string; children: React.ReactNode }
 export default function AdminDashboardLayout({ children }: { children: React.ReactNode }) {
   const { user, logoutUser, isLoading } = useAuth();
   const router = useRouter();
+  const [isSheetOpen, setIsSheetOpen] = React.useState(false);
   const isAdmin = user?.isAdmin;
 
   React.useEffect(() => {
@@ -42,20 +50,22 @@ export default function AdminDashboardLayout({ children }: { children: React.Rea
     logoutUser();
     router.push('/admin/login');
   };
+
+  const closeSheet = () => setIsSheetOpen(false);
   
   const navLinks = (
       <nav className="grid items-start px-2 text-sm font-medium lg:px-4">
-          <NavLink href="/admin/dashboard"><Home className="h-4 w-4" />Dashboard</NavLink>
-          <NavLink href="/admin/dashboard/payments"><CreditCard className="h-4 w-4" />Payments</NavLink>
-          <NavLink href="/admin/dashboard/users"><Users className="h-4 w-4" />Users</NavLink>
+          <NavLink href="/admin/dashboard" closeSheet={closeSheet}><Home className="h-4 w-4" />Dashboard</NavLink>
+          <NavLink href="/admin/dashboard/payments" closeSheet={closeSheet}><CreditCard className="h-4 w-4" />Payments</NavLink>
+          <NavLink href="/admin/dashboard/users" closeSheet={closeSheet}><Users className="h-4 w-4" />Users</NavLink>
       </nav>
   );
 
   if (isLoading || !isAdmin) {
     return (
-        <div className="flex min-h-screen w-full items-center justify-center">
-            <Loader2 className="h-8 w-8 animate-spin" />
-            <span className="ml-2">Loading Admin Panel...</span>
+        <div className="flex min-h-screen w-full items-center justify-center bg-background">
+            <Loader2 className="h-8 w-8 animate-spin text-primary" />
+            <span className="ml-3 text-lg text-muted-foreground">Loading Admin Panel...</span>
         </div>
     );
   }
@@ -81,7 +91,7 @@ export default function AdminDashboardLayout({ children }: { children: React.Rea
       </div>
       <div className="flex flex-col">
         <header className="flex h-20 items-center gap-4 border-b bg-muted/40 px-4 lg:h-20 lg:px-6">
-          <Sheet>
+          <Sheet open={isSheetOpen} onOpenChange={setIsSheetOpen}>
             <SheetTrigger asChild>
               <Button variant="outline" size="icon" className="shrink-0 md:hidden">
                 <PanelLeft className="h-5 w-5" />

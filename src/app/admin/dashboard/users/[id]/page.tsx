@@ -4,61 +4,48 @@ import { useEffect, useState } from 'react';
 import { Badge } from "@/components/ui/badge"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
-import { Separator } from '@/components/ui/separator';
 import { Skeleton } from '@/components/ui/skeleton';
+import apiClient from '@/lib/api-client';
+import { useToast } from '@/hooks/use-toast';
+import type { AdminUserDetailsResponse, UserShipmentSummary, UserPayment, TrackingStage } from '@/lib/types';
+import { format, parseISO } from 'date-fns';
+import { cn } from '@/lib/utils';
+import { IndianRupee } from 'lucide-react';
 
-interface UserProfile {
-    id: number;
-    first_name: string;
-    last_name: string;
-    email: string;
-    created_at: string;
-}
-interface Shipment {
-    id: number;
-    shipment_id_str: string;
-    status: string;
-    total_with_tax_18_percent: number;
-    booking_date: string;
-}
-interface Payment {
-    id: number;
-    shipment_id_str: string;
-    amount: number;
-    status: string;
-    created_at: string;
-}
-interface UserDetails {
-    user: UserProfile;
-    shipments: Shipment[];
-    payments: Payment[];
-}
+const statusColors: Record<string, string> = {
+  "Pending Payment": "bg-gray-100 text-gray-700 border-gray-300",
+  Booked: "bg-blue-100 text-blue-700 border-blue-300",
+  "In Transit": "bg-yellow-100 text-yellow-700 border-yellow-300",
+  "Out for Delivery": "bg-orange-100 text-orange-700 border-orange-300",
+  Delivered: "bg-green-100 text-green-700 border-green-300",
+  Cancelled: "bg-red-100 text-red-700 border-red-300",
+};
 
 export default function UserDetailPage({ params }: { params: { id: string } }) {
-    const [details, setDetails] = useState<UserDetails | null>(null);
+    const [details, setDetails] = useState<AdminUserDetailsResponse | null>(null);
     const [loading, setLoading] = useState(true);
+    const { toast } = useToast();
 
     useEffect(() => {
         async function fetchDetails() {
+            if (!params.id) return;
             try {
                 setLoading(true);
-                const response = await fetch(`https://www.server.shedloadoverseas.com/api/admin/users/${params.id}`);
-                if (!response.ok) {
-                    throw new Error('Failed to fetch user details');
-                }
-                const data: UserDetails = await response.json();
+                const data: AdminUserDetailsResponse = await apiClient(`/api/admin/users/${params.id}`);
                 setDetails(data);
-            } catch (error) {
+            } catch (error: any) {
+                toast({
+                    variant: "destructive",
+                    title: "Failed to fetch user details",
+                    description: error.message || "An unknown error occurred",
+                });
                 console.error(error);
             } finally {
                 setLoading(false);
             }
         }
-
-        if (params.id) {
-            fetchDetails();
-        }
-    }, [params.id]);
+        fetchDetails();
+    }, [params.id, toast]);
 
     if (loading) {
         return (
@@ -93,10 +80,13 @@ export default function UserDetailPage({ params }: { params: { id: string } }) {
                         <TableBody>
                             {details.shipments.length > 0 ? details.shipments.map(shipment => (
                                 <TableRow key={shipment.id}>
-                                    <TableCell>{shipment.shipment_id_str}</TableCell>
+                                    <TableCell className="font-medium text-primary">{shipment.shipment_id_str}</TableCell>
                                     <TableCell>{new Date(shipment.booking_date).toLocaleDateString()}</TableCell>
-                                    <TableCell><Badge>{shipment.status}</Badge></TableCell>
-                                    <TableCell className="text-right">₹{shipment.total_with_tax_18_percent.toLocaleString()}</TableCell>
+                                    <TableCell><Badge variant="outline" className={cn(statusColors[shipment.status])}>{shipment.status}</Badge></TableCell>
+                                    <TableCell className="text-right flex items-center justify-end">
+                                      <IndianRupee className="h-4 w-4 mr-1 text-muted-foreground" />
+                                      {shipment.total_with_tax_18_percent.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                                    </TableCell>
                                 </TableRow>
                             )) : <TableRow><TableCell colSpan={4} className="text-center">No shipments found.</TableCell></TableRow>}
                         </TableBody>
@@ -114,10 +104,13 @@ export default function UserDetailPage({ params }: { params: { id: string } }) {
                         <TableBody>
                             {details.payments.length > 0 ? details.payments.map(payment => (
                                 <TableRow key={payment.id}>
-                                    <TableCell>{payment.shipment_id_str}</TableCell>
+                                    <TableCell className="font-medium text-primary">{payment.shipment_id_str}</TableCell>
                                     <TableCell>{new Date(payment.created_at).toLocaleDateString()}</TableCell>
                                     <TableCell><Badge variant={payment.status === 'Approved' ? 'default' : payment.status === 'Rejected' ? 'destructive' : 'outline'}>{payment.status}</Badge></TableCell>
-                                    <TableCell className="text-right">₹{payment.amount.toLocaleString()}</TableCell>
+                                    <TableCell className="text-right flex items-center justify-end">
+                                      <IndianRupee className="h-4 w-4 mr-1 text-muted-foreground" />
+                                      {payment.amount.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                                    </TableCell>
                                 </TableRow>
                             )) : <TableRow><TableCell colSpan={4} className="text-center">No payments found.</TableCell></TableRow>}
                         </TableBody>

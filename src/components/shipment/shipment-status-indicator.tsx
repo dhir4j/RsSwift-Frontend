@@ -1,10 +1,9 @@
-
 "use client";
 
 import * as React from 'react';
 import type { TrackingStep, TrackingStage } from '@/lib/types';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { CheckCircle, Circle, Loader2, Truck, PackageCheck, PackageSearch, AlertTriangle } from 'lucide-react';
+import { CheckCircle, Circle, Loader2, Truck, PackageCheck, PackageSearch, AlertTriangle, Wallet } from 'lucide-react';
 import { Separator } from '@/components/ui/separator';
 import { Progress } from '@/components/ui/progress';
 import { format, parseISO } from 'date-fns';
@@ -16,12 +15,12 @@ interface ShipmentStatusIndicatorProps {
 }
 
 const stageIcons: Record<string, React.ElementType> = {
+  "Pending Payment": Wallet,
   Booked: PackageSearch,
   "In Transit": Truck,
   "Out for Delivery": PackageCheck,
   Delivered: CheckCircle,
   Cancelled: AlertTriangle,
-  "Pending Payment": Loader2,
 };
 
 const stageOrder: TrackingStage[] = ["Booked", "In Transit", "Out for Delivery", "Delivered"];
@@ -32,7 +31,7 @@ export function ShipmentStatusIndicator({ shipmentId, currentStatus, trackingHis
   const progressValue = currentStatus === "Delivered" ? 100 : (currentStageIndex + 1) / stageOrder.length * 100;
 
   return (
-    <Card className="w-full">
+    <Card className="shadow-lg w-full">
       <CardHeader>
         <CardTitle className="font-headline text-xl sm:text-2xl text-primary">
           Tracking ID: {shipmentId}
@@ -42,9 +41,9 @@ export function ShipmentStatusIndicator({ shipmentId, currentStatus, trackingHis
         <div>
           <div className="flex justify-between mb-2">
             {stageOrder.map((stage, index) => (
-              <div key={stage} className={`flex flex-col items-center text-xs font-medium ${index <= currentStageIndex ? 'text-primary' : 'text-muted-foreground'}`}>
+              <div key={stage} className={`flex flex-col items-center text-xs font-medium w-20 text-center ${index <= currentStageIndex ? 'text-primary' : 'text-muted-foreground'}`}>
                 {React.createElement(stageIcons[stage] || Circle, { className: `h-6 w-6 mb-1` })}
-                <span className="text-center">{stage}</span>
+                <span>{stage}</span>
               </div>
             ))}
           </div>
@@ -74,13 +73,13 @@ export function ShipmentStatusIndicator({ shipmentId, currentStatus, trackingHis
                   <div className="flex flex-col items-center">
                     <CheckCircle className="h-5 w-5 text-green-500" />
                     {index < trackingHistory.length - 1 && (
-                      <div className="flex-grow w-px bg-border" />
+                      <div className="flex-grow w-px bg-border my-1" />
                     )}
                   </div>
                   <div className="pb-4">
                     <p className="font-semibold">{step.activity}</p>
                     <p className="text-sm text-muted-foreground">{format(parseISO(step.date), 'dd MMM yyyy, HH:mm')}</p>
-                    <p className="text-sm text-muted-foreground">{step.location}</p>
+                    {step.location && <p className="text-sm text-muted-foreground">Location: {step.location}</p>}
                   </div>
                 </li>
               ))}

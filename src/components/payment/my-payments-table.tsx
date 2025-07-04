@@ -1,4 +1,3 @@
-
 "use client";
 
 import React, { useState, useEffect, useCallback } from 'react';
@@ -15,9 +14,9 @@ import { useToast } from '@/hooks/use-toast';
 import { useRouter } from 'next/navigation';
 
 const statusColors: Record<PaymentStatus, string> = {
-  Pending: "bg-yellow-100 text-yellow-700 border-yellow-300",
-  Approved: "bg-green-100 text-green-700 border-green-300",
-  Rejected: "bg-red-100 text-red-700 border-red-300",
+  Pending: "bg-yellow-100 text-yellow-700 border-yellow-300 dark:bg-yellow-900/50 dark:text-yellow-300 dark:border-yellow-700",
+  Approved: "bg-green-100 text-green-700 border-green-300 dark:bg-green-900/50 dark:text-green-300 dark:border-green-700",
+  Rejected: "bg-red-100 text-red-700 border-red-300 dark:bg-red-900/50 dark:text-red-300 dark:border-red-700",
 };
 
 export function MyPaymentsTable() {
@@ -30,22 +29,12 @@ export function MyPaymentsTable() {
   const handleApiError = useCallback((error: any, operation: string) => {
     console.error(`API error during ${operation}:`, error);
     const errorMessage = error?.data?.error || error.message || "An unexpected error occurred.";
-    if (error.status === 422) {
-        toast({
-            title: "Authentication Issue",
-            description: "Your session may have expired. Please log in again.",
-            variant: "destructive",
-        });
-        logoutUser();
-        router.replace('/login');
-    } else {
-        toast({
-          title: `Error ${operation}`,
-          description: errorMessage,
-          variant: "destructive",
-        });
-    }
-  }, [toast, logoutUser, router]);
+    toast({
+        title: `Error ${operation}`,
+        description: errorMessage,
+        variant: "destructive",
+    });
+  }, [toast]);
 
   const fetchUserPayments = useCallback(async () => {
     if (!isAuthenticated || !user?.email) {
