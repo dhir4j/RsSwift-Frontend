@@ -1,3 +1,4 @@
+
 "use client"
 
 import { Card, CardContent } from "@/components/ui/card"
@@ -13,7 +14,7 @@ import { Star } from "lucide-react"
 
 const testimonials = [
   {
-    quote: "RS SWIFT COURIERS has been a game-changer for our business. Their express delivery is incredibly fast and reliable. We can always count on them.",
+    quote: "RS Swift Couriers LLP has been a game-changer for our business. Their express delivery is incredibly fast and reliable. We can always count on them.",
     author: "Aryan Babar",
     company: "E-commerce Seller",
     avatar: "AB",
@@ -27,7 +28,7 @@ const testimonials = [
     stars: 5,
   },
   {
-    quote: "As a frequent shipper, I appreciate the professionalism and efficiency of RS SWIFT COURIERS. Their nationwide coverage is a huge plus.",
+    quote: "As a frequent shipper, I appreciate the professionalism and efficiency of RS Swift Couriers LLP. Their nationwide coverage is a huge plus.",
     author: "Amit Singh",
     company: "Tech Startup",
     avatar: "AS",
@@ -74,7 +75,7 @@ export default function Testimonials() {
                       <AvatarFallback>{testimonial.avatar}</AvatarFallback>
                     </Avatar>
                     <div>
-                      <p className="font-semibold">{testimonial.author}</p>
+                      <p className="font-semibold text-foreground">{testimonial.author}</p>
                       <p className="text-sm text-muted-foreground">{testimonial.company}</p>
                     </div>
                   </div>

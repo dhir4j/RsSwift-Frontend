@@ -80,7 +80,7 @@ export function SignupForm() {
       <CardHeader className="items-center text-center">
         <CompanyLogo className="mb-4" />
         <CardTitle className="font-headline text-2xl sm:text-3xl">Create Account</CardTitle>
-        <CardDescription>Join SwiftShip today.</CardDescription>
+        <CardDescription>Join RS Swift Couriers LLP today.</CardDescription>
       </CardHeader>
       <CardContent>
         <Form {...form}>

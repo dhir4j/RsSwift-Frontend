@@ -60,7 +60,7 @@ export default function HomePage() {
           name: "Rohan Kapoor",
           role: "E-commerce Store Owner",
           avatar: "RK",
-          text: "Switching to SwiftShip was the best decision for my business. Their reliability and speed have significantly improved my customer satisfaction."
+          text: "Switching to RS Swift Couriers LLP was the best decision for my business. Their reliability and speed have significantly improved my customer satisfaction."
       },
       {
           name: "Anjali Sharma",
@@ -111,7 +111,7 @@ export default function HomePage() {
         <section id="features" className="py-20 md:py-28 bg-background">
              <div className="container mx-auto px-6 md:px-10">
                 <div className="text-center max-w-2xl mx-auto mb-16">
-                    <h2 className="text-3xl sm:text-4xl font-bold font-headline tracking-tight animate-enter">Why Choose SwiftShip?</h2>
+                    <h2 className="text-3xl sm:text-4xl font-bold font-headline tracking-tight animate-enter">Why Choose RS Swift Couriers LLP?</h2>
                     <p className="mt-4 text-lg text-muted-foreground animate-enter" style={{ animationDelay: '150ms' }}>
                         We provide a seamless shipping experience backed by powerful features and a commitment to reliability.
                     </p>
@@ -173,7 +173,7 @@ export default function HomePage() {
             <div className="container mx-auto px-6 md:px-10">
                  <div className="text-center max-w-2xl mx-auto mb-16">
                     <h2 className="text-3xl sm:text-4xl font-bold font-headline tracking-tight animate-enter">Trusted by Businesses and Individuals</h2>
-                    <p className="mt-4 text-lg text-muted-foreground animate-enter" style={{ animationDelay: '150ms' }}>See what our satisfied customers have to say about their experience with SwiftShip.</p>
+                    <p className="mt-4 text-lg text-muted-foreground animate-enter" style={{ animationDelay: '150ms' }}>See what our satisfied customers have to say about their experience with RS Swift Couriers LLP.</p>
                 </div>
                 <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
                      {testimonials.map((testimonial, index) => (
@@ -206,7 +206,7 @@ export default function HomePage() {
               Ready to Ship with Confidence?
             </h2>
             <p className="text-lg text-muted-foreground mb-8 animate-enter" style={{ animationDelay: '150ms' }}>
-              Create an account in minutes and join thousands of satisfied customers who trust SwiftShip for their critical deliveries.
+              Create an account in minutes and join thousands of satisfied customers who trust RS Swift Couriers LLP for their critical deliveries.
             </p>
             <Button size="lg" asChild className="font-semibold text-lg py-3 px-8 shadow-xl hover:shadow-2xl transition-shadow animate-enter" style={{ animationDelay: '300ms' }}>
               <Link href="/signup">

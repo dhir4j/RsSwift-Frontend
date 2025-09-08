@@ -1,3 +1,4 @@
+
 import Link from "next/link"
 import { Twitter, Facebook, Instagram, Linkedin } from "lucide-react"
 import Logo from "./logo"
@@ -30,8 +31,8 @@ export default function Footer() {
             <Link href="/refund-cancellation" className="hover:text-primary hover:underline" prefetch={false}>
               Refund & Cancellation
             </Link>
-            <Link href="/customer-care" className="hover:text-primary hover:underline" prefetch={false}>
-              Customer Care
+            <Link href="/contact" className="hover:text-primary hover:underline" prefetch={false}>
+              Contact Us
             </Link>
           </div>
           <div className="grid gap-2 text-sm">
@@ -67,7 +68,7 @@ export default function Footer() {
           </div>
         </div>
         <div className="mt-8 border-t pt-6 text-center text-sm text-muted-foreground">
-          © {new Date().getFullYear()} RS SWIFT COURIERS. All rights reserved.
+          © {new Date().getFullYear()} RS Swift Couriers LLP. All rights reserved.
         </div>
       </div>
     </footer>

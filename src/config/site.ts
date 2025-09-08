@@ -1,3 +1,4 @@
+
 import { Home, PackagePlus, Search, ListOrdered, Receipt, Wallet, LayoutDashboard, Users, MessageSquare } from 'lucide-react'; 
 import type { LucideIcon } from 'lucide-react';
 
@@ -76,8 +77,8 @@ export const adminNavItems: NavItem[] = [
 ];
 
 export const siteConfig = {
-  name: "RS SWIFT",
-  description: "Courier and shipment management solutions by RS SWIFT COURIERS LLP.",
+  name: "RS Swift Couriers LLP",
+  description: "Courier and shipment management solutions by RS Swift Couriers LLP.",
   url: "https://rsswift.example.com", 
   ogImage: "https://rsswift.example.com/og.jpg", 
   mainNav: dashboardNavItems,

@@ -77,7 +77,7 @@ export function AdminLoginForm() {
   return (
     <Card className="w-full max-w-md shadow-xl bg-card text-card-foreground border-primary/50">
       <CardHeader className="items-center text-center">
-        <Image src="/images/rsswift_logo.png" alt="SwiftShip Admin" width={180} height={45} className="object-contain mb-4" />
+        <Image src="/images/rsswift_logo.png" alt="RS Swift Couriers LLP Admin" width={180} height={45} className="object-contain mb-4" />
         <CardTitle className="font-headline text-2xl sm:text-3xl text-primary">Admin Panel</CardTitle>
         <CardDescription className="text-muted-foreground">Access the control center.</CardDescription>
       </CardHeader>

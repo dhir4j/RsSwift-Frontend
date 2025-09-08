@@ -1,3 +1,4 @@
+
 import Header from '@/components/header';
 import Footer from '@/components/footer';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -36,7 +37,7 @@ export default function AboutUs() {
                 Connecting India, One Parcel at a Time.
               </h1>
               <p className="text-lg text-muted-foreground md:text-xl animate-enter" style={{animationDelay: '200ms'}}>
-                RS SWIFT COURIERS is redefining the logistics landscape with a commitment to speed, security, and superior customer service.
+                RS Swift Couriers LLP is redefining the logistics landscape with a commitment to speed, security, and superior customer service.
               </p>
             </div>
           </div>
@@ -55,7 +56,7 @@ export default function AboutUs() {
                   Our journey began with a simple mission: to bridge distances by delivering packages with utmost care and efficiency. We saw the need for a courier service that wasn't just about transport, but about trust and transparency.
                 </p>
                 <p className="text-muted-foreground md:text-lg/relaxed">
-                  Today, RS SWIFT COURIERS leverages cutting-edge technology and a robust network to ensure that your parcels reach their destination on time, every time. Our real-time tracking system provides complete visibility, giving you peace of mind from pickup to delivery.
+                  Today, RS Swift Couriers LLP leverages cutting-edge technology and a robust network to ensure that your parcels reach their destination on time, every time. Our real-time tracking system provides complete visibility, giving you peace of mind from pickup to delivery.
                 </p>
               </div>
               <div className="grid grid-cols-2 gap-4 animate-enter" style={{animationDelay: '400ms'}}>
@@ -113,7 +114,7 @@ export default function AboutUs() {
                         Ready to Ship with a Partner You Can Trust?
                     </h2>
                     <p className="text-muted-foreground md:text-lg">
-                        Experience the RS SWIFT COURIERS difference today. Get started with your first shipment in minutes.
+                        Experience the RS Swift Couriers LLP difference today. Get started with your first shipment in minutes.
                     </p>
                     <Button size="lg" asChild className="mt-4">
                         <Link href="/register">
