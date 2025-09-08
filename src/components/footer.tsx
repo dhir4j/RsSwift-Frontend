@@ -37,6 +37,7 @@ export default function Footer() {
           </div>
           <div className="grid gap-2 text-sm">
             <h3 className="font-bold text-base font-headline">Contact Us</h3>
+            <p className="font-semibold">RS Swift Couriers LLP</p>
             <p>18AX MODEL TOWN EXTENSION LUDHIANA NEAR PUNJAB & SIND BANK</p>
             <a href="mailto:RSSWIFTCOURIERS@GMAIL.COM" className="hover:text-primary hover:underline">
               RSSWIFTCOURIERS@GMAIL.COM
