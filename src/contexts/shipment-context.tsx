@@ -120,9 +120,15 @@ export const ShipmentProvider = ({ children }: { children: ReactNode }) => {
   ): Promise<CreateShipmentResponse> => {
     setIsLoading(true);
     try {
+      // Capitalize service_type before sending
+      const payload = {
+        ...shipmentData,
+        service_type: shipmentData.service_type.charAt(0).toUpperCase() + shipmentData.service_type.slice(1)
+      };
+
       const response = await apiClient<CreateShipmentResponse>('/api/shipments', {
         method: 'POST',
-        body: JSON.stringify(shipmentData), 
+        body: JSON.stringify(payload), 
       });
       await fetchUserShipments(); 
       return response; 

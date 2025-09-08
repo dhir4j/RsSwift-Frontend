@@ -2,7 +2,7 @@
 "use client";
 
 import { useState, useEffect } from 'react';
-import { useForm, Controller } from 'react-hook-form';
+import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
 import Image from 'next/image';
@@ -55,7 +55,7 @@ const shipmentFormSchema = z.object({
   packageLengthCm: z.coerce.number().min(1, "Length must be at least 1cm").max(200, "Max 200cm"),
   pickupDate: z.date({ required_error: "Pickup date is required." }),
 
-  serviceType: z.enum(["Standard", "Express"], { required_error: "Service type is required." }),
+  serviceType: z.enum(["express", "air", "surface"], { required_error: "Service type is required." }),
 });
 
 type ShipmentFormValues = z.infer<typeof shipmentFormSchema>;
@@ -64,25 +64,14 @@ interface PaymentStepData {
   show: boolean;
   amount: string;
   numericAmount: number | null;
+  priceResponse: PriceApiResponse | null;
   formData: ShipmentFormValues | null;
+  shipmentType: ShipmentTypeOption | null;
 }
-
-const parsePriceStringToNumber = (priceStr: string | number | undefined | null): number | null => {
-  if (typeof priceStr === 'number') {
-    return priceStr;
-  }
-  if (typeof priceStr === 'string') {
-    const numericString = priceStr.replace(/[^0-9.-]+/g,"");
-    const parsed = parseFloat(numericString);
-    return isNaN(parsed) ? null : parsed;
-  }
-  return null;
-};
-
 
 export function BookShipmentForm() {
   const [submissionStatus, setSubmissionStatus] = useState<Partial<CreateShipmentResponse> | null>(null);
-  const [paymentStep, setPaymentStep] = useState<PaymentStepData>({ show: false, amount: "₹0.00", numericAmount: 0, formData: null });
+  const [paymentStep, setPaymentStep] = useState<PaymentStepData>({ show: false, amount: "₹0.00", numericAmount: 0, priceResponse: null, formData: null, shipmentType: null });
   const { addShipment, isLoading: isShipmentContextLoading } = useShipments();
   const [isPricingLoading, setIsLoadingPricing] = useState(false);
   const [utr, setUtr] = useState<string>('');
@@ -105,60 +94,77 @@ export function BookShipmentForm() {
       packageWeightKg: 0.5,
       packageWidthCm: 10, packageHeightCm: 10, packageLengthCm: 10,
       pickupDate: new Date(),
-      serviceType: "Standard",
+      serviceType: "express",
     },
   });
 
   const shipmentTypeOption = form.watch("shipmentTypeOption");
+  const packageWeight = form.watch("packageWeightKg");
 
   useEffect(() => {
     if (user && user.firstName && user.lastName && !form.getValues('senderName')) {
       form.setValue('senderName', `${user.firstName} ${user.lastName}`);
     }
   }, [user, form]);
-
+  
   useEffect(() => {
     if (shipmentTypeOption === "Domestic") {
-        form.setValue("receiverAddressCountry", "India");
-        form.setValue("serviceType", "Standard");
+      form.setValue("receiverAddressCountry", "India");
+      if (packageWeight > 5) {
+        form.setValue("serviceType", "surface");
+      } else {
+        form.setValue("serviceType", "express");
+      }
     } else if (shipmentTypeOption === "International") {
-        form.setValue("serviceType", "Express");
-        form.setValue("receiverAddressCountry", "");
+      form.setValue("serviceType", "express");
+      form.setValue("receiverAddressCountry", "");
     }
-  }, [shipmentTypeOption, form]);
+  }, [shipmentTypeOption, packageWeight, form]);
+
 
   const onSubmitToPayment = async (data: ShipmentFormValues) => {
     setIsLoadingPricing(true);
     let numericTotalPrice: number | null = null;
+    let priceResponseData: PriceApiResponse;
+
     try {
       if (data.shipmentTypeOption === "Domestic") {
         const payload: DomesticPriceRequest = {
           state: data.receiverAddressState,
-          mode: data.serviceType.toLowerCase() as "express" | "standard",
+          city: data.receiverAddressCity,
+          mode: data.serviceType as "express" | "air" | "surface",
           weight: data.packageWeightKg,
         };
-        const response = await apiClient<DomesticPriceResponse>('/api/domestic/price', {
+        priceResponseData = await apiClient<DomesticPriceResponse>('/api/domestic/price', {
           method: 'POST', body: JSON.stringify(payload)
         });
-        numericTotalPrice = response.total_price;
-      } else {
+        numericTotalPrice = priceResponseData.total_price;
+
+      } else { // International
         const payload: InternationalPriceRequest = {
           country: data.receiverAddressCountry,
           weight: data.packageWeightKg,
         };
-        const response = await apiClient<InternationalPriceResponse>('/api/international/price', {
+        priceResponseData = await apiClient<InternationalPriceResponse>('/api/international/price', {
           method: 'POST', body: JSON.stringify(payload)
         });
-        numericTotalPrice = response.total_price;
+        numericTotalPrice = priceResponseData.total_price;
       }
 
       if (numericTotalPrice === null || numericTotalPrice <= 0) {
         throw new Error("Could not determine a valid price.");
       }
-      setPaymentStep({ show: true, amount: `₹${numericTotalPrice.toFixed(2)}`, numericAmount: numericTotalPrice, formData: data });
+      setPaymentStep({ 
+          show: true, 
+          amount: `₹${numericTotalPrice.toFixed(2)}`, 
+          numericAmount: numericTotalPrice, 
+          priceResponse: priceResponseData,
+          formData: data,
+          shipmentType: data.shipmentTypeOption
+      });
 
     } catch (error: any) {
-      toast({ title: "Pricing Error", description: error.message, variant: "destructive" });
+      toast({ title: "Pricing Error", description: error.message || "Failed to fetch pricing.", variant: "destructive" });
     } finally {
       setIsLoadingPricing(false);
     }
@@ -201,7 +207,7 @@ export function BookShipmentForm() {
       package_height_cm: data.packageHeightCm,
       package_length_cm: data.packageLengthCm,
       pickup_date: format(data.pickupDate, 'yyyy-MM-dd'),
-      service_type: data.serviceType,
+      service_type: data.serviceType.charAt(0).toUpperCase() + data.serviceType.slice(1) as ServiceType,
       final_total_price_with_tax: paymentStep.numericAmount,
       user_email: user.email,
     };
@@ -217,7 +223,7 @@ export function BookShipmentForm() {
       setSubmissionStatus(shipmentResponse);
       toast({ title: "Submission Successful!", description: `UTR for shipment ${shipmentResponse.shipment_id_str} submitted.` });
       form.reset();
-      setPaymentStep({ show: false, amount: "₹0.00", numericAmount: 0, formData: null });
+      setPaymentStep({ show: false, amount: "₹0.00", numericAmount: 0, formData: null, priceResponse: null, shipmentType: null });
       setUtr('');
     } catch (error: any) {
       toast({ title: "Submission Failed", description: error.message, variant: "destructive" });
@@ -265,7 +271,7 @@ export function BookShipmentForm() {
                                 packageWeightKg: 0.5,
                                 packageWidthCm: 10, packageHeightCm: 10, packageLengthCm: 10,
                                 pickupDate: new Date(),
-                                serviceType: "Standard",
+                                serviceType: "express",
                             });
                         }}
                         className="w-full"
@@ -382,11 +388,21 @@ export function BookShipmentForm() {
                       <Button variant={"outline"} className={cn("w-[240px] pl-3 text-left font-normal", !field.value && "text-muted-foreground")}>{field.value ? format(field.value, "PPP") : <span>Pick a date</span>}<CalendarIcon className="ml-auto h-4 w-4 opacity-50" /></Button>
                       </FormControl></PopoverTrigger><PopoverContent className="w-auto p-0" align="start"><Calendar mode="single" selected={field.value} onSelect={field.onChange} disabled={(date) => date < new Date(new Date().setDate(new Date().getDate() -1))} initialFocus /></PopoverContent></Popover><FormMessage /></FormItem>
                     )} />
-                    <FormField control={form.control} name="serviceType" render={({ field }) => ( <FormItem><FormLabel>Service Type</FormLabel>
-                      <Select onValueChange={field.onChange} value={field.value} disabled={shipmentTypeOption === "International"}><FormControl><SelectTrigger><SelectValue placeholder="Select service" /></SelectTrigger></FormControl><SelectContent><SelectItem value="Standard">Standard</SelectItem><SelectItem value="Express">Express</SelectItem></SelectContent></Select>
-                      {shipmentTypeOption === 'International' && <p className="text-xs text-muted-foreground flex items-center gap-1"><Info size={14} /> International ships Express.</p>}
-                      <FormMessage /></FormItem>
-                    )} />
+                    {shipmentTypeOption === 'Domestic' && <FormField control={form.control} name="serviceType" render={({ field }) => (
+                        <FormItem>
+                            <FormLabel>Service Type</FormLabel>
+                            <Select onValueChange={field.onChange} value={field.value}>
+                                <FormControl><SelectTrigger><SelectValue placeholder="Select service"/></SelectTrigger></FormControl>
+                                <SelectContent>
+                                    <SelectItem value="express" disabled={packageWeight > 5}>Express</SelectItem>
+                                    <SelectItem value="air">Air Cargo</SelectItem>
+                                    <SelectItem value="surface">Surface Cargo</SelectItem>
+                                </SelectContent>
+                            </Select>
+                            {packageWeight > 5 && <p className="text-xs text-muted-foreground flex items-center gap-1"><Info size={14} /> Express only supported up to 5kg.</p>}
+                            <FormMessage />
+                        </FormItem>
+                    )} />}
                   </div>
                 </div>
 
