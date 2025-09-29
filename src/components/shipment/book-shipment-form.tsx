@@ -45,7 +45,7 @@ const shipmentFormSchema = z.object({
   receiverAddressLine2: z.string().optional(),
   receiverAddressCity: z.string().min(2, "City is required"),
   receiverAddressState: z.string().min(2, "State/Province is required"),
-  receiverAddressPincode: z.string().regex(/^\d{3,10}$/, "Pincode/ZIP must be 3-10 digits"),
+  receiverAddressPincode: z.string().min(3, "Pincode/ZIP is required.").max(10, "Pincode/ZIP is too long."),
   receiverAddressCountry: z.string().min(2, "Country is required"),
   receiverPhone: z.string().min(5, "A valid phone number is required."),
 
@@ -56,6 +56,14 @@ const shipmentFormSchema = z.object({
   pickupDate: z.date({ required_error: "Pickup date is required." }),
 
   serviceType: z.enum(["express", "air", "surface"], { required_error: "Service type is required." }),
+}).refine((data) => {
+    if (data.shipmentTypeOption === 'Domestic') {
+        return /^\d{6}$/.test(data.receiverAddressPincode);
+    }
+    return true;
+}, {
+    message: "Domestic pincode must be exactly 6 digits.",
+    path: ["receiverAddressPincode"],
 });
 
 type ShipmentFormValues = z.infer<typeof shipmentFormSchema>;
