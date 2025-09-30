@@ -60,14 +60,12 @@ const shipmentFormSchema = z.object({
     if (data.shipmentTypeOption === 'Domestic') {
         return /^\d{6}$/.test(data.receiverAddressPincode);
     }
-    if (data.shipmentTypeOption === 'International') {
-        return /^[a-zA-Z0-9\s-]{3,10}$/.test(data.receiverAddressPincode);
-    }
-    return true;
+    return true; // No specific regex for international, just min/max length
 }, {
-    message: "Invalid Pincode/ZIP format.",
+    message: "Pincode must be 6 digits for domestic shipments.",
     path: ["receiverAddressPincode"],
 });
+
 
 type ShipmentFormValues = z.infer<typeof shipmentFormSchema>;
 
