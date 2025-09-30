@@ -60,9 +60,12 @@ const shipmentFormSchema = z.object({
     if (data.shipmentTypeOption === 'Domestic') {
         return /^\d{6}$/.test(data.receiverAddressPincode);
     }
+    if (data.shipmentTypeOption === 'International') {
+        return /^[a-zA-Z0-9\s-]{3,10}$/.test(data.receiverAddressPincode);
+    }
     return true;
 }, {
-    message: "Domestic pincode must be exactly 6 digits.",
+    message: "Invalid Pincode/ZIP format.",
     path: ["receiverAddressPincode"],
 });
 
@@ -309,7 +312,7 @@ export function BookShipmentForm() {
         <CardContent className="text-center space-y-4">
           <p className="text-muted-foreground">Amount to Pay</p>
           <p className="text-4xl font-bold text-primary">{paymentStep.amount}</p>
-          <Image src="/images/qr-code.png" alt="QR Code" width={200} height={200} className="mx-auto rounded-md border" />
+          <Image src="/images/image.png" alt="QR Code" width={200} height={200} className="mx-auto rounded-md border" />
           <div className="text-left space-y-1">
             <Label htmlFor="utrInput" className="font-semibold">Enter 12-digit UTR Number</Label>
             <Input id="utrInput" value={utr} onChange={(e) => { setUtr(e.target.value.replace(/\D/g, '').slice(0, 12)); setUtrError(null); }} placeholder="UTR from payment app" maxLength={12} />
