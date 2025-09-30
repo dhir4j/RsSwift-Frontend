@@ -87,7 +87,7 @@ export const siteConfig = {
     address: "18AX MODEL TOWN EXTENSION LUDHIANA NEAR PUNJAB & SIND BANK",
     email: "RSSWIFTCOURIERS@GMAIL.COM",
     phone: "+91 8544970282",
-    gstin: "YOUR_GSTIN_HERE",
+    gstin: "03ABLFR5077L1ZQ",
     pan: "YOUR_PAN_HERE"
   },
   links: {
