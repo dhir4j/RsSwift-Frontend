@@ -1,3 +1,4 @@
+
 "use client";
 
 import React, { useState, useCallback, useEffect } from 'react';
@@ -8,7 +9,7 @@ import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
-import { IndianRupee, PackageSearch, FileDown, Search, ListOrdered, Filter, Loader2 } from 'lucide-react';
+import { IndianRupee, PackageSearch, FileDown, Search, ListOrdered, Filter, Loader2, Eye } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { format, parseISO, isValid } from 'date-fns';
 import apiClient from '@/lib/api-client';
@@ -16,6 +17,7 @@ import { useToast } from '@/hooks/use-toast';
 import { useAuth } from '@/hooks/use-auth';
 import { useRouter } from 'next/navigation';
 import { mapApiShipmentToFrontend } from '@/contexts/shipment-context';
+import Link from 'next/link';
 
 const statusColors: Record<string, string> = {
   "Pending Payment": "bg-gray-100 text-gray-700 border-gray-300",
@@ -105,25 +107,17 @@ export function AdminOrdersTable() {
         return;
     }
     const headers = [
-      "Order Number (shipment_id_str)",
-      "Customer Name (sender_name)",
-      "Description",
-      "Price (w/o Tax)",
-      "Tax (18%)",
-      "Total Price",
-      "Status",
-      "Booking Date"
+      "Order Number (shipment_id_str)", "Sender Name", "Receiver Name", "Destination", "Weight (kg)", "Total Price", "Status", "Booking Date"
     ];
 
     const rows = allShipments.map(order => {
-        const description = `${order.service_type || 'N/A'} (${order.package_weight_kg || 'N/A'}kg) to ${order.receiver_address_city || 'N/A'}`;
         const bookingDate = order.booking_date && isValid(parseISO(order.booking_date)) ? format(parseISO(order.booking_date), 'yyyy-MM-dd HH:mm') : 'N/A';
         return [
             `"${order.shipment_id_str || 'Unknown ID'}"`,
             `"${order.sender_name || 'N/A'}"`,
-            `"${description}"`,
-            typeof order.price_without_tax === 'number' ? order.price_without_tax.toFixed(2) : 'N/A',
-            typeof order.tax_amount_18_percent === 'number' ? order.tax_amount_18_percent.toFixed(2) : 'N/A',
+            `"${order.receiver_name || 'N/A'}"`,
+            `"${order.receiver_address_city || 'N/A'}"`,
+            order.package_weight_kg || 'N/A',
             typeof order.total_with_tax_18_percent === 'number' ? order.total_with_tax_18_percent.toFixed(2) : 'N/A',
             `"${order.status || 'N/A'}"`,
             `"${bookingDate}"`
@@ -203,12 +197,13 @@ export function AdminOrdersTable() {
                 <TableHeader>
                     <TableRow>
                     <TableHead>Order #</TableHead>
-                    <TableHead>Customer</TableHead>
-                    <TableHead>Description</TableHead>
+                    <TableHead>Sender</TableHead>
+                    <TableHead>Receiver</TableHead>
+                    <TableHead>Destination</TableHead>
+                    <TableHead className="text-center">Weight</TableHead>
                     <TableHead className="text-right">Total</TableHead>
                     <TableHead>Status</TableHead>
-                    <TableHead>Date</TableHead>
-                    <TableHead className="text-center">Update Status</TableHead>
+                    <TableHead>Actions</TableHead>
                     </TableRow>
                 </TableHeader>
                 <TableBody>
@@ -217,7 +212,9 @@ export function AdminOrdersTable() {
                             <TableRow key={order.shipment_id_str}>
                                 <TableCell className="font-medium text-primary">{order.shipment_id_str}</TableCell>
                                 <TableCell>{order.sender_name}</TableCell>
-                                <TableCell>{`${order.service_type} (${order.package_weight_kg}kg) to ${order.receiver_address_city}`}</TableCell>
+                                <TableCell>{order.receiver_name}</TableCell>
+                                <TableCell>{order.receiver_address_city}</TableCell>
+                                <TableCell className="text-center">{order.package_weight_kg} kg</TableCell>
                                 <TableCell className="text-right font-semibold">
                                     <span className="inline-flex items-center justify-end">
                                         <IndianRupee className="h-4 w-4 mr-0.5" />
@@ -229,22 +226,26 @@ export function AdminOrdersTable() {
                                     {order.status}
                                 </Badge>
                                 </TableCell>
-                                <TableCell>{format(parseISO(order.booking_date), 'dd MMM yyyy, HH:mm')}</TableCell>
-                                <TableCell className="text-center min-w-[180px]">
-                                <Select
-                                    value={order.status}
-                                    onValueChange={(newStatus) => handleStatusUpdate(order.shipment_id_str, newStatus as TrackingStage, order)}
-                                    disabled={order.status === 'Pending Payment'}
-                                >
-                                    <SelectTrigger className="h-9 text-xs">
-                                    <SelectValue placeholder="Update Status" />
-                                    </SelectTrigger>
-                                    <SelectContent>
-                                    {Object.keys(statusColors).map(statusVal => (
-                                        <SelectItem key={statusVal} value={statusVal} className="text-xs" disabled={statusVal === 'Pending Payment'}>{statusVal}</SelectItem>
-                                    ))}
-                                    </SelectContent>
-                                </Select>
+                                <TableCell className="text-right space-x-2">
+                                  <Select
+                                      value={order.status}
+                                      onValueChange={(newStatus) => handleStatusUpdate(order.shipment_id_str, newStatus as TrackingStage, order)}
+                                      disabled={order.status === 'Pending Payment'}
+                                  >
+                                      <SelectTrigger className="h-9 text-xs inline-flex w-auto min-w-[150px]">
+                                        <SelectValue placeholder="Update Status" />
+                                      </SelectTrigger>
+                                      <SelectContent>
+                                      {Object.keys(statusColors).filter(s => s !== "Pending Payment").map(statusVal => (
+                                          <SelectItem key={statusVal} value={statusVal} className="text-xs">{statusVal}</SelectItem>
+                                      ))}
+                                      </SelectContent>
+                                  </Select>
+                                  <Button asChild variant="outline" size="sm">
+                                      <Link href={`/admin/invoice/${order.shipment_id_str}`}>
+                                          <Eye className="mr-1 h-4 w-4" /> Invoice
+                                      </Link>
+                                  </Button>
                                 </TableCell>
                             </TableRow>
                         );
@@ -265,3 +266,5 @@ export function AdminOrdersTable() {
     </Card>
   );
 }
+
+    
