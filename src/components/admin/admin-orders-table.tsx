@@ -1,7 +1,6 @@
-
 "use client";
 
-import React, { useState, useCallback, useEffect } from 'react';
+import React, { useState, useCallback, useEffect, useMemo } from 'react';
 import type { Shipment, TrackingStage, AdminShipmentsResponse, UpdateShipmentStatusResponse } from '@/lib/types';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -9,7 +8,7 @@ import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
-import { IndianRupee, PackageSearch, FileDown, Search, ListOrdered, Filter, Loader2, Eye } from 'lucide-react';
+import { IndianRupee, PackageSearch, FileDown, Search, ListOrdered, Filter, Loader2, Eye, MoreHorizontal, AlertCircle, X, ChevronsUpDown } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { format, parseISO, isValid } from 'date-fns';
 import apiClient from '@/lib/api-client';
@@ -18,6 +17,17 @@ import { useAuth } from '@/hooks/use-auth';
 import { useRouter } from 'next/navigation';
 import { mapApiShipmentToFrontend } from '@/contexts/shipment-context';
 import Link from 'next/link';
+import { Checkbox } from "@/components/ui/checkbox"
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog"
 
 const statusColors: Record<string, string> = {
   "Pending Payment": "bg-gray-100 text-gray-700 border-gray-300",
@@ -28,19 +38,27 @@ const statusColors: Record<string, string> = {
   Cancelled: "bg-red-100 text-red-700 border-red-300",
 };
 
+const BULK_STATUS_OPTIONS: TrackingStage[] = ["Booked", "In Transit", "Out for Delivery", "Delivered", "Cancelled"];
+
 export function AdminOrdersTable() {
   const [allShipments, setAllShipments] = useState<Shipment[]>([]);
   const [isLoading, setIsLoading] = useState(false);
+  const [isBulkUpdating, setIsBulkUpdating] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState<string>('all');
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const [totalCount, setTotalCount] = useState(0);
+  const [selectedRows, setSelectedRows] = useState<Record<string, boolean>>({});
+  const [bulkStatus, setBulkStatus] = useState<TrackingStage | ''>('');
+  const [isConfirmDialogOpen, setIsConfirmDialogOpen] = useState(false);
   const itemsPerPage = 10;
 
   const { toast } = useToast();
   const { user, isAuthenticated, logoutUser } = useAuth();
   const router = useRouter();
+
+  const numSelected = useMemo(() => Object.values(selectedRows).filter(Boolean).length, [selectedRows]);
 
   const handleApiError = useCallback((error: any, operation: string) => {
     console.error(`API error during ${operation}:`, error);
@@ -68,8 +86,6 @@ export function AdminOrdersTable() {
     } catch (error: any) {
       handleApiError(error, 'fetching admin shipments');
       setAllShipments([]);
-      setTotalCount(0);
-      setTotalPages(1);
     } finally {
       setIsLoading(false);
     }
@@ -86,73 +102,105 @@ export function AdminOrdersTable() {
     }
   };
 
-  const handleStatusUpdate = async (shipmentId: string, newStatus: TrackingStage, currentShipment: Shipment) => {
-    try {
-      const response = await apiClient<UpdateShipmentStatusResponse>(`/api/admin/shipments/${shipmentId}/status`, {
-        method: 'PUT',
-        body: JSON.stringify({ status: newStatus, location: currentShipment.receiver_address_city, activity: `Status updated to ${newStatus}` }),
+  const handleToggleSelectAll = (checked: boolean | 'indeterminate') => {
+    if (checked === true) {
+      const newSelectedRows: Record<string, boolean> = {};
+      allShipments.forEach(shipment => {
+        newSelectedRows[shipment.shipment_id_str] = true;
       });
-      toast({ title: "Success", description: `Shipment ${shipmentId} status updated to ${newStatus}.` });
-      setAllShipments(prev =>
-        prev.map(s => s.shipment_id_str === shipmentId ? { ...s, status: newStatus, tracking_history: response.updatedShipment.tracking_history || s.tracking_history } : s)
-      );
-    } catch (error: any) {
-      handleApiError(error, `updating status for ${shipmentId}`);
+      setSelectedRows(newSelectedRows);
+    } else {
+      setSelectedRows({});
     }
+  };
+
+  const handleRowCheckboxChange = (shipmentId: string, checked: boolean) => {
+    setSelectedRows(prev => ({
+      ...prev,
+      [shipmentId]: checked
+    }));
+  };
+
+  const handleBulkUpdate = async () => {
+    if (!bulkStatus || numSelected === 0) {
+      toast({ title: 'Invalid Action', description: 'Please select a status and at least one order.', variant: 'destructive' });
+      return;
+    }
+    
+    setIsBulkUpdating(true);
+    const selectedIds = Object.keys(selectedRows).filter(id => selectedRows[id]);
+    
+    let successCount = 0;
+    let errorCount = 0;
+
+    for (const id of selectedIds) {
+      try {
+        await apiClient<UpdateShipmentStatusResponse>(`/api/admin/shipments/${id}/status`, {
+          method: 'PUT',
+          body: JSON.stringify({ status: bulkStatus }),
+        });
+        successCount++;
+      } catch (error) {
+        console.error(`Failed to update shipment ${id}:`, error);
+        errorCount++;
+      }
+    }
+
+    setIsBulkUpdating(false);
+
+    if (successCount > 0) {
+      toast({ title: 'Bulk Update Successful', description: `${successCount} order(s) updated to "${bulkStatus}".` });
+      fetchAdminShipments(currentPage, searchTerm, statusFilter); // Refresh data
+    }
+
+    if (errorCount > 0) {
+      toast({ title: 'Bulk Update Failed', description: `${errorCount} order(s) could not be updated.`, variant: 'destructive' });
+    }
+    
+    setSelectedRows({});
+    setBulkStatus('');
   };
 
   const exportToCSV = useCallback(() => {
     if (allShipments.length === 0) {
-        toast({ title: "No Data", description: "Nothing to export.", variant: "default"});
-        return;
+      toast({ title: "No Data", description: "Nothing to export." });
+      return;
     }
-    const headers = [
-      "Order Number (shipment_id_str)", "Sender Name", "Receiver Name", "Destination", "Weight (kg)", "Total Price", "Status", "Booking Date"
-    ];
-
-    const rows = allShipments.map(order => {
-        const bookingDate = order.booking_date && isValid(parseISO(order.booking_date)) ? format(parseISO(order.booking_date), 'yyyy-MM-dd HH:mm') : 'N/A';
-        return [
-            `"${order.shipment_id_str || 'Unknown ID'}"`,
-            `"${order.sender_name || 'N/A'}"`,
-            `"${order.receiver_name || 'N/A'}"`,
-            `"${order.receiver_address_city || 'N/A'}"`,
-            order.package_weight_kg || 'N/A',
-            typeof order.total_with_tax_18_percent === 'number' ? order.total_with_tax_18_percent.toFixed(2) : 'N/A',
-            `"${order.status || 'N/A'}"`,
-            `"${bookingDate}"`
-        ];
-    });
-
-    let csvContent = "data:text/csv;charset=utf-8,"
-      + headers.join(",") + "\n"
-      + rows.map(e => e.join(",")).join("\n");
-
-    const encodedUri = encodeURI(csvContent);
+    const headers = ["Order #", "Type", "Sender", "Receiver", "Destination", "Date", "Amount", "Status"];
+    const rows = allShipments.map(order => [
+        `"${order.shipment_id_str}"`,
+        `"${order.service_type}"`,
+        `"${order.sender_name}"`,
+        `"${order.receiver_name}"`,
+        `"${order.receiver_address_city}"`,
+        `"${format(parseISO(order.booking_date), 'yyyy-MM-dd HH:mm')}"`,
+        order.total_with_tax_18_percent.toFixed(2),
+        `"${order.status}"`
+    ].join(','));
+    const csvContent = "data:text/csv;charset=utf-8," + [headers.join(','), ...rows].join('\n');
     const link = document.createElement("a");
-    link.setAttribute("href", encodedUri);
-    link.setAttribute("download", `swiftship_all_orders_${new Date().toISOString().split('T')[0]}.csv`);
+    link.setAttribute("href", encodeURI(csvContent));
+    link.setAttribute("download", "orders.csv");
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
   }, [allShipments, toast]);
 
-
   return (
-    <Card>
-      <CardHeader className="flex flex-col md:flex-row md:justify-between md:items-center">
-        <div>
-          <CardTitle className="font-headline text-xl sm:text-2xl flex items-center gap-2">
-            <ListOrdered className="h-7 w-7 text-primary" /> All Orders ({totalCount})
-          </CardTitle>
-          <CardDescription>View, manage, and export all customer orders.</CardDescription>
+    <Card className="shadow-xl mt-8">
+      <CardHeader>
+        <div className="flex flex-col md:flex-row md:justify-between md:items-center">
+          <div>
+            <CardTitle className="font-headline text-xl sm:text-2xl flex items-center gap-2">
+              <ListOrdered className="h-7 w-7 text-primary" /> All Orders ({totalCount})
+            </CardTitle>
+            <CardDescription>View, manage, and export all customer orders.</CardDescription>
+          </div>
+          <Button onClick={exportToCSV} variant="outline" size="sm" className="mt-4 md:mt-0" disabled={allShipments.length === 0}>
+            <FileDown className="mr-2 h-4 w-4" /> Export CSV
+          </Button>
         </div>
-         <Button onClick={exportToCSV} variant="outline" size="sm" className="mt-4 md:mt-0" disabled={allShipments.length === 0}>
-          <FileDown className="mr-2 h-4 w-4" /> Export to CSV
-        </Button>
-      </CardHeader>
-      <CardContent>
-        <div className="mb-6 p-4 border rounded-lg bg-muted/50 space-y-4 md:space-y-0 md:flex md:items-center md:justify-between md:gap-4">
+        <div className="mt-6 p-4 border rounded-lg bg-muted/50 space-y-4 md:space-y-0 md:flex md:items-center md:justify-between md:gap-4">
             <div className="relative flex-grow">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
               <Input
@@ -163,7 +211,7 @@ export function AdminOrdersTable() {
               />
             </div>
             <div className="flex-grow md:flex-grow-0">
-                <Select value={statusFilter} onValueChange={(value) => setStatusFilter(value as TrackingStage | 'all')}>
+                <Select value={statusFilter} onValueChange={(value) => setStatusFilter(value)}>
                     <SelectTrigger className="w-full md:w-[180px]">
                         <Filter className="mr-2 h-4 w-4 text-muted-foreground" />
                         <SelectValue placeholder="Filter by Status" />
@@ -177,11 +225,12 @@ export function AdminOrdersTable() {
                 </Select>
             </div>
              <Button onClick={() => fetchAdminShipments(1, searchTerm, statusFilter)} disabled={isLoading}>
-                {isLoading ? <Loader2 className="mr-2 h-4 w-4 animate-spin"/> : <Search className="mr-2 h-4 w-4"/>}
+                {isLoading && !allShipments.length ? <Loader2 className="mr-2 h-4 w-4 animate-spin"/> : <Search className="mr-2 h-4 w-4"/>}
                 Apply Filters
             </Button>
         </div>
-
+      </CardHeader>
+      <CardContent>
         {isLoading && allShipments.length === 0 ? (
           <div className="flex justify-center items-center h-64"><Loader2 className="h-12 w-12 animate-spin text-primary" /> <p className="ml-2">Loading orders...</p></div>
         ) : !isLoading && allShipments.length === 0 ? (
@@ -196,60 +245,58 @@ export function AdminOrdersTable() {
                 <Table>
                 <TableHeader>
                     <TableRow>
-                    <TableHead>Order #</TableHead>
-                    <TableHead>Sender</TableHead>
-                    <TableHead>Receiver</TableHead>
-                    <TableHead>Destination</TableHead>
-                    <TableHead className="text-center">Weight</TableHead>
-                    <TableHead className="text-right">Total</TableHead>
-                    <TableHead>Status</TableHead>
-                    <TableHead>Actions</TableHead>
+                      <TableHead padding="checkbox" className="w-[50px]">
+                        <Checkbox
+                          checked={numSelected > 0 && numSelected === allShipments.length ? true : numSelected > 0 ? "indeterminate" : false}
+                          onCheckedChange={handleToggleSelectAll}
+                          aria-label="Select all"
+                        />
+                      </TableHead>
+                      <TableHead>Order #</TableHead>
+                      <TableHead>Type</TableHead>
+                      <TableHead>Sender</TableHead>
+                      <TableHead>Receiver</TableHead>
+                      <TableHead>Destination</TableHead>
+                      <TableHead>Date</TableHead>
+                      <TableHead className="text-right">Amount</TableHead>
+                      <TableHead>Status</TableHead>
+                      <TableHead className="text-center">Actions</TableHead>
                     </TableRow>
                 </TableHeader>
                 <TableBody>
-                    {allShipments.map((order) => {
-                        return (
-                            <TableRow key={order.shipment_id_str}>
-                                <TableCell className="font-medium text-primary">{order.shipment_id_str}</TableCell>
-                                <TableCell>{order.sender_name}</TableCell>
-                                <TableCell>{order.receiver_name}</TableCell>
-                                <TableCell>{order.receiver_address_city}</TableCell>
-                                <TableCell className="text-center">{order.package_weight_kg} kg</TableCell>
-                                <TableCell className="text-right font-semibold">
-                                    <span className="inline-flex items-center justify-end">
-                                        <IndianRupee className="h-4 w-4 mr-0.5" />
-                                        {order.total_with_tax_18_percent.toFixed(2)}
-                                    </span>
-                                </TableCell>
-                                <TableCell>
-                                <Badge variant="outline" className={cn("text-xs", statusColors[order.status] || "bg-gray-100 text-gray-700 border-gray-300")}>
-                                    {order.status}
-                                </Badge>
-                                </TableCell>
-                                <TableCell className="text-right space-x-2">
-                                  <Select
-                                      value={order.status}
-                                      onValueChange={(newStatus) => handleStatusUpdate(order.shipment_id_str, newStatus as TrackingStage, order)}
-                                      disabled={order.status === 'Pending Payment'}
-                                  >
-                                      <SelectTrigger className="h-9 text-xs inline-flex w-auto min-w-[150px]">
-                                        <SelectValue placeholder="Update Status" />
-                                      </SelectTrigger>
-                                      <SelectContent>
-                                      {Object.keys(statusColors).filter(s => s !== "Pending Payment").map(statusVal => (
-                                          <SelectItem key={statusVal} value={statusVal} className="text-xs">{statusVal}</SelectItem>
-                                      ))}
-                                      </SelectContent>
-                                  </Select>
-                                  <Button asChild variant="outline" size="sm">
-                                      <Link href={`/admin/invoice/${order.shipment_id_str}`}>
-                                          <Eye className="mr-1 h-4 w-4" /> Invoice
-                                      </Link>
-                                  </Button>
-                                </TableCell>
-                            </TableRow>
-                        );
-                    })}
+                    {allShipments.map((order) => (
+                        <TableRow key={order.shipment_id_str} data-state={selectedRows[order.shipment_id_str] ? 'selected' : ''}>
+                            <TableCell padding="checkbox">
+                              <Checkbox
+                                checked={selectedRows[order.shipment_id_str] || false}
+                                onCheckedChange={(checked) => handleRowCheckboxChange(order.shipment_id_str, !!checked)}
+                                aria-label="Select row"
+                              />
+                            </TableCell>
+                            <TableCell className="font-medium text-primary">{order.shipment_id_str}</TableCell>
+                            <TableCell className="text-xs">{order.service_type}</TableCell>
+                            <TableCell>{order.sender_name}</TableCell>
+                            <TableCell>{order.receiver_name}</TableCell>
+                            <TableCell>{order.receiver_address_city}</TableCell>
+                            <TableCell className="text-xs">{format(parseISO(order.booking_date), 'dd MMM yyyy')}</TableCell>
+                            <TableCell className="text-right">
+                                <span className="inline-flex items-center justify-end">
+                                    <IndianRupee className="h-3.5 w-3.5 mr-0.5" />
+                                    {order.total_with_tax_18_percent.toFixed(2)}
+                                </span>
+                            </TableCell>
+                            <TableCell>
+                              <Badge variant="outline" className={cn("text-xs", statusColors[order.status])}>{order.status}</Badge>
+                            </TableCell>
+                            <TableCell className="text-center">
+                              <Button asChild variant="ghost" size="sm">
+                                <Link href={`/admin/invoice/${order.shipment_id_str}`}>
+                                  <Eye className="h-4 w-4" />
+                                </Link>
+                              </Button>
+                            </TableCell>
+                        </TableRow>
+                    ))}
                 </TableBody>
                 </Table>
             </div>
@@ -263,8 +310,47 @@ export function AdminOrdersTable() {
           </>
         )}
       </CardContent>
+
+      {numSelected > 0 && (
+          <div className="sticky bottom-0 border-t bg-background/95 backdrop-blur-sm p-3 flex items-center justify-between gap-4 animate-in slide-in-from-bottom-5">
+              <span className="text-sm font-semibold">{numSelected} order(s) selected</span>
+              <div className="flex items-center gap-2">
+                  <Select value={bulkStatus} onValueChange={(value) => setBulkStatus(value as TrackingStage)}>
+                      <SelectTrigger className="w-[180px] h-9">
+                          <SelectValue placeholder="Select new status" />
+                      </SelectTrigger>
+                      <SelectContent>
+                          {BULK_STATUS_OPTIONS.map(status => (
+                            <SelectItem key={status} value={status}>{status}</SelectItem>
+                          ))}
+                      </SelectContent>
+                  </Select>
+                  <Button size="sm" onClick={() => setIsConfirmDialogOpen(true)} disabled={!bulkStatus || isBulkUpdating}>
+                      {isBulkUpdating ? <Loader2 className="mr-2 h-4 w-4 animate-spin"/> : null}
+                      Update Status
+                  </Button>
+                  <Button variant="ghost" size="sm" onClick={() => setSelectedRows({})}>
+                    <X className="mr-2 h-4 w-4" />
+                    Clear
+                  </Button>
+              </div>
+          </div>
+      )}
+
+      <AlertDialog open={isConfirmDialogOpen} onOpenChange={setIsConfirmDialogOpen}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+            <AlertDialogDescription>
+              This will update the status of <strong>{numSelected}</strong> selected order(s) to <strong>{bulkStatus}</strong>. This action cannot be undone.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction onClick={() => { setIsConfirmDialogOpen(false); handleBulkUpdate(); }}>Confirm Update</AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </Card>
   );
 }
-
-    
