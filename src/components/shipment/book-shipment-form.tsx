@@ -310,7 +310,7 @@ export function BookShipmentForm() {
         <CardContent className="text-center space-y-4">
           <p className="text-muted-foreground">Amount to Pay</p>
           <p className="text-4xl font-bold text-primary">{paymentStep.amount}</p>
-          <Image src="/images/image.png" alt="QR Code" width={200} height={200} className="mx-auto rounded-md border" />
+          <Image src="/images/new_qr.png" alt="QR Code" width={200} height={200} className="mx-auto rounded-md border" />
           <div className="text-left space-y-1">
             <Label htmlFor="utrInput" className="font-semibold">Enter 12-digit UTR Number</Label>
             <Input id="utrInput" value={utr} onChange={(e) => { setUtr(e.target.value.replace(/\D/g, '').slice(0, 12)); setUtrError(null); }} placeholder="UTR from payment app" maxLength={12} />
