@@ -125,7 +125,7 @@ function PaymentComponent() {
         </CardHeader>
         <CardContent className="flex flex-col items-center gap-6">
           <Image
-            src="https://placehold.co/300x300.png"
+            src="/images/new_qr.png"
             alt="QR Code for payment"
             width={300}
             height={300}
