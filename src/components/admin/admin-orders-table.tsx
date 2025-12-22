@@ -46,6 +46,8 @@ export function AdminOrdersTable() {
   const [isBulkUpdating, setIsBulkUpdating] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState<string>('all');
+  const [startDate, setStartDate] = useState('');
+  const [endDate, setEndDate] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const [totalCount, setTotalCount] = useState(0);
@@ -70,13 +72,15 @@ export function AdminOrdersTable() {
     });
   }, [toast]);
 
-  const fetchAdminShipments = useCallback(async (page = 1, search = searchTerm, status = statusFilter) => {
+  const fetchAdminShipments = useCallback(async (page = 1, search = searchTerm, status = statusFilter, fromDate = startDate, toDate = endDate) => {
     if (!isAuthenticated || !user?.isAdmin) return;
     setIsLoading(true);
     try {
       let queryParams = `?page=${page}&limit=${itemsPerPage}`;
       if (search) queryParams += `&q=${encodeURIComponent(search)}`;
       if (status !== 'all') queryParams += `&status=${encodeURIComponent(status)}`;
+      if (fromDate) queryParams += `&start_date=${encodeURIComponent(fromDate)}`;
+      if (toDate) queryParams += `&end_date=${encodeURIComponent(toDate)}`;
 
       const response = await apiClient<AdminShipmentsResponse>(`/api/admin/shipments${queryParams}`);
       setAllShipments(response.shipments.map(mapApiShipmentToFrontend));
@@ -89,16 +93,16 @@ export function AdminOrdersTable() {
     } finally {
       setIsLoading(false);
     }
-  }, [user?.isAdmin, isAuthenticated, searchTerm, statusFilter, handleApiError]);
+  }, [user?.isAdmin, isAuthenticated, searchTerm, statusFilter, startDate, endDate, handleApiError]);
 
   useEffect(() => {
-    fetchAdminShipments(1, searchTerm, statusFilter);
+    fetchAdminShipments(1, searchTerm, statusFilter, startDate, endDate);
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const handlePageChange = (newPage: number) => {
     if (newPage >= 1 && newPage <= totalPages) {
-      fetchAdminShipments(newPage, searchTerm, statusFilter);
+      fetchAdminShipments(newPage, searchTerm, statusFilter, startDate, endDate);
     }
   };
 
@@ -150,7 +154,7 @@ export function AdminOrdersTable() {
 
     if (successCount > 0) {
       toast({ title: 'Bulk Update Successful', description: `${successCount} order(s) updated to "${bulkStatus}".` });
-      fetchAdminShipments(currentPage, searchTerm, statusFilter); // Refresh data
+      fetchAdminShipments(currentPage, searchTerm, statusFilter, startDate, endDate); // Refresh data
     }
 
     if (errorCount > 0) {
@@ -161,30 +165,41 @@ export function AdminOrdersTable() {
     setBulkStatus('');
   };
 
-  const exportToCSV = useCallback(() => {
-    if (allShipments.length === 0) {
-      toast({ title: "No Data", description: "Nothing to export." });
-      return;
+  const exportToCSV = useCallback(async () => {
+    try {
+      let queryParams = '?';
+      if (searchTerm) queryParams += `&q=${encodeURIComponent(searchTerm)}`;
+      if (statusFilter !== 'all') queryParams += `&status=${encodeURIComponent(statusFilter)}`;
+      if (startDate) queryParams += `&start_date=${encodeURIComponent(startDate)}`;
+      if (endDate) queryParams += `&end_date=${encodeURIComponent(endDate)}`;
+
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/admin/shipments/export${queryParams}`, {
+        method: 'GET',
+        headers: {
+          'Authorization': `Bearer ${localStorage.getItem('authToken')}`,
+        },
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to export CSV');
+      }
+
+      const blob = await response.blob();
+      const url = window.URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = `orders_${new Date().toISOString().split('T')[0]}.csv`;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      window.URL.revokeObjectURL(url);
+
+      toast({ title: "Export Successful", description: "CSV file downloaded successfully." });
+    } catch (error) {
+      console.error('Export error:', error);
+      toast({ title: "Export Failed", description: "Failed to export CSV file.", variant: "destructive" });
     }
-    const headers = ["Order #", "Type", "Sender", "Receiver", "Destination", "Date", "Amount", "Status"];
-    const rows = allShipments.map(order => [
-        `"${order.shipment_id_str}"`,
-        `"${order.service_type}"`,
-        `"${order.sender_name}"`,
-        `"${order.receiver_name}"`,
-        `"${order.receiver_address_city}"`,
-        `"${format(parseISO(order.booking_date), 'yyyy-MM-dd HH:mm')}"`,
-        order.total_with_tax_18_percent.toFixed(2),
-        `"${order.status}"`
-    ].join(','));
-    const csvContent = "data:text/csv;charset=utf-8," + [headers.join(','), ...rows].join('\n');
-    const link = document.createElement("a");
-    link.setAttribute("href", encodeURI(csvContent));
-    link.setAttribute("download", "orders.csv");
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-  }, [allShipments, toast]);
+  }, [searchTerm, statusFilter, startDate, endDate, toast]);
 
   return (
     <Card className="shadow-xl mt-8">
@@ -196,38 +211,69 @@ export function AdminOrdersTable() {
             </CardTitle>
             <CardDescription>View, manage, and export all customer orders.</CardDescription>
           </div>
-          <Button onClick={exportToCSV} variant="outline" size="sm" className="mt-4 md:mt-0" disabled={allShipments.length === 0}>
+          <Button onClick={exportToCSV} variant="outline" size="sm" className="mt-4 md:mt-0">
             <FileDown className="mr-2 h-4 w-4" /> Export CSV
           </Button>
         </div>
-        <div className="mt-6 p-4 border rounded-lg bg-muted/50 space-y-4 md:space-y-0 md:flex md:items-center md:justify-between md:gap-4">
-            <div className="relative flex-grow">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
+        <div className="mt-6 p-4 border rounded-lg bg-muted/50 space-y-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+              <div className="relative">
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
+                <Input
+                  placeholder="Search Order No, Sender, Receiver..."
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                  className="w-full pl-10"
+                />
+              </div>
+              <Select value={statusFilter} onValueChange={(value) => setStatusFilter(value)}>
+                  <SelectTrigger className="w-full">
+                      <Filter className="mr-2 h-4 w-4 text-muted-foreground" />
+                      <SelectValue placeholder="Filter by Status" />
+                  </SelectTrigger>
+                  <SelectContent>
+                      <SelectItem value="all">All Statuses</SelectItem>
+                      {Object.keys(statusColors).map(status => (
+                          <SelectItem key={status} value={status}>{status}</SelectItem>
+                      ))}
+                  </SelectContent>
+              </Select>
               <Input
-                placeholder="Search Order No, Sender, Receiver..."
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                className="w-full pl-10"
+                type="date"
+                placeholder="From Date"
+                value={startDate}
+                onChange={(e) => setStartDate(e.target.value)}
+                className="w-full"
+              />
+              <Input
+                type="date"
+                placeholder="To Date"
+                value={endDate}
+                onChange={(e) => setEndDate(e.target.value)}
+                className="w-full"
               />
             </div>
-            <div className="flex-grow md:flex-grow-0">
-                <Select value={statusFilter} onValueChange={(value) => setStatusFilter(value)}>
-                    <SelectTrigger className="w-full md:w-[180px]">
-                        <Filter className="mr-2 h-4 w-4 text-muted-foreground" />
-                        <SelectValue placeholder="Filter by Status" />
-                    </SelectTrigger>
-                    <SelectContent>
-                        <SelectItem value="all">All Statuses</SelectItem>
-                        {Object.keys(statusColors).map(status => (
-                            <SelectItem key={status} value={status}>{status}</SelectItem>
-                        ))}
-                    </SelectContent>
-                </Select>
-            </div>
-             <Button onClick={() => fetchAdminShipments(1, searchTerm, statusFilter)} disabled={isLoading}>
+            <div className="flex items-center gap-2">
+              <Button onClick={() => fetchAdminShipments(1, searchTerm, statusFilter, startDate, endDate)} disabled={isLoading} className="flex-1 md:flex-none">
                 {isLoading && !allShipments.length ? <Loader2 className="mr-2 h-4 w-4 animate-spin"/> : <Search className="mr-2 h-4 w-4"/>}
                 Apply Filters
-            </Button>
+              </Button>
+              {(searchTerm || statusFilter !== 'all' || startDate || endDate) && (
+                <Button
+                  variant="outline"
+                  onClick={() => {
+                    setSearchTerm('');
+                    setStatusFilter('all');
+                    setStartDate('');
+                    setEndDate('');
+                    fetchAdminShipments(1, '', 'all', '', '');
+                  }}
+                >
+                  <X className="mr-2 h-4 w-4"/>
+                  Clear Filters
+                </Button>
+              )}
+            </div>
         </div>
       </CardHeader>
       <CardContent>
