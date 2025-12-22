@@ -1,9 +1,11 @@
 
-from flask import Blueprint, request, jsonify
+from flask import Blueprint, request, jsonify, make_response
 from app.models import Shipment, User, PaymentRequest
 from app.extensions import db
 from sqlalchemy import or_, func
-from datetime import datetime
+from datetime import datetime, timedelta
+import csv
+from io import StringIO
 
 admin_bp = Blueprint("admin", __name__, url_prefix="/api/admin")
 
@@ -13,6 +15,8 @@ def get_all_shipments():
     limit = int(request.args.get("limit", 10))
     status = request.args.get("status")
     q = request.args.get("q")
+    start_date = request.args.get("start_date")
+    end_date = request.args.get("end_date")
     query = Shipment.query
 
     if status:
@@ -26,7 +30,24 @@ def get_all_shipments():
                 Shipment.receiver_name.ilike(like_q)
             )
         )
-    
+
+    # Date filtering
+    if start_date:
+        try:
+            start_dt = datetime.fromisoformat(start_date.replace('Z', '+00:00'))
+            query = query.filter(Shipment.booking_date >= start_dt)
+        except ValueError:
+            return jsonify({"error": "Invalid start_date format. Use ISO format (YYYY-MM-DD or YYYY-MM-DDTHH:MM:SS)"}), 400
+
+    if end_date:
+        try:
+            end_dt = datetime.fromisoformat(end_date.replace('Z', '+00:00'))
+            # Add one day to include the entire end date
+            end_dt = end_dt + timedelta(days=1)
+            query = query.filter(Shipment.booking_date < end_dt)
+        except ValueError:
+            return jsonify({"error": "Invalid end_date format. Use ISO format (YYYY-MM-DD or YYYY-MM-DDTHH:MM:SS)"}), 400
+
     total_count = query.count()
     pagination = query.order_by(Shipment.booking_date.desc()).paginate(page=page, per_page=limit, error_out=False)
     shipments = pagination.items
@@ -53,6 +74,93 @@ def get_all_shipments():
         "currentPage": page,
         "totalCount": total_count
     }), 200
+
+@admin_bp.route("/shipments/export", methods=["GET"])
+def export_shipments_csv():
+    status = request.args.get("status")
+    q = request.args.get("q")
+    start_date = request.args.get("start_date")
+    end_date = request.args.get("end_date")
+    query = Shipment.query
+
+    # Apply same filters as get_all_shipments
+    if status:
+        query = query.filter_by(status=status)
+    if q:
+        like_q = f"%{q}%"
+        query = query.filter(
+            or_(
+                Shipment.shipment_id_str.ilike(like_q),
+                Shipment.sender_name.ilike(like_q),
+                Shipment.receiver_name.ilike(like_q)
+            )
+        )
+
+    # Date filtering
+    if start_date:
+        try:
+            start_dt = datetime.fromisoformat(start_date.replace('Z', '+00:00'))
+            query = query.filter(Shipment.booking_date >= start_dt)
+        except ValueError:
+            return jsonify({"error": "Invalid start_date format. Use ISO format (YYYY-MM-DD or YYYY-MM-DDTHH:MM:SS)"}), 400
+
+    if end_date:
+        try:
+            end_dt = datetime.fromisoformat(end_date.replace('Z', '+00:00'))
+            end_dt = end_dt + timedelta(days=1)
+            query = query.filter(Shipment.booking_date < end_dt)
+        except ValueError:
+            return jsonify({"error": "Invalid end_date format. Use ISO format (YYYY-MM-DD or YYYY-MM-DDTHH:MM:SS)"}), 400
+
+    # Get all shipments (no pagination for export)
+    shipments = query.order_by(Shipment.booking_date.desc()).all()
+
+    # Create CSV
+    si = StringIO()
+    writer = csv.writer(si)
+
+    # Write headers
+    writer.writerow([
+        "Order #",
+        "Type",
+        "Sender",
+        "Sender City",
+        "Receiver",
+        "Receiver City",
+        "Weight (kg)",
+        "Date",
+        "Price (excl. tax)",
+        "Tax (18%)",
+        "Total Amount",
+        "Status"
+    ])
+
+    # Write data rows
+    for s in shipments:
+        writer.writerow([
+            s.shipment_id_str,
+            s.service_type,
+            s.sender_name,
+            s.sender_address_city,
+            s.receiver_name,
+            s.receiver_address_city,
+            float(s.package_weight_kg),
+            s.booking_date.strftime('%Y-%m-%d %H:%M'),
+            float(s.price_without_tax),
+            float(s.tax_amount_18_percent),
+            float(s.total_with_tax_18_percent),
+            s.status
+        ])
+
+    output = si.getvalue()
+    si.close()
+
+    # Create response
+    response = make_response(output)
+    response.headers["Content-Disposition"] = f"attachment; filename=orders_{datetime.now().strftime('%Y%m%d_%H%M%S')}.csv"
+    response.headers["Content-Type"] = "text/csv"
+
+    return response
 
 @admin_bp.route("/shipments/<shipment_id_str>/status", methods=["PUT"])
 def update_shipment_status(shipment_id_str):
