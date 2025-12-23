@@ -163,7 +163,6 @@ export default function InvoiceDetailPage() {
               <p className="font-bold text-sm">{siteConfig.company.legalName}</p>
               <address className="text-xs text-muted-foreground not-italic">{siteConfig.company.address}</address>
               <p className="text-xs text-muted-foreground">Email: {siteConfig.company.email}</p>
-              {(siteConfig.company.phone) && <p className="text-xs text-muted-foreground">Phone: {siteConfig.company.phone}</p>}
               {(siteConfig.company.gstin) && <p className="text-xs text-muted-foreground">GSTIN: {siteConfig.company.gstin}</p>}
             </div>
             <div>
@@ -172,7 +171,6 @@ export default function InvoiceDetailPage() {
               <div className="text-xs text-muted-foreground">
                 {formatAddress(senderAddress)}
               </div>
-              {(shipment.sender_phone) && <p className="text-xs text-muted-foreground">Phone: {shipment.sender_phone}</p>}
             </div>
              <div> 
               <h3 className="font-semibold text-primary">Ship To:</h3>
@@ -180,7 +178,6 @@ export default function InvoiceDetailPage() {
               <div className="text-xs text-muted-foreground">
                 {formatAddress(receiverAddress)}
               </div>
-              {(shipment.receiver_phone) && <p className="text-xs text-muted-foreground">Phone: {shipment.receiver_phone}</p>}
             </div>
           </div>
           
@@ -225,8 +222,12 @@ export default function InvoiceDetailPage() {
                 <span className="font-medium flex items-center"><IndianRupee className="h-4 w-4 mr-0.5" />{(shipment.price_without_tax || 0).toFixed(2)}</span>
               </div>
               <div className="flex justify-between text-sm">
-                <span className="text-muted-foreground">Tax (18%):</span>
-                <span className="font-medium flex items-center"><IndianRupee className="h-4 w-4 mr-0.5" />{(shipment.tax_amount_18_percent || 0).toFixed(2)}</span>
+                <span className="text-muted-foreground">CGST (9%):</span>
+                <span className="font-medium flex items-center"><IndianRupee className="h-4 w-4 mr-0.5" />{((shipment.tax_amount_18_percent || 0) / 2).toFixed(2)}</span>
+              </div>
+              <div className="flex justify-between text-sm">
+                <span className="text-muted-foreground">SGST (9%):</span>
+                <span className="font-medium flex items-center"><IndianRupee className="h-4 w-4 mr-0.5" />{((shipment.tax_amount_18_percent || 0) / 2).toFixed(2)}</span>
               </div>
               <Separator />
               <div className="flex justify-between text-base font-bold text-primary">

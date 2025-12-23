@@ -54,7 +54,7 @@ export function AdminOrdersTable() {
   const [selectedRows, setSelectedRows] = useState<Record<string, boolean>>({});
   const [bulkStatus, setBulkStatus] = useState<TrackingStage | ''>('');
   const [isConfirmDialogOpen, setIsConfirmDialogOpen] = useState(false);
-  const itemsPerPage = 10;
+  const itemsPerPage = 500;
 
   const { toast } = useToast();
   const { user, isAuthenticated, logoutUser } = useAuth();
