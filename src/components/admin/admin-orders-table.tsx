@@ -166,51 +166,47 @@ export function AdminOrdersTable() {
     setBulkStatus('');
   };
 
-  const exportToCSV = useCallback(async () => {
+  const exportToCSV = useCallback(() => {
+    if (allShipments.length === 0) {
+      toast({ title: "No Data", description: "No orders to export.", variant: "destructive" });
+      return;
+    }
+
     setIsExporting(true);
     try {
-      const params = new URLSearchParams();
-      if (searchTerm) params.append('q', searchTerm);
-      if (statusFilter !== 'all') params.append('status', statusFilter);
-      if (startDate) params.append('start_date', startDate);
-      if (endDate) params.append('end_date', endDate);
+      const headers = ["Order #", "Type", "Sender", "Sender City", "Receiver", "Receiver City", "Weight (kg)", "Date", "Price (excl. tax)", "Tax (18%)", "Total Amount", "Status"];
 
-      const queryString = params.toString();
-      const url = `/api/admin/shipments/export${queryString ? `?${queryString}` : ''}`;
+      const rows = allShipments.map(order => [
+        `"${order.shipment_id_str}"`,
+        `"${order.service_type}"`,
+        `"${order.sender_name}"`,
+        `"${order.sender_address_city}"`,
+        `"${order.receiver_name}"`,
+        `"${order.receiver_address_city}"`,
+        order.package_weight_kg,
+        `"${format(parseISO(order.booking_date), 'yyyy-MM-dd HH:mm')}"`,
+        order.price_without_tax.toFixed(2),
+        order.tax_amount_18_percent.toFixed(2),
+        order.total_with_tax_18_percent.toFixed(2),
+        `"${order.status}"`
+      ].join(','));
 
-      const apiUrl = process.env.NEXT_PUBLIC_API_URL || '';
-
-      const response = await fetch(`${apiUrl}${url}`, {
-        method: 'GET',
-        credentials: 'include',
-      });
-
-      if (!response.ok) {
-        throw new Error(`Failed to export: ${response.status}`);
-      }
-
-      const blob = await response.blob();
-      const downloadUrl = window.URL.createObjectURL(blob);
-      const link = document.createElement('a');
-      link.href = downloadUrl;
-      link.download = `orders_${new Date().toISOString().split('T')[0]}.csv`;
+      const csvContent = "data:text/csv;charset=utf-8," + [headers.join(','), ...rows].join('\n');
+      const link = document.createElement("a");
+      link.setAttribute("href", encodeURI(csvContent));
+      link.setAttribute("download", `orders_${new Date().toISOString().split('T')[0]}.csv`);
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);
-      window.URL.revokeObjectURL(downloadUrl);
 
-      toast({ title: "Export Successful", description: "CSV file downloaded successfully." });
+      toast({ title: "Export Successful", description: `${allShipments.length} orders exported successfully.` });
     } catch (error: any) {
       console.error('Export error:', error);
-      toast({
-        title: "Export Failed",
-        description: "Failed to export CSV file.",
-        variant: "destructive"
-      });
+      toast({ title: "Export Failed", description: "Failed to export CSV file.", variant: "destructive" });
     } finally {
       setIsExporting(false);
     }
-  }, [searchTerm, statusFilter, startDate, endDate, toast]);
+  }, [allShipments, toast]);
 
   return (
     <Card className="shadow-xl mt-8">
