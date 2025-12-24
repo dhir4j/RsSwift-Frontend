@@ -178,37 +178,18 @@ export function AdminOrdersTable() {
       const queryString = params.toString();
       const url = `/api/admin/shipments/export${queryString ? `?${queryString}` : ''}`;
 
-      const token = localStorage.getItem('authToken');
-      if (!token) {
-        throw new Error('Authentication token not found. Please log in again.');
-      }
-
       const apiUrl = process.env.NEXT_PUBLIC_API_URL || '';
 
       const response = await fetch(`${apiUrl}${url}`, {
         method: 'GET',
-        headers: {
-          'Authorization': `Bearer ${token}`,
-        },
+        credentials: 'include',
       });
 
       if (!response.ok) {
-        let errorMessage = `Server error: ${response.status} ${response.statusText}`;
-        try {
-          const errorData = await response.json();
-          errorMessage = errorData.error || errorMessage;
-        } catch {
-          const errorText = await response.text();
-          if (errorText) errorMessage = errorText;
-        }
-        throw new Error(errorMessage);
+        throw new Error(`Failed to export: ${response.status}`);
       }
 
       const blob = await response.blob();
-      if (blob.size === 0) {
-        throw new Error('No data available to export');
-      }
-
       const downloadUrl = window.URL.createObjectURL(blob);
       const link = document.createElement('a');
       link.href = downloadUrl;
@@ -223,7 +204,7 @@ export function AdminOrdersTable() {
       console.error('Export error:', error);
       toast({
         title: "Export Failed",
-        description: error.message || "Failed to export CSV file.",
+        description: "Failed to export CSV file.",
         variant: "destructive"
       });
     } finally {
