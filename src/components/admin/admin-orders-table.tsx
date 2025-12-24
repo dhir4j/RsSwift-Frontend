@@ -174,27 +174,27 @@ export function AdminOrdersTable() {
 
     setIsExporting(true);
     try {
-      const headers = ["Order #", "Type", "Sender", "Sender City", "Receiver", "Receiver City", "Weight (kg)", "Date", "Price (excl. tax)", "Tax (18%)", "Total Amount", "Status"];
+      // Match the table columns exactly: Order #, Type, Sender, Receiver, Destination, Date, Amount, Status
+      const headers = ["Order #", "Type", "Sender", "Receiver", "Destination", "Date", "Amount", "Status"];
 
       const rows = allShipments.map(order => [
-        `"${order.shipment_id_str}"`,
-        `"${order.service_type}"`,
-        `"${order.sender_name}"`,
-        `"${order.sender_address_city}"`,
-        `"${order.receiver_name}"`,
-        `"${order.receiver_address_city}"`,
-        order.package_weight_kg,
-        `"${format(parseISO(order.booking_date), 'yyyy-MM-dd HH:mm')}"`,
-        order.price_without_tax.toFixed(2),
-        order.tax_amount_18_percent.toFixed(2),
+        order.shipment_id_str,
+        order.service_type,
+        order.sender_name,
+        order.receiver_name,
+        order.receiver_address_city,
+        format(parseISO(order.booking_date), 'dd MMM yyyy'),
         order.total_with_tax_18_percent.toFixed(2),
-        `"${order.status}"`
+        order.status
       ].join(','));
 
-      const csvContent = "data:text/csv;charset=utf-8," + [headers.join(','), ...rows].join('\n');
+      const csvContent = [headers.join(','), ...rows].join('\n');
+      const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
       const link = document.createElement("a");
-      link.setAttribute("href", encodeURI(csvContent));
+      const url = URL.createObjectURL(blob);
+      link.setAttribute("href", url);
       link.setAttribute("download", `orders_${new Date().toISOString().split('T')[0]}.csv`);
+      link.style.visibility = 'hidden';
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);
