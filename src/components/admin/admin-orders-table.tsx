@@ -44,6 +44,7 @@ export function AdminOrdersTable() {
   const [allShipments, setAllShipments] = useState<Shipment[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [isBulkUpdating, setIsBulkUpdating] = useState(false);
+  const [isExporting, setIsExporting] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState<string>('all');
   const [startDate, setStartDate] = useState('');
@@ -166,38 +167,67 @@ export function AdminOrdersTable() {
   };
 
   const exportToCSV = useCallback(async () => {
+    setIsExporting(true);
     try {
-      let queryParams = '?';
-      if (searchTerm) queryParams += `&q=${encodeURIComponent(searchTerm)}`;
-      if (statusFilter !== 'all') queryParams += `&status=${encodeURIComponent(statusFilter)}`;
-      if (startDate) queryParams += `&start_date=${encodeURIComponent(startDate)}`;
-      if (endDate) queryParams += `&end_date=${encodeURIComponent(endDate)}`;
+      const params = new URLSearchParams();
+      if (searchTerm) params.append('q', searchTerm);
+      if (statusFilter !== 'all') params.append('status', statusFilter);
+      if (startDate) params.append('start_date', startDate);
+      if (endDate) params.append('end_date', endDate);
 
-      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/admin/shipments/export${queryParams}`, {
+      const queryString = params.toString();
+      const url = `/api/admin/shipments/export${queryString ? `?${queryString}` : ''}`;
+
+      const token = localStorage.getItem('authToken');
+      if (!token) {
+        throw new Error('Authentication token not found. Please log in again.');
+      }
+
+      const apiUrl = process.env.NEXT_PUBLIC_API_URL || '';
+
+      const response = await fetch(`${apiUrl}${url}`, {
         method: 'GET',
         headers: {
-          'Authorization': `Bearer ${localStorage.getItem('authToken')}`,
+          'Authorization': `Bearer ${token}`,
         },
       });
 
       if (!response.ok) {
-        throw new Error('Failed to export CSV');
+        let errorMessage = `Server error: ${response.status} ${response.statusText}`;
+        try {
+          const errorData = await response.json();
+          errorMessage = errorData.error || errorMessage;
+        } catch {
+          const errorText = await response.text();
+          if (errorText) errorMessage = errorText;
+        }
+        throw new Error(errorMessage);
       }
 
       const blob = await response.blob();
-      const url = window.URL.createObjectURL(blob);
+      if (blob.size === 0) {
+        throw new Error('No data available to export');
+      }
+
+      const downloadUrl = window.URL.createObjectURL(blob);
       const link = document.createElement('a');
-      link.href = url;
+      link.href = downloadUrl;
       link.download = `orders_${new Date().toISOString().split('T')[0]}.csv`;
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);
-      window.URL.revokeObjectURL(url);
+      window.URL.revokeObjectURL(downloadUrl);
 
       toast({ title: "Export Successful", description: "CSV file downloaded successfully." });
-    } catch (error) {
+    } catch (error: any) {
       console.error('Export error:', error);
-      toast({ title: "Export Failed", description: "Failed to export CSV file.", variant: "destructive" });
+      toast({
+        title: "Export Failed",
+        description: error.message || "Failed to export CSV file.",
+        variant: "destructive"
+      });
+    } finally {
+      setIsExporting(false);
     }
   }, [searchTerm, statusFilter, startDate, endDate, toast]);
 
@@ -211,8 +241,9 @@ export function AdminOrdersTable() {
             </CardTitle>
             <CardDescription>View, manage, and export all customer orders.</CardDescription>
           </div>
-          <Button onClick={exportToCSV} variant="outline" size="sm" className="mt-4 md:mt-0">
-            <FileDown className="mr-2 h-4 w-4" /> Export CSV
+          <Button onClick={exportToCSV} variant="outline" size="sm" className="mt-4 md:mt-0" disabled={isExporting}>
+            {isExporting ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <FileDown className="mr-2 h-4 w-4" />}
+            {isExporting ? 'Exporting...' : 'Export CSV'}
           </Button>
         </div>
         <div className="mt-6 p-4 border rounded-lg bg-muted/50 space-y-4">
