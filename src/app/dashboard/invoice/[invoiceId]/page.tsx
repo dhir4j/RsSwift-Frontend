@@ -136,7 +136,7 @@ export default function InvoiceDetailPage() {
     country: shipment.receiver_address_country || '',
   };
   
-  const invoiceDateStr = shipment.booking_date || new Date().toISOString();
+  const invoiceDateStr = shipment.pickup_date || shipment.booking_date || new Date().toISOString();
   const invoiceDate = isValid(parseISO(invoiceDateStr)) ? parseISO(invoiceDateStr) : new Date();
 
   return (

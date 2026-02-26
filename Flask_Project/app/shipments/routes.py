@@ -30,10 +30,10 @@ def create_shipment():
     price_without_tax = round(final_total_price / 1.18, 2)
     tax_amount = round(final_total_price - price_without_tax, 2)
 
-    now_iso = datetime.utcnow().isoformat()
+    pickup_date_iso = shipment_data["pickup_date"].isoformat() if hasattr(shipment_data["pickup_date"], 'isoformat') else str(shipment_data["pickup_date"])
     tracking_history = [{
         "stage": "Pending Payment",
-        "date": now_iso,
+        "date": pickup_date_iso,
         "location": shipment_data["sender_address_city"],
         "activity": "Shipment created. Awaiting payment confirmation."
     }]
