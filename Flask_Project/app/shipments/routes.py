@@ -259,6 +259,7 @@ def get_shipment_detail(shipment_id_str):
         "receiver_address_country": shipment.receiver_address_country,
         "receiver_phone": shipment.receiver_phone,
         "package_weight_kg": float(shipment.package_weight_kg),
+        "pickup_date": shipment.pickup_date.isoformat(),
         "booking_date": shipment.booking_date.isoformat(),
         "status": shipment.status,
         "price_without_tax": float(shipment.price_without_tax),
