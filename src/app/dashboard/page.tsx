@@ -97,7 +97,7 @@ export default function DashboardPage() {
                                 <p className="text-sm flex-grow">
                                     Shipment <Link href={`/dashboard/track-shipment?id=${shipment.shipment_id_str}`} className="font-mono text-primary hover:underline">{shipment.shipment_id_str}</Link> has been updated to: <span className="font-semibold">{shipment.status}</span>.
                                 </p>
-                                <p className="text-xs text-muted-foreground flex-shrink-0">{formatDistanceToNow(parseISO(shipment.booking_date), { addSuffix: true })}</p>
+                                <p className="text-xs text-muted-foreground flex-shrink-0">{formatDistanceToNow(parseISO(shipment.pickup_date || shipment.booking_date), { addSuffix: true })}</p>
                             </div>
                         ))
                     ) : (

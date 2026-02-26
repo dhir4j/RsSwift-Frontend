@@ -39,8 +39,8 @@ export function MyShipmentsTable() {
     return shipments
       .filter(shipment => {
         const statusMatch = filterStatus === 'all' || shipment.status === filterStatus;
-        const bookingDateObj = shipment.booking_date ? parseISO(shipment.booking_date) : null;
-        const dateMatch = !filterDate || (bookingDateObj && format(bookingDateObj, 'yyyy-MM-dd') === format(filterDate, 'yyyy-MM-dd'));
+        const pickupDateObj = (shipment.pickup_date || shipment.booking_date) ? parseISO(shipment.pickup_date || shipment.booking_date) : null;
+        const dateMatch = !filterDate || (pickupDateObj && format(pickupDateObj, 'yyyy-MM-dd') === format(filterDate, 'yyyy-MM-dd'));
         
         const searchLower = searchTerm.toLowerCase();
         const searchMatch = searchTerm === '' || 
@@ -50,8 +50,8 @@ export function MyShipmentsTable() {
         return statusMatch && dateMatch && searchMatch;
       })
       .sort((a, b) => {
-        const dateA = a.booking_date ? parseISO(a.booking_date).getTime() : 0;
-        const dateB = b.booking_date ? parseISO(b.booking_date).getTime() : 0;
+        const dateA = (a.pickup_date || a.booking_date) ? parseISO(a.pickup_date || a.booking_date).getTime() : 0;
+        const dateB = (b.pickup_date || b.booking_date) ? parseISO(b.pickup_date || b.booking_date).getTime() : 0;
         return dateB - dateA;
       });
   }, [shipments, filterStatus, filterDate, searchTerm]);
@@ -162,7 +162,7 @@ export function MyShipmentsTable() {
                 {filteredShipments.map((shipment) => (
                   <TableRow key={shipment.shipment_id_str}> 
                     <TableCell className="font-medium text-primary">{shipment.shipment_id_str || 'Unknown ID'}</TableCell>
-                    <TableCell>{shipment.booking_date ? format(parseISO(shipment.booking_date), 'dd MMM yyyy') : 'N/A'}</TableCell>
+                    <TableCell>{(shipment.pickup_date || shipment.booking_date) ? format(parseISO(shipment.pickup_date || shipment.booking_date), 'dd MMM yyyy') : 'N/A'}</TableCell>
                     <TableCell>{shipment.sender_name}</TableCell>
                     <TableCell>{shipment.receiver_name}</TableCell>
                     <TableCell>{shipment.service_type}</TableCell>

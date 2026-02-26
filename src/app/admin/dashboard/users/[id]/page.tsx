@@ -81,7 +81,7 @@ export default function UserDetailPage({ params }: { params: { id: string } }) {
                             {details.shipments.length > 0 ? details.shipments.map(shipment => (
                                 <TableRow key={shipment.id}>
                                     <TableCell className="font-medium text-primary">{shipment.shipment_id_str}</TableCell>
-                                    <TableCell>{new Date(shipment.booking_date).toLocaleDateString()}</TableCell>
+                                    <TableCell>{new Date(shipment.pickup_date || shipment.booking_date).toLocaleDateString()}</TableCell>
                                     <TableCell><Badge variant="outline" className={cn(statusColors[shipment.status])}>{shipment.status}</Badge></TableCell>
                                     <TableCell className="text-right flex items-center justify-end">
                                       <IndianRupee className="h-4 w-4 mr-1 text-muted-foreground" />

@@ -229,6 +229,7 @@ def get_user_shipments():
             "sender_name": s.sender_name,
             "receiver_name": s.receiver_name,
             "service_type": s.service_type,
+            "pickup_date": s.pickup_date.isoformat(),
             "booking_date": s.booking_date.isoformat(),
             "status": s.status,
             "total_with_tax_18_percent": float(s.total_with_tax_18_percent),

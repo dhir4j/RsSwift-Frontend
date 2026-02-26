@@ -183,7 +183,7 @@ export function AdminOrdersTable() {
         order.sender_name,
         order.receiver_name,
         order.receiver_address_city,
-        format(parseISO(order.booking_date), 'dd MMM yyyy'),
+        format(parseISO(order.pickup_date || order.booking_date), 'dd MMM yyyy'),
         order.total_with_tax_18_percent.toFixed(2),
         order.status
       ].join(','));
@@ -332,7 +332,7 @@ export function AdminOrdersTable() {
                             <TableCell>{order.sender_name}</TableCell>
                             <TableCell>{order.receiver_name}</TableCell>
                             <TableCell>{order.receiver_address_city}</TableCell>
-                            <TableCell className="text-xs">{format(parseISO(order.booking_date), 'dd MMM yyyy')}</TableCell>
+                            <TableCell className="text-xs">{format(parseISO(order.pickup_date || order.booking_date), 'dd MMM yyyy')}</TableCell>
                             <TableCell className="text-right">
                                 <span className="inline-flex items-center justify-end">
                                     <IndianRupee className="h-3.5 w-3.5 mr-0.5" />

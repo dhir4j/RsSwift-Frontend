@@ -138,7 +138,7 @@ export default function OrdersTable() {
             s.tax?.toFixed(2),
             s.total?.toFixed(2),
             s.status,
-            `"${new Date(s.booking_date).toLocaleString()}"`
+            `"${new Date(s.pickup_date || s.booking_date).toLocaleString()}"`
         ].join(','));
 
         const csvContent = "data:text/csv;charset=utf-8," + [headers.join(','), ...rows].join('\n');
@@ -268,7 +268,7 @@ export default function OrdersTable() {
                                 <TableCell>
                                     <Badge variant={getBadgeVariant(shipment.status)}>{shipment.status}</Badge>
                                 </TableCell>
-                                <TableCell className="text-xs text-muted-foreground">{new Date(shipment.booking_date).toLocaleString()}</TableCell>
+                                <TableCell className="text-xs text-muted-foreground">{new Date(shipment.pickup_date || shipment.booking_date).toLocaleString()}</TableCell>
                                 <TableCell className="text-right">
                                     {updatingStatusId === shipment.id ? (
                                         <div className="flex justify-center"><Loader2 className="h-4 w-4 animate-spin" /></div>
